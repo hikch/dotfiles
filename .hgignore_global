@@ -1,0 +1,36 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~ Generally useful ignore configurations
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# auto-generated content
+syntax: glob 
+*.log
+*.bak
+*.db
+
+# swap files of various origins
+syntax: glob 
+*~
+*.orig
+*.rej
+*.swn
+*.swo
+*.swp
+
+# Revision control dirs
+syntax: glob 
+\.hg/
+\.git/
+\.svn/
+CVS/
+
+# Various system generated files
+syntax: glob 
+Thumbs.db
+\.DS_Store
+
+syntax: regexp
+Icon\r
+
+# Python Rope
+syntax: glob 
+.ropeproject
