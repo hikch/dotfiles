@@ -1,0 +1,108 @@
+[[plugins]]
+# color scheme
+# solarized
+repo = 'altercation/vim-colors-solarized'
+hook_add = '''
+    syntax enable
+    set background=light
+'''
+
+[[plugins]]
+# surround
+repo = 'tpope/vim-surround'
+
+[[plugins]]
+# abolish
+repo = 'tpope/vim-abolish'
+
+[[plugins]]
+# yank ring
+repo = 'vim-scripts/YankRing.vim'
+hook_add = '''
+  let g:yankring_history_dir = '~/tmp'
+'''
+
+[[plugins]]
+# QFixHowm
+repo = 'fuenor/qfixhowm'
+
+hook_add = '''
+  set runtimepath+=~/bin/qfixapp
+  let QFixHowm_Key = 'g'
+  let howm_dir             = '~/Dropbox/howm'
+  let howm_filename        = '%Y/%m/%Y-%m-%d-%H%M%S.txt'
+  let howm_fileencoding    = 'utf-8'
+  let howm_fileformat      = 'unix'
+'''
+  
+[[plugins]]
+# vim indent guide
+repo = "nathanaelkane/vim-indent-guides"
+hook_add = '''
+  let g:indent_guides_enable_on_vim_startup=1  
+  let g:indent_guides_guide_size = 1
+  let g:indent_guides_start_level = 2
+  let g:indent_guides_color_change_percent = 3
+  let g:indent_guides_exclude_filetypes = ['help', 'html']
+'''
+
+[[plugins]]
+# dirvish
+repo = 'justinmk/vim-dirvish'
+
+[[plugins]]
+# airline
+repo = 'vim-airline/vim-airline'
+# repo = 'alpaca-tc/alpaca_powertabline'
+# repo = 'Lokaltog/powerline', { 'rtp' : 'powerline/bindings/vim'}
+
+[[plugins]]
+# airline themes
+repo = 'vim-airline/vim-airline-themes'
+hook_add = '''
+    let g:airline_powerline_fonts = 1
+'''
+
+[[plugins]]
+repo = 'prabirshrestha/vim-lsp'
+hook_add = '''
+    let g:lsp_async_completion = 1
+    let g:lsp_fold_enabled = 0
+    let g:lsp_signs_enabled = 1
+    let g:lsp_diagnostics_enabled = 1
+    let g:lsp_diagnostics_echo_cursor = 1
+    let g:lsp_virtual_text_enabled = 1
+    let g:lsp_signs_error = {'text': '💩'}
+    let g:lsp_signs_warning = {'text': '⚠️'}
+    let g:lsp_signs_information = {'text': '📖'}
+    let g:lsp_signs_hint = {'text': '?'}
+'''
+
+[[plugins]]
+repo = 'mattn/vim-lsp-settings'
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete.vim'
+hook_add = '''
+    let g:asyncomplete_auto_popup = 1
+    let g:asyncomplete_auto_completeopt = 1
+    let g:asyncomplete_popup_delay = 400
+'''
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete-lsp.vim'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
+
+[[plugins]]
+# Unite
+repo = "Shougo/unite.vim"
+
+[[plugins]]
+# Unite outline
+repo = 'h1mesuke/unite-outline'
+
