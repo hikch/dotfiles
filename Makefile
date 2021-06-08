@@ -10,3 +10,6 @@ DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
 deploy: ## Deploy dotfiles.
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+
+init: ## Initialize.
+	@curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
