@@ -188,3 +188,5 @@ if [ -f '/Users/hu/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/hu/google-cl
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/hu/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/hu/google-cloud-sdk/completion.zsh.inc'; fi
+
+export PATH="$HOME/.poetry/bin:$PATH"
