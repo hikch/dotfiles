@@ -1,4 +1,5 @@
 cask_args appdir: "/Applications"
+
 tap "heroku/brew"
 tap "homebrew-ffmpeg/ffmpeg"
 tap "homebrew/bundle"
@@ -7,6 +8,7 @@ tap "homebrew/cask-fonts"
 tap "homebrew/core"
 tap "homebrew/services"
 tap "tomanthony/brews"
+
 brew "direnv"
 brew "docker"
 brew "fish"
@@ -25,12 +27,14 @@ brew "pyenv"
 brew "tmux"
 brew "tree"
 brew "yarn"
+
 cask "font-menlo-for-powerline"
+cask "google-cloud-sdk"
 cask "iterm2"
 cask "zoom"
+
 mas "Evernote Web Clipper", id: 1481669779
 mas "HiddenMe", id: 467040476
-mas "iReal Pro", id: 409035833
 mas "Kindle", id: 405399194
 mas "Markoff", id: 1084713122
 mas "Microsoft Remote Desktop", id: 1295203466
@@ -43,3 +47,4 @@ mas "Tweetbot", id: 557168941
 mas "WinArchiver Lite", id: 414855915
 mas "Xcode", id: 497799835
 mas "Yoink", id: 457622435
+mas "iReal Pro", id: 409035833
