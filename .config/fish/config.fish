@@ -10,7 +10,7 @@ status --is-interactive; and source (pyenv init -|psub)
 
 # setup gcloud
 # The next line updates PATH for the Google Cloud SDK.
-source /Users/hu/google-cloud-sdk/path.fish.inc
+source "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.fish.inc"
 
 # setup homebrew
 eval (/opt/homebrew/bin/brew shellenv)

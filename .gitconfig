@@ -1,5 +1,4 @@
 [core]
-	editor = /usr/local/bin/nvim
 	quotepath = false
 	precomposeunicode = true
 [user]

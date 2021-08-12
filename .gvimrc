@@ -33,4 +33,4 @@ endif
 "
 let $SSH_ASKPASS = simplify($VIM . '/../../MacOS') . '/macvim-askpass'
 set noimdisable
-set imdisableactivate
+" set imdisableactivate
