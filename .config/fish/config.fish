@@ -25,3 +25,6 @@ set -x PATH ~/.poetry/bin $PATH
 
 # pip cache
 set -x PIP_DOWNLOAD_CACHE ~/.cache/pip
+
+# openssl
+fish_add_path /opt/homebrew/opt/openssl@1.1/bin
