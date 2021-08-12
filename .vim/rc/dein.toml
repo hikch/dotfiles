@@ -19,7 +19,7 @@ repo = 'tpope/vim-abolish'
 # yank ring
 repo = 'vim-scripts/YankRing.vim'
 hook_add = '''
-  let g:yankring_history_dir = '~/tmp'
+  let g:yankring_history_dir = '/tmp'
 '''
 
 [[plugins]]

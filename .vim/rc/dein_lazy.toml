@@ -4,5 +4,5 @@ repo = "sjl/gundo.vim"
 
 [[plugins]]
 # python
-# repo = "lambdalisue/vim-pyenv"
-# on_ft = ["python", "python3", "djangohtml"]
+repo = "lambdalisue/vim-pyenv"
+on_ft = ["python", "python3", "djangohtml"]
