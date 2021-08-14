@@ -10,9 +10,11 @@ DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
 deploy: ## Deploy dotfiles.
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+	@chown $$(id -un):$$(id -gn) ~/.ssh
+	@chmod 0700 ~/.ssh
 
 init: deploy ## Initialize.
 	xcode-select --install || True
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	eval "$$(/opt/homebrew/bin/brew shellenv)"; brew bundle --global
+	eval "$$(/opt/homebrew/bin/brew shellenv)"; brew bundle --global || True
 	curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
