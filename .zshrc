@@ -161,3 +161,5 @@ for s in `ls -1 ${HOME}/.zsh.d/zshrc.*`
 do
     source $s
 done
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
