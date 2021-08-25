@@ -1,2 +1,0 @@
-## texlive
-export PATH="/usr/local/texlive/2020basic/bin/x86_64-darwin:$PATH"
