@@ -39,9 +39,10 @@ elm-app: homebrew ## Install create-elm-app
 
 
 fisher: homebrew # Install fisher for fish
-	/bin/zsh -c "curl -sL https://git.io/fisher \
-		| source \
-		&& fisher install jorgebucaran/fisher" \
-		|| true
+	/opt/homebrew/bin/fish -c \
+		"curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
+	
+	touch .config/fish/fish_plugins
+	/opt/homebrew/bin/fish -c "fisher update"
 
 
