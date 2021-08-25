@@ -18,20 +18,6 @@ esac
 #
 autoload colors
 colors
-case ${UID} in
-0)
-    PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') %B%{${fg[red]}%}%/#%{${reset_color}%}%b "
-    PROMPT2="%B%{${fg[red]}%}%_#%{${reset_color}%}%b "
-    SPROMPT="%B%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%}%b "
-    ;;
-*)
-    PROMPT="%(?.%{$fg[green]%}.%{$fg[blue]%}) %(?!(*'_') <!(*;_;%)? <)%{${reset_color}%} "
-    PROMPT2="%{${fg[green]}%}%_%%%{${reset_color}%} "
-    SPROMPT="%{$fg[red]%}%{$suggest%}(*'~'%)? < もしかして %B%r%b %{$fg[red]%}かな? [そう!(y), 違う!(n),a,e]:${reset_color}  "
-    [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && 
-        PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}"
-    ;;
-esac
 
 # auto change directory
 #
@@ -175,18 +161,3 @@ for s in `ls -1 ${HOME}/.zsh.d/zshrc.*`
 do
     source $s
 done
-
-### Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
-export PATH="/usr/local/opt/openssl/bin:$PATH"
-
-
-function gi() { curl -sLw n https://www.gitignore.io/api/$@ ;}
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/hu/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/hu/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/hu/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/hu/google-cloud-sdk/completion.zsh.inc'; fi
-
-export PATH="$HOME/.poetry/bin:$PATH"
