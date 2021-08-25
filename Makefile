@@ -1,4 +1,4 @@
-.PHONY: help run
+.PHONY: help deploy init xcode homebrew vim elm-app fish
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -23,12 +23,16 @@ xcode: ## Install xcode unix tools
 	xcode-select --install || True
 
 
-homebrew: xcode ## Install homebrew
+
+homebrew: /opt/homebrew/bin/brew ## Install homebrew and packages
+
+
+/opt/homebrew/bin/brew:
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	eval "$$(/opt/homebrew/bin/brew shellenv)"; brew bundle --global || True
 
 
-vim: homebrew ## Install dein for vim
+vim: homebrew ## Install vim plug-ins
 	curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
 
 
@@ -38,7 +42,7 @@ elm-app: homebrew ## Install create-elm-app
 		|| true
 
 
-fisher: homebrew # Install fisher for fish
+fish: homebrew # Install fish plug-ins
 	/opt/homebrew/bin/fish -c \
 		"curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
 	
