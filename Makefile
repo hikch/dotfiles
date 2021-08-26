@@ -1,4 +1,4 @@
-.PHONY: help deploy init xcode homebrew vim elm-app fish
+.PHONY: help deploy init xcode homebrew vim elm fish
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -16,12 +16,11 @@ deploy: ## Deploy dotfiles.
 	@chmod 0700 ~/.ssh
 
 
-init: deploy xcode homebrew vim elm-app fish ## Initialize.
+init: deploy xcode homebrew vim elm fish ## Initialize.
 
 
 xcode: ## Install xcode unix tools
 	xcode-select --install || True
-
 
 
 homebrew: /opt/homebrew/bin/brew ## Install homebrew and packages
@@ -36,9 +35,13 @@ vim: homebrew ## Install vim plug-ins
 	curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
 
 
-elm-app: homebrew ## Install create-elm-app
+elm: homebrew ## Install elm, elm-test, elm-format, elm-app
 	npm install -g \
+		elm \
+		elm-test \
+		elm-format \
 		create-elm-app \
+		@elm-tooling/elm-language-server
 		|| true
 
 
