@@ -86,6 +86,13 @@ on_ft = ["toml"]
 repo = "airblade/vim-gitgutter"
 
 
+[[plugins]]
+# vim-instant-markdown
+repo = "instant-markdown/vim-instant-markdown"
+build = "npm -g install instant-markdown-d"
+on_ft = ["md"]
+
+
 #[[plugins]]
 #repo = 'prabirshrestha/vim-lsp'
 #hook_add = '''
