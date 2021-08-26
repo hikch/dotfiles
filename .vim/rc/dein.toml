@@ -80,6 +80,12 @@ hook_add = '''
 repo = "cespare/vim-toml"
 on_ft = ["toml"]
 
+
+[[plugins]]
+# gitgutter
+repo = "airblade/vim-gitgutter"
+
+
 #[[plugins]]
 #repo = 'prabirshrestha/vim-lsp'
 #hook_add = '''
