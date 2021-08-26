@@ -242,6 +242,7 @@ set cursorline
 set cursorcolumn
 
 
+
 " ----------------------------------------------------------------
 " Auto commands.
 "
