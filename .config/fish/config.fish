@@ -7,6 +7,7 @@ eval (direnv hook fish)
 
 # setup pyenv
 status --is-interactive; and source (pyenv init -|psub)
+pyenv init - | source
 
 # setup gcloud
 # The next line updates PATH for the Google Cloud SDK.
