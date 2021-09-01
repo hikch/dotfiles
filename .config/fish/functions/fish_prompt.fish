@@ -1,5 +1,5 @@
 function fish_prompt --description 'Write out the prompt'
-	set -l last_status $status
+    set -l last_status $status
 
     if not set -q __fish_git_prompt_show_informative_status
         set -g __fish_git_prompt_show_informative_status 1
@@ -74,6 +74,20 @@ function fish_prompt --description 'Write out the prompt'
         case '*'
             set color_cwd $fish_color_cwd
             set suffix '$'
+    end
+
+    # Python
+    set -l ver_py (pyenv version-name)
+    if not set -q VIRTUAL_ENV
+        if test 'system' != $ver_py
+            set_color $color_cwd
+            printf '(py:%s) ' $ver_py
+            set_color normal
+        end
+    else
+        set_color $color_cwd
+        printf '(py:%s venv) ' $ver_py
+        set_color normal
     end
 
     # PWD
