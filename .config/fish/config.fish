@@ -32,3 +32,6 @@ set -x PATH ~/.poetry/bin $PATH
 
 # pip cache
 set -x PIP_DOWNLOAD_CACHE ~/.cache/pip
+
+# iTerm
+test -e /Users/hu/.iterm2_shell_integration.fish ; and source /Users/hu/.iterm2_shell_integration.fish ; or true
