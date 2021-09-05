@@ -1,1 +1,1 @@
-/opt/homebrew/opt/fzf/shell/key-bindings.fish
+/Users/hu/.cache/dein/repos/github.com/junegunn/fzf/shell/key-bindings.fish
