@@ -94,6 +94,17 @@ build = "npm -g install instant-markdown-d"
 on_ft = ["md"]
 
 
+[[plugins]]
+# fzf
+repo = "junegunn/fzf"
+build = "./install --all"
+
+[[plugins]]
+# fzf.vim
+repo = "junegunn/fzf.vim"
+
+
+
 #[[plugins]]
 #repo = 'prabirshrestha/vim-lsp'
 #hook_add = '''
