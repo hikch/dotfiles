@@ -77,18 +77,24 @@ function fish_prompt --description 'Write out the prompt'
     end
 
     # Python
-    set -l ver_py (pyenv version-name)
-    if not set -q VIRTUAL_ENV
-        if test 'system' != $ver_py
-            set_color $color_cwd
-            printf '(py:%s) ' $ver_py
-            set_color normal
-        end
+    set -l py_version (pyenv version-name)
+    set -l py_venv_name ""
+    set -l py_is_venv ""
+    if set -q VIRTUAL_ENV
+        set py_venv_name (basename $VIRTUAL_ENV)
+        set py_is_venv "venv"
+    end
+
+    if functions -q iterm2_set_user_var
+        iterm2_set_user_var venv $py_status \
+            (string join / (string join : "py" $py_version) $py_venv_name)
     else
         set_color $color_cwd
-        printf '(py:%s venv) ' $ver_py
+        printf '(%s) ' \
+            (string join / (string join : "py" $py_version) $py_is_venv)
         set_color normal
     end
+
 
     # PWD
     set_color $color_cwd
