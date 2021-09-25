@@ -135,7 +135,9 @@ set notimeout ttimeout ttimeoutlen=200
 " <F11>キーで'paste'と'nopaste'を切り替える
 set pastetoggle=<F11>
 
-
+" File encodings
+" ファイルを開くときのエンコードにcp932を追加
+set fileencodings=ucs-bom,utf-8,cp932,default,latin1
 
 "------------------------------------------------------------
 " Indentation options {{{1
