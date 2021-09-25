@@ -104,6 +104,13 @@ build = "./install --all"
 repo = "junegunn/fzf.vim"
 
 
+[[plubins]]
+# todo
+repo = "Dimercel/todo-vim"
+hook_add = '''
+nmap <F5> :TODOToggle<CR>
+'''
+
 
 #[[plugins]]
 #repo = 'prabirshrestha/vim-lsp'
