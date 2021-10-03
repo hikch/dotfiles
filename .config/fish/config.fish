@@ -6,32 +6,31 @@ set -x SHELL /opt/homebrew/bin/fish
 set -x EDITOR vi
 
 # setup homebrew
-eval (/opt/homebrew/bin/brew shellenv)
+test -e /opt/homebrew/bin/brew; and eval (/opt/homebrew/bin/brew shellenv)
 
 # openssl
-fish_add_path /opt/homebrew/opt/openssl@1.1/bin
+test -e /opt/homebrew/opt/openssl@1.1/bin; and fish_add_path /opt/homebrew/opt/openssl@1.1/bin
 
 # setup direnv
-eval (direnv hook fish)
+which direnv > /dev/null; and eval (direnv hook fish)
 
 # setup pyenv
-status is-interactive; and pyenv init --path | source
-pyenv init - | source
+if which pyenv > /dev/null
+    status is-interactive; and pyenv init --path | source
+    pyenv init - | source
+end
 
 # setup gcloud
 # The next line updates PATH for the Google Cloud SDK.
-source "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.fish.inc"
-
-## MySQL
-#
-set -x PATH /usr/local/mysql/bin $PATH
-set -x DYLD_LIBRARY_PATH /usr/local/mysql/lib/
+if test -e "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.fish.inc"
+    source "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.fish.inc"
+end
 
 # setup poetry
-set -x PATH ~/.poetry/bin $PATH
+which poetry > /dev/null; and set -x PATH ~/.poetry/bin $PATH
 
 # pip cache
-set -x PIP_DOWNLOAD_CACHE ~/.cache/pip
+which pip > /dev/null; and set -x PIP_DOWNLOAD_CACHE ~/.cache/pip
 
 # iTerm
 test -e /Users/hu/.iterm2_shell_integration.fish ; and source /Users/hu/.iterm2_shell_integration.fish ; or true
