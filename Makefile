@@ -42,28 +42,20 @@ endif
 
 
 vim: homebrew ## Install vim plug-ins
-ifneq "" "$(shell which vim >> /dev/null)"
-	curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
-endif
+	which vim && curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
 
 elm: homebrew ## Install elm, elm-test, elm-format, elm-app
-ifneq "" "$(shell which npm >> /dev/null)"
-	npm install -g \
+	which npm && npm install -g \
 		elm \
 		elm-test \
 		elm-format \
 		create-elm-app \
 		@elm-tooling/elm-language-server \
 		|| true
-endif
 
 
 fish: homebrew # Install fish plug-ins
-ifneq "" "$(shell which fish >> /dev/null)"
-  ifneq "" "$(shell type fisher 2> /dev/null)"
-	/opt/homebrew/bin/fish -c \
+	which fish && /opt/homebrew/bin/fish -c \
 		"curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
-  endif
-	touch .config/fish/fish_plugins
+	which fish && touch .config/fish/fish_plugins
 	/opt/homebrew/bin/fish -c "fisher update"
-endif
