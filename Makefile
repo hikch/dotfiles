@@ -10,6 +10,12 @@ DOTFILES   := $(filter-out $(EXCLUSIONS), $(CANDIDATES))
 DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 OSNAME     := $(shell uname -s)
 
+# commands
+MACKUP	   := $(shell which mackup)
+
+
+init: deploy xcode homebrew vim elm fish restore ## Initialize.
+
 
 deploy: ## Deploy dotfiles.
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
@@ -17,7 +23,24 @@ deploy: ## Deploy dotfiles.
 	@chmod 0700 ~/.ssh
 
 
-init: deploy xcode homebrew vim elm fish ## Initialize.
+check-backup: $(MACKUP) .mackup.cfg ## Check need back up with mackup
+	@mackup -n backup
+
+
+backup: $(MACKUP) .mackup.cfg ## Back up with mackup
+	mackup backup
+
+
+restore: $(MACUP) .mackup.cfg ## Restore with mackup
+	mackup restore
+
+
+uninstall: $(MACUP) .mackup.cfg ## Uninstall with mackup
+	mackup uninstall
+
+
+.mackup.cfg: mackup.m4
+	m4 $? -D__path__=`hostname` > $@
 
 
 xcode: ## Install xcode unix tools
@@ -45,6 +68,8 @@ endif
 
 vim: homebrew ## Install vim plug-ins
 	which vim && curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
+	which vim && vim -c 'call dein#recache_runtimepath()' -c 'q'
+
 
 elm: homebrew ## Install elm, elm-test, elm-format, elm-app
 	which npm && npm install -g \
@@ -61,3 +86,8 @@ fish: homebrew # Install fish plug-ins
 		"curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
 	which fish && touch .config/fish/fish_plugins
 	/opt/homebrew/bin/fish -c "fisher update"
+
+
+$(MACKUP):
+	brew install mackup
+
