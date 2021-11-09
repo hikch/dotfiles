@@ -6,41 +6,51 @@ help:
 
 EXCLUSIONS := .DS_Store .git .gitmodules .gitignore .travis.yml
 CANDIDATES := $(wildcard .??*) bin etc
-DOTFILES   := $(filter-out $(EXCLUSIONS), $(CANDIDATES))
+DOTFILES   = $(filter-out $(EXCLUSIONS), $(CANDIDATES))
 DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 OSNAME     := $(shell uname -s)
 
 # commands
-MACKUP	   := $(shell which mackup)
+MACKUP	   = $(shell which mackup)
 
 
-init: deploy xcode homebrew vim elm fish restore ## Initialize.
+init: xcode homebrew deploy restore vim elm fish ## Initialize.
 
 
-deploy: ## Deploy dotfiles.
+deploy: .mackup.cfg ## Deploy dotfiles.
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@chown $$(id -un):$$(id -gn) ~/.ssh
 	@chmod 0700 ~/.ssh
 
 
-check-backup: $(MACKUP) .mackup.cfg ## Check need back up with mackup
-	@mackup -n backup
+mackup-check-backup: .mackup.cfg ## Check need back up with mackup
+ifdef MACKUP
+	@$(MACKUP) -n backup
+endif
 
 
-backup: $(MACKUP) .mackup.cfg ## Back up with mackup
-	mackup backup
+mackup-backup: .mackup.cfg ## Back up with mackup
+ifdef MACKUP
+	$(MACKUP) backup
+endif
 
 
-restore: $(MACUP) .mackup.cfg ## Restore with mackup
-	mackup restore
+mackup-restore: .mackup.cfg ## Restore with mackup
+ifdef MACKUP
+	$(MACKUP) restore
+endif
 
 
-uninstall: $(MACUP) .mackup.cfg ## Uninstall with mackup
-	mackup uninstall
+mackup-uninstall: .mackup.cfg ## Uninstall with mackup
+ifdef MACKUP
+	$(MACKUP) uninstall
+endif
 
 
 .mackup.cfg: mackup.m4
+ifdef MACKUP
 	m4 $? -D__path__=`hostname` > $@
+endif
 
 
 xcode: ## Install xcode unix tools
@@ -86,8 +96,3 @@ fish: homebrew # Install fish plug-ins
 		"curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
 	which fish && touch .config/fish/fish_plugins
 	/opt/homebrew/bin/fish -c "fisher update"
-
-
-$(MACKUP):
-	brew install mackup
-
