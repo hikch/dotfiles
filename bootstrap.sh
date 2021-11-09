@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# Utils
+#
+
 p_header() {
     printf "⇒ %s\n" "$*"
 }
@@ -20,6 +24,9 @@ is_exists() {
     type -P $1 > /dev/null 2>&1
 }
 
+#
+# functions
+#
 
 install_make_cmd() {
     if ! is_exists "make"; then
@@ -85,17 +92,17 @@ deploy_dotfiles() {
 #
 # main
 #
+
 DOTFILES_GITHUB=https://github.com/hikch/dotfiles
 DOTFILES_GITHUB_REPO=${DOTFILES_GITHUB}.git
 DOTFILES_GITHUB_ARCH=${DOTFILES_GITHUB}/archive/main.tar.gz
 DOTFILES_GITHUB_DIR=dotfiles-main
 
-# Set DOTPATH as default variable
+# Set DOTFILES_DIR as default variable
 if [ -z "${DOTFILES_DIR:-}" ]; then
     DOTFILES_DIR=~/dotfiles; export DOTFILES_DIR
 fi
 
-download_dotfiles &&
-    install_make_cmd &&
+install_make_cmd &&
+    download_dotfiles &&
     deploy_dotfiles
-    
