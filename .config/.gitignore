@@ -1,5 +1,8 @@
 /*
-!/fish
-!/git
+!/coc/extensions/package.json
+!/coc/ultisnips
 
+!/fish
 fish/fishd.*
+
+!/git
