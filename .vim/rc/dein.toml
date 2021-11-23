@@ -71,7 +71,7 @@ merged = 0
 hook_add = '''
     " display coc status on airline
     " :h coc-status-airline
-    let g:airline#extensions#coc#enabled = 0
+    let g:airline#extensions#coc#enabled = 1
     let g:coc_node_path = '/opt/homebrew/bin/node'
     let g:coc_global_extensions = ['coc-json', 'coc-snippets']
 '''
