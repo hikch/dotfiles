@@ -125,7 +125,8 @@ set cmdheight=2
 
 " Display line numbers on the left
 " 行番号を表示
-set number
+"set number
+set rnu
 
 " Quickly time out on keycodes, but never time out on mappings
 " キーコードはすぐにタイムアウト。マッピングはタイムアウトしない
@@ -138,6 +139,10 @@ set pastetoggle=<F11>
 " File encodings
 " ファイルを開くときのエンコードにcp932を追加
 set fileencodings=ucs-bom,utf-8,cp932,default,latin1
+
+" File formats
+" ファイルを開くときのファイル形式（改行）doc, mac を追加
+set fileformats=unix,dos,mac
 
 "------------------------------------------------------------
 " Indentation options {{{1
