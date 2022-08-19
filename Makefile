@@ -14,7 +14,7 @@ OSNAME     := $(shell uname -s)
 MACKUP	   = $(shell which mackup)
 
 
-init: xcode homebrew deploy restore vim elm fish ## Initialize.
+init: xcode homebrew deploy elm fish ## Initialize.
 
 
 deploy: .mackup.cfg ## Deploy dotfiles.
@@ -69,9 +69,9 @@ endif
 
 /opt/homebrew/bin/brew:
 ifeq  "$(OSNAME)" "Darwin"
-	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	if [ ! -e /opt/homebrew ]; then
-		ln -s /usr/local /opt/homebrew
+	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)";
+	if [ ! -e /opt/homebrew ]; then \
+		sudo ln -s /usr/local /opt/homebrew ; \
 	fi
 endif
 
