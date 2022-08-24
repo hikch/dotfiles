@@ -19,3 +19,4 @@ pip
 ssh
 vim
 zsh
+Hazel
