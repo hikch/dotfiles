@@ -18,8 +18,6 @@ defaults write com.apple.dock orientation -string "right"
 # defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Google Chrome.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
 #
 
-killall Dock
-
 ##
 ## Finder
 ##
@@ -49,8 +47,6 @@ defaults write com.apple.finder ShowStatusBar -bool true
 
 # Show tab bar
 defaults write com.apple.finder ShowTabView -bool true
-
-killall Finder
 
 ##
 ## Safari
@@ -100,9 +96,6 @@ defaults write com.apple.symbolichotkeys.plist AppleSymbolicHotKeys -dict-add 64
     </dict>
   </dict>
   "
-
-# Enable shortcut changes
-/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
 
 
 ##
