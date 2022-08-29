@@ -96,3 +96,8 @@ fish: homebrew # Install fish plug-ins
 		"curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
 	which fish && touch .config/fish/fish_plugins
 	/opt/homebrew/bin/fish -c "fisher update"
+
+mac-defaults: ## Setup macos settings
+ifeq  "$(OSNAME)" "Darwin"
+	etc/mac_defaults.sh
+endif
