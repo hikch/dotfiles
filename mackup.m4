@@ -6,7 +6,10 @@ engine = icloud
 directory = Mackup/__path__
 
 [applications_to_ignore]
+Hazel
+ansible
 bash
+curl
 fish
 fisher
 git
@@ -15,8 +18,9 @@ homebrew
 mackup
 mercurial
 neovim
+netrc
 pip
 ssh
 vim
+yarn
 zsh
-Hazel
