@@ -39,4 +39,5 @@ xcode                          Install xcode unix tools
 
 ## TODO
 
-- Use the defaults command to automate MacOS settings
+- Switch to package management using nix 
+- Seitch to dotfiles management using home-manager
