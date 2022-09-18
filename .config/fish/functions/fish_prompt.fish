@@ -77,9 +77,6 @@ function fish_prompt --description 'Write out the prompt'
     end
 
     # Python
-    set -l py_version (pyenv version-name)
-    set -l py_venv_name ""
-    set -l py_is_venv ""
     if set -q VIRTUAL_ENV
         set py_venv_name (basename $VIRTUAL_ENV)
         set py_is_venv "venv"

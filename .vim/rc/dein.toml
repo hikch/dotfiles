@@ -73,7 +73,7 @@ hook_add = '''
     " :help coc-status-airline
     "
     let g:airline#extensions#coc#enabled = 1
-    let g:coc_node_path = '/opt/homebrew/bin/node'
+    let g:coc_node_path = '/Users/hu/.nix-profile/bin/node'
     let g:coc_global_extensions = [ 'coc-css', 'coc-cssmodules', 'coc-html', 'coc-htmlhint', 'coc-json', 'coc-markdownlint', 'coc-pydocstring', 'coc-pyright', 'coc-sh', 'coc-snippets', 'coc-sql', 'coc-yaml' ]
 '''
 
@@ -87,13 +87,6 @@ on_ft = ["toml"]
 [[plugins]]
 # gitgutter
 repo = "airblade/vim-gitgutter"
-
-
-[[plugins]]
-# vim-instant-markdown
-repo = "instant-markdown/vim-instant-markdown"
-build = "npm -g install instant-markdown-d"
-on_ft = ["md"]
 
 
 [[plugins]]
