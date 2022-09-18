@@ -1,10 +1,5 @@
 {
     "languageserver": {
-        "efm": {
-            "command": "efm-langserver",
-            "args": [],
-            "filetypes": ["markdown", "text"]
-        },
         "elmLS": {
             "command": "elm-language-server",
             "filetypes": ["elm"],

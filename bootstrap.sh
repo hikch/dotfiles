@@ -28,14 +28,16 @@ is_exists() {
 # functions
 #
 
-install_make_cmd() {
-    if ! is_exists "make"; then
-        if [ `uname -s` = 'Darwin' ]; then
-            xcode-select --install || True
+is_install_unix_tooles() {
+    if [ `uname -s` = 'Darwin' ]; then
+        if [[ "$(xcode-select -p)" == "" ]]; then
+            p_error "Not installed command line tools!"
+            p_info "Run 'xcode-select --install' to install Command Line Tools."
+            exit 1
         fi
     fi
     if ! is_exists "make"; then
-        p_error "Not found make command!"
+        p_error "make required!"
         exit 1
     fi
 }
@@ -75,18 +77,33 @@ download_dotfiles() {
         exit 1
     fi
 
-    p_done "Downloaded dotfiles."
+    case $? in
+        0 )
+            p_done "Downloaded dotfiles."
+            ;;
+        * )
+            p_error "Could not doenload dotfile."
+            ;;
+    esac
 }
 
 
 deploy_dotfiles() {
     p_header "Deploying dotfiles to $DOTFILES_DIR..."
 
-    cd $DOTFILES_DIR &&
-        make deploy &&
+    mkdir -vp $DOTFILES_DIR &&
+        cd $DOTFILES_DIR &&
+        make deploy
 
-    p_info 'Run `make init` if you need to initialize the software for setup.'
-    p_done 'Deployed dotfiles'
+    case $? in
+        0 )
+            p_info 'Run `make init` if you need to initialize the software for setup.'
+            p_done 'Deployed dotfiles'
+            ;;
+        * )
+            p_error "Could not create directory $DOTFILES_DIR."
+            ;;
+    esac
 }
 
 #
@@ -103,6 +120,6 @@ if [ -z "${DOTFILES_DIR:-}" ]; then
     DOTFILES_DIR=~/dotfiles; export DOTFILES_DIR
 fi
 
-install_make_cmd &&
+is_install_unix_tooles &&
     download_dotfiles &&
     deploy_dotfiles
