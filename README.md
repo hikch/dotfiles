@@ -65,6 +65,7 @@ and more...
 
 ## TODO
 
+- [ ] Make script for creating ssh settings when adding a remote host.
 - [ ] Use nix-darwin to manage the settings in mac defaults
 - [x] Use the defaults command to automate MacOS settings
 - [x] Switch to package management using nix
