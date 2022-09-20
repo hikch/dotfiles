@@ -52,6 +52,13 @@ vim                            Install vim plug-ins
 **Note** init is done after making nix, nix-darwin, and home-manager.
 ```
 
+## Note
+
+### .config
+
+.config is not managed by git.
+Use .gitignore to remove exclusions only for files you want to manage.
+
 ## Toolset
 
 - [direnv](https://github.com/direnv/direnv)
