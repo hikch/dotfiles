@@ -1,7 +1,12 @@
+# .config is basically unmanaged
+# Exclude only the files you want to manage 
 /*
+
 !/coc/ultisnips
 
 !/fish
 fish/fishd.*
 
 !/git
+
+!/nixpkgs
