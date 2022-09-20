@@ -47,7 +47,7 @@ home-manager: ## Install home-manager
 
 
 .PHONY: init
-init: deploy homebrew darwin-rebuild-switch home-manager-switch fish mac-defaults ## Initialize.
+init: deploy darwin-rebuild-switch home-manager-switch homebrew fish mac-defaults ## Initialize.
 
 .PHONY: deploy
 deploy: ## Deploy dotfiles.
@@ -70,9 +70,10 @@ darwin-rebuild-switch: ## Run darwin-rebuild switch
 .PHONY: homebrew
 homebrew:  ## Install homebrew packages
 ifeq  "$(OSNAME)" "Darwin"
-	sh etc/install_homebrew.sh;
+	ls /opt/homebrew/bin/brew || \
+		/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	eval "$$(/opt/homebrew/bin/brew shellenv)"; \
-		brew bundle --file="./.Brewfile" 2>&1
+		brew bundle --file="./.Brewfile" 2>&1 || true
 endif
 
 

@@ -1,0 +1,314 @@
+{
+  "entries": {
+    "tap": {
+      "homebrew/bundle": {
+        "revision": "95e1114e202c57887b761e268f43f0077f593f0f"
+      },
+      "homebrew/cask": {
+        "revision": "bd77d02a4406f005ed425f554da6a709bc322ff0"
+      },
+      "homebrew/cask-fonts": {
+        "revision": "8fef229ebe25d19ce0d3fca85d939c9df7aaf291"
+      },
+      "homebrew/core": {
+        "revision": "f890e2444f92abb7dc791ebef23637556902828f"
+      },
+      "homebrew/services": {
+        "revision": "b57b4bf4323d6cf6734bb48ccdc366c321504940"
+      }
+    },
+    "brew": {
+      "mas": {
+        "version": "1.8.6",
+        "bottle": {
+          "rebuild": 0,
+          "root_url": "https://ghcr.io/v2/homebrew/core",
+          "files": {
+            "arm64_monterey": {
+              "cellar": ":any_skip_relocation",
+              "url": "https://ghcr.io/v2/homebrew/core/mas/blobs/sha256:379d46e2657be295321f1603dc1df28130ea0b5b264ceb192a9ba488d77c7a98",
+              "sha256": "379d46e2657be295321f1603dc1df28130ea0b5b264ceb192a9ba488d77c7a98"
+            },
+            "arm64_big_sur": {
+              "cellar": ":any_skip_relocation",
+              "url": "https://ghcr.io/v2/homebrew/core/mas/blobs/sha256:918a1484de106940f7bebc936e1ded87d7b65652054b09204887ad0651937ec4",
+              "sha256": "918a1484de106940f7bebc936e1ded87d7b65652054b09204887ad0651937ec4"
+            },
+            "monterey": {
+              "cellar": ":any_skip_relocation",
+              "url": "https://ghcr.io/v2/homebrew/core/mas/blobs/sha256:6b313f2f66d028cb7782c108d6e502ce73ccb9c08fac3bece0b057fcce5c4689",
+              "sha256": "6b313f2f66d028cb7782c108d6e502ce73ccb9c08fac3bece0b057fcce5c4689"
+            },
+            "big_sur": {
+              "cellar": ":any_skip_relocation",
+              "url": "https://ghcr.io/v2/homebrew/core/mas/blobs/sha256:50b50f51219143fcb69c730b52b74011a76104f66348ea727d0200f7b375ae25",
+              "sha256": "50b50f51219143fcb69c730b52b74011a76104f66348ea727d0200f7b375ae25"
+            },
+            "catalina": {
+              "cellar": ":any_skip_relocation",
+              "url": "https://ghcr.io/v2/homebrew/core/mas/blobs/sha256:d241d3b9156b033f3d2c31684a44de726297e07fd9bd5e3ccc4c36e4f1c3baf3",
+              "sha256": "d241d3b9156b033f3d2c31684a44de726297e07fd9bd5e3ccc4c36e4f1c3baf3"
+            }
+          }
+        }
+      }
+    },
+    "cask": {
+      "alfred": {
+        "version": "5.0.2,2073",
+        "options": {
+          "full_name": "alfred",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "anydesk": {
+        "version": "6.6.0",
+        "options": {
+          "full_name": "anydesk",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "appcleaner": {
+        "version": "3.6.4,4270",
+        "options": {
+          "full_name": "appcleaner",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "deepl": {
+        "version": "3.5.251434",
+        "options": {
+          "full_name": "deepl",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "discord": {
+        "version": "0.0.268",
+        "options": {
+          "full_name": "discord",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "docker": {
+        "version": "4.12.0,85629",
+        "options": {
+          "full_name": "docker",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "dropbox": {
+        "version": "157.4.4808",
+        "options": {
+          "full_name": "dropbox",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "dropbox-passwords": {
+        "version": "8.2.14",
+        "options": {
+          "full_name": "dropbox-passwords",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "evernote": {
+        "version": "10.44.8,3632,36e33ef8ac",
+        "options": {
+          "full_name": "evernote",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "firefox": {
+        "version": "104.0.2",
+        "options": {
+          "full_name": "firefox",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "font-menlo-for-powerline": {
+        "version": "latest",
+        "options": {
+          "full_name": "font-menlo-for-powerline",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "google-chrome": {
+        "version": "105.0.5195.125",
+        "options": {
+          "full_name": "google-chrome",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "google-cloud-sdk": {
+        "version": "latest",
+        "options": {
+          "full_name": "google-cloud-sdk",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "google-drive": {
+        "version": "63.0.5",
+        "options": {
+          "full_name": "google-drive",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "hazel": {
+        "version": "5.1.4",
+        "options": {
+          "full_name": "hazel",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "intellij-idea-ce": {
+        "version": "2022.2.2,222.4167.29",
+        "options": {
+          "full_name": "intellij-idea-ce",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "iterm2": {
+        "version": "3.4.16",
+        "options": {
+          "full_name": "iterm2",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "keycastr": {
+        "version": "0.9.12",
+        "options": {
+          "full_name": "keycastr",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "macvim": {
+        "version": "173",
+        "options": {
+          "full_name": "macvim",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "omnifocus": {
+        "version": "3.13.3",
+        "options": {
+          "full_name": "omnifocus",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "omnigraffle": {
+        "version": "7.20",
+        "options": {
+          "full_name": "omnigraffle",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "omnioutliner": {
+        "version": "5.10",
+        "options": {
+          "full_name": "omnioutliner",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "pycharm-ce": {
+        "version": "2022.2.2,222.4167.33",
+        "options": {
+          "full_name": "pycharm-ce",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "resilio-sync": {
+        "version": "2.7.3",
+        "options": {
+          "full_name": "resilio-sync",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "sourcetree": {
+        "version": "4.2.0,246",
+        "options": {
+          "full_name": "sourcetree",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "vlc": {
+        "version": "3.0.17.3",
+        "options": {
+          "full_name": "vlc",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "zoom": {
+        "version": "5.11.11.10514",
+        "options": {
+          "full_name": "zoom",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      }
+    }
+  },
+  "system": {
+    "macos": {
+      "monterey": {
+        "HOMEBREW_VERSION": "3.6.2",
+        "HOMEBREW_PREFIX": "/opt/homebrew",
+        "Homebrew/homebrew-core": "f890e2444f92abb7dc791ebef23637556902828f",
+        "CLT": "14.0.0.0.1.1661618636",
+        "Xcode": "14.0",
+        "macOS": "12.6"
+      }
+    }
+  }
+}
