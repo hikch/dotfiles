@@ -52,6 +52,7 @@ init: deploy darwin-rebuild-switch home-manager-switch homebrew fish mac-default
 .PHONY: deploy
 deploy: ## Deploy dotfiles.
 	@if ! [ -L $(HOME)/.config ]; then mv $(HOME)/.config $(HOME)/.config~; fi
+	@if ! [ -L $(HOME)/.nixpkgs ]; then mv $(HOME)/.nixpkgs $(HOME)/.nixpkgs~; fi
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@chown $$(id -un):$$(id -gn) ~/.ssh
 	@chmod 0700 ~/.ssh
