@@ -1,7 +1,9 @@
-.PHONY: help deploy init xcode homebrew vim elm fish
-
+.PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@echo ""
+	@echo "**Note** init is done after making nix, nix-darwin, and home-manager."
+	@echo ""
 
 
 EXCLUSIONS := .DS_Store .git .gitmodules .gitignore .travis.yml
@@ -10,94 +12,87 @@ DOTFILES   = $(filter-out $(EXCLUSIONS), $(CANDIDATES))
 DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 OSNAME     := $(shell uname -s)
 
-# commands
-MACKUP	   = $(shell which mackup)
+define INSTALL_NIX_HOME_MANAGER
+endef
+export INSTALL_NIX_HOME_MANAGER
 
 
-init: xcode homebrew deploy elm fish ## Initialize.
+.PHONY: nix
+nix: /nix ## Install nix
+/nix: # Install nix
+	@echo "Install nix"
+	curl -L https://nixos.org/nix/install |sh
 
 
-deploy: .mackup.cfg ## Deploy dotfiles.
+.PHONY: nix-darwin
+nix-darwin: ## Install nix-darwin
+ifeq  "$(OSNAME)" "Darwin"
+	@echo "Install nix-darwin..."
+	@which darwin-rebuild || \
+		nix-build \
+			https://github.com/LnL7/nix-darwin/archive/master.tar.gz \
+			-A installer
+	./result/bin/darwin-installer
+endif
+
+
+.PHONY: home-manager
+home-manager: ## Install home-manager
+	@echo "Install nix home-manage..."
+	@which home-manager || \
+		( nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager; \
+		  nix-channel --update; \
+		  nix-shell '<home-manager>' -A install; \
+		)
+
+
+.PHONY: init
+init: deploy homebrew darwin-rebuild-switch home-manager-switch fish mac-defaults ## Initialize.
+
+.PHONY: deploy
+deploy: ## Deploy dotfiles.
+	@if ! [ -L $(HOME)/.config ]; then mv $(HOME)/.config $(HOME)/.config~; fi
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@chown $$(id -un):$$(id -gn) ~/.ssh
 	@chmod 0700 ~/.ssh
 
-
-mackup-check-backup: .mackup.cfg ## Check need back up with mackup
-ifdef MACKUP
-	@$(MACKUP) -n backup
-endif
-
-
-mackup-backup: .mackup.cfg ## Back up with mackup
-ifdef MACKUP
-	$(MACKUP) backup
-endif
+.PHONY: home-manager-switch
+home-manager-switch: ## Run home-manager switch
+	which home-manager \
+		&& home-manager switch
 
 
-mackup-restore: .mackup.cfg ## Restore with mackup
-ifdef MACKUP
-	$(MACKUP) restore
-endif
+.PHONY: darwin-rebuild-switch
+darwin-rebuild-switch: ## Run darwin-rebuild switch
+	which darwin-rebuild \
+		&& darwin-rebuild switch
 
-
-mackup-uninstall: .mackup.cfg ## Uninstall with mackup
-ifdef MACKUP
-	$(MACKUP) uninstall
-endif
-
-
-.mackup.cfg: mackup.m4
-ifdef MACKUP
-	m4 $? -D__path__=`hostname` > $@
-endif
-
-
-xcode: ## Install xcode unix tools
+.PHONY: homebrew
+homebrew:  ## Install homebrew packages
 ifeq  "$(OSNAME)" "Darwin"
-	xcode-select --install || True
-endif
-
-
-homebrew: /opt/homebrew/bin/brew ## Install homebrew packages
-ifeq  "$(OSNAME)" "Darwin"
+	sh etc/install_homebrew.sh;
 	eval "$$(/opt/homebrew/bin/brew shellenv)"; \
-	    brew bundle --global 2>&1 \
-	    |awk '/has failed!/{print $$2}' |xargs brew reinstall -f;
+		brew bundle --file="./.Brewfile" 2>&1
 endif
 
 
-/opt/homebrew/bin/brew:
-ifeq  "$(OSNAME)" "Darwin"
-	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)";
-	if [ ! -e /opt/homebrew ]; then \
-		sudo ln -s /usr/local /opt/homebrew ; \
-	fi
-endif
-
-
-vim: homebrew ## Install vim plug-ins
+.PHONY: vim
+vim: ## Install vim plug-ins
 	which vim && curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
 	which vim && vim -c 'call dein#recache_runtimepath()' -c 'q'
 
 
-elm: homebrew ## Install elm, elm-test, elm-format, elm-app
-	which npm && npm install -g \
-		elm \
-		elm-test \
-		elm-format \
-		create-elm-app \
-		@elm-tooling/elm-language-server \
-		|| true
-
-
-fish: homebrew # Install fish plug-ins
-	which fish && /opt/homebrew/bin/fish -c \
+.PHONY: fish
+fish: # Install fish plug-ins & Add direnv hook
+	which fish && fish -c \
 		"curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
 	which fish && touch .config/fish/fish_plugins
-	/opt/homebrew/bin/fish -c "fisher update"
+	fish -c "fisher update"
 
+
+.PHONY: mac-defaults
 mac-defaults: ## Setup macos settings
 ifeq  "$(OSNAME)" "Darwin"
-	etc/mac_defaults.sh
+	sh etc/mac_defaults.sh
+	@echo "Reboot to reflect settings."
 endif

@@ -1,15 +1,15 @@
 ## 
 # setup shell
-set -x SHELL /opt/homebrew/bin/fish
+set -x SHELL $(which zsh)
 
 # setup default editor
 set -x EDITOR vi
 
 # setup homebrew
-test -e /opt/homebrew/bin/brew; and eval (/opt/homebrew/bin/brew shellenv)
+# test -e /opt/homebrew/bin/brew; and eval (/opt/homebrew/bin/brew shellenv)
 
 # openssl
-test -e /opt/homebrew/opt/openssl@1.1/bin; and fish_add_path /opt/homebrew/opt/openssl@1.1/bin
+# test -e /opt/homebrew/opt/openssl@1.1/bin; and fish_add_path /opt/homebrew/opt/openssl@1.1/bin
 
 # setup direnv
 which direnv > /dev/null; and eval (direnv hook fish)
@@ -34,3 +34,7 @@ which pip > /dev/null; and set -x PIP_DOWNLOAD_CACHE ~/.cache/pip
 
 # iTerm
 test -e /Users/hu/.iterm2_shell_integration.fish ; and source /Users/hu/.iterm2_shell_integration.fish ; or true
+
+# user bin
+test -e ~/bin ; and set -x PATH ~/bin $PATH
+
