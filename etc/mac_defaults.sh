@@ -61,6 +61,15 @@ defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool 
 # Show status bar
 defaults write com.apple.Safari ShowStatusBar -bool true
 
+
+##
+# iTerm2
+##
+
+defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+defaults write com.googlecode.iterm2 PrefsCustomFolder -string "~/.config/iterm2"
+defaults write com.googlecode.iterm2 NoSyncNeverRemindPrefsChangesLostForFile_selection -int 2
+
 ##
 ## Shortcuts
 ##
