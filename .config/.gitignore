@@ -12,3 +12,4 @@ fish/fishd.*
 !/nixpkgs
 
 !/iterm2
+/iterm2/AppSupport
