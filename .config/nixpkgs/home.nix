@@ -22,6 +22,7 @@
   # Install packages
   home.packages = with pkgs; [
     elmPackages.elm-language-server
+    ffmpeg
     fish
     fzf
     jq
