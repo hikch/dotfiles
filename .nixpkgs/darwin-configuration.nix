@@ -41,4 +41,16 @@ in {
       '';
     };
   };
+
+  launchd.daemons = {
+    "local.loopback-alias.127.0.0.2" = {
+      serviceConfig = {
+        Label = "local.loopback-alias.127.0.0.2";
+        RunAtLoad = true;
+        ProgramArguments = [ "/sbin/ifconfig" "lo0" "alias" "127.0.0.2" ];
+        StandardErrorPath = "/var/log/loopback-alias.log";
+        StandardOutPath = "/var/log/loopback-alias.log";
+      };
+    };
+  };
 }
