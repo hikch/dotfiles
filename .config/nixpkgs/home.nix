@@ -30,6 +30,7 @@
     nodejs
     openssl
     pandoc
+    ripgrep
     tmux
     tree
   ];
