@@ -27,6 +27,7 @@
     fzf
     jq
     mercurial
+    nix-direnv
     nodejs
     openssl
     pandoc
