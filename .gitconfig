@@ -1,6 +1,7 @@
 [core]
 	quotepath = false
 	precomposeunicode = true
+	excludesfile = /Users/hu/.gitignore_global
 [user]
 	name = Heikichi Umehara
 	email = heikichi3@gmail.com
@@ -8,12 +9,14 @@
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
 [mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
 [push]
 	default = current
 [merge]
 	ff = false
+	tool = gvimdiff
+	conflictstyle = diff3
 [pull]
 	ff = only
 [filter "lfs"]
@@ -23,3 +26,6 @@
 	required = true
 [credential]
 	helper = osxkeychain
+[mergetool]
+	keepBackup = false
+	prompt = false
