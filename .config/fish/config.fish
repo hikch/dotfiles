@@ -38,3 +38,5 @@ test -e /Users/hu/.iterm2_shell_integration.fish ; and source /Users/hu/.iterm2_
 # user bin
 test -e ~/bin ; and set -x PATH ~/bin $PATH
 
+
+source /Users/hu/.docker/init-fish.sh || true # Added by Docker Desktop
