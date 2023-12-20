@@ -8,6 +8,13 @@ hook_add = '''
 '''
 
 [[plugins]]
+# copilot
+repo = "github/copilot.vim"
+hook_add = '''
+    let g:copilot_node_command = '~/.nix-profile/bin/node'
+'''
+
+[[plugins]]
 # surround
 repo = 'tpope/vim-surround'
 
