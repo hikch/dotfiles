@@ -16,5 +16,6 @@
 
     // To prevent completion when typing in the IME,
     // set to not complete until the third character is typed
-    "suggest.minTriggerInputLength": 3
+    "suggest.minTriggerInputLength": 3,
+    "snippets.ultisnips.pythonPrompt": false
 }
