@@ -4,13 +4,19 @@
 <dict>
 	<key>AutoHideTmuxClientSession</key>
 	<true/>
+	<key>BracketedPasteMode</key>
+	<true/>
 	<key>Command</key>
 	<string></string>
+	<key>ConvertDosNewlines</key>
+	<true/>
 	<key>Default Bookmark Guid</key>
 	<string>9F662CE6-236A-4687-9282-6D4506853E1F</string>
 	<key>EnableAPIServer</key>
 	<false/>
 	<key>EnableRendezvous</key>
+	<false/>
+	<key>EscapeShellCharsWithBackslash</key>
 	<false/>
 	<key>HapticFeedbackForEsc</key>
 	<false/>
@@ -1488,6 +1494,12 @@
 	<true/>
 	<key>OpenTmuxWindowsIn</key>
 	<integer>2</integer>
+	<key>PasteSpecialRegex</key>
+	<string></string>
+	<key>PasteSpecialSubstitution</key>
+	<string></string>
+	<key>PasteSpecialUseRegexSubstitution</key>
+	<false/>
 	<key>PointerActions</key>
 	<dict>
 		<key>Button,1,1,,</key>
