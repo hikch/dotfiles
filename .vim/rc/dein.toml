@@ -12,6 +12,7 @@ hook_add = '''
 repo = "github/copilot.vim"
 hook_add = '''
     let g:copilot_node_command = '~/.nix-profile/bin/node'
+    let g:copilot_filetypes = { 'gitcommit': v:true }
 '''
 
 [[plugins]]
