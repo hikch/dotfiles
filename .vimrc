@@ -278,6 +278,28 @@ augroup vimrc-auto-mkdir
     endfunction
 augroup END
 
+"
+" Copilot で git commit message を生成するための設定
+" Gitコミットメッセージのバッファにステージングされた差分を追加
+"
+
+autocmd BufRead,BufNewFile COMMIT_EDITMSG call AppendGitDiff()
+" autocmd FileType gitcommit call AppendGitDiff()
+
+function! AppendGitDiff()
+    " ステージングされた差分を取得
+    let l:diff = system('git diff --cached')
+
+    " 各行をコメントアウト
+    let l:commented_diff = join(map(split(l:diff, "\n"), '"# ".v:val'), "\n")
+
+    " バッファの最後に追加
+    if len(l:diff) > 0
+        call append(line('$'), split(commented_diff, '\n'))
+    endif
+endfunction
+
+"
 " ----------------------------------------------------------------
 "  Dein.vim plugin manager 
 "
