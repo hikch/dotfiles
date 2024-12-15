@@ -29,7 +29,6 @@ To install the packages and applications, follow these steps.
 Start and run the shell for each step to enable the package manager.
 
 1. make nix
-1. make nix-darwin
 1. make home-manager
 1. make init
 
@@ -38,18 +37,18 @@ Start and run the shell for each step to enable the package manager.
 ``` sh
 $ cd ~/dotfiles
 $ make
-darwin-rebuild-switch          Run darwin-rebuild switch
 deploy                         Deploy dotfiles.
+fish                           Install fish plug-ins & Add direnv hook
 home-manager-switch            Run home-manager switch
 home-manager                   Install home-manager
 homebrew                       Install homebrew packages
 init                           Initialize.
 mac-defaults                   Setup macos settings
-nix-darwin                     Install nix-darwin
+nix-update                     Update nix
 nix                            Install nix
 vim                            Install vim plug-ins
 
-**Note** init is done after making nix, nix-darwin, and home-manager.
+**Note** init is done after making nix, and home-manager
 ```
 
 ## Note
@@ -65,9 +64,8 @@ Use .gitignore to remove exclusions only for files you want to manage.
 - [fish](https://fishshell.com)
 - [homebrew](https://brew.sh)
 - [jq](https://stedolan.github.io/jq/)
-- [lorri](https://github.com/nix-community/lorri)
 - [macvim](https://macvim-dev.github.io/macvim/)
-- [nix](https://nixos.org), [nix-darwin](https://github.com/LnL7/nix-darwin), [home-manager](https://github.com/nix-community/home-manager)
+- [nix](https://nixos.org), [home-manager](https://github.com/nix-community/home-manager)
 and more...
 
 ## TODO
@@ -76,7 +74,6 @@ and more...
 - [ ] Use nix-darwin to manage the settings in mac defaults
 - [x] Use the defaults command to automate MacOS settings
 - [x] Switch to package management using nix
-- [x] Switch to package management using nix-darwin
 - [x] Seitch to dotfiles management using nix home-manager
 
 I am wondering whether to manage dot files with nix.

@@ -9,7 +9,7 @@ fish/fishd.*
 
 !/git
 
-!/nixpkgs
+!/home-manager
 
 !/iterm2
 /iterm2/AppSupport

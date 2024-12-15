@@ -2,7 +2,7 @@
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 	@echo ""
-	@echo "**Note** init is done after making nix, nix-darwin, and home-manager."
+	@echo "**Note** init is done after making nix, and home-manager."
 	@echo ""
 
 
@@ -18,22 +18,10 @@ export INSTALL_NIX_HOME_MANAGER
 
 
 .PHONY: nix
-nix: /nix ## Install nix
-/nix: # Install nix
+nix: ## Install nix
 	@echo "Install nix"
 	curl -L https://nixos.org/nix/install |sh
 
-
-.PHONY: nix-darwin
-nix-darwin: ## Install nix-darwin
-ifeq  "$(OSNAME)" "Darwin"
-	@echo "Install nix-darwin..."
-	@which darwin-rebuild || \
-		nix-build \
-			https://github.com/LnL7/nix-darwin/archive/master.tar.gz \
-			-A installer
-	./result/bin/darwin-installer
-endif
 
 
 .PHONY: home-manager
@@ -47,7 +35,7 @@ home-manager: ## Install home-manager
 
 
 .PHONY: init
-init: deploy darwin-rebuild-switch home-manager-switch homebrew fish mac-defaults ## Initialize.
+init: deploy  home-manager-switch homebrew fish mac-defaults ## Initialize.
 
 .PHONY: deploy
 deploy: ## Deploy dotfiles.
@@ -62,11 +50,6 @@ home-manager-switch: ## Run home-manager switch
 	which home-manager \
 		&& home-manager switch
 
-
-.PHONY: darwin-rebuild-switch
-darwin-rebuild-switch: ## Run darwin-rebuild switch
-	which darwin-rebuild \
-		&& darwin-rebuild switch
 
 .PHONY: homebrew
 homebrew:  ## Install homebrew packages
@@ -85,12 +68,18 @@ vim: ## Install vim plug-ins
 
 
 .PHONY: fish
-fish: # Install fish plug-ins & Add direnv hook
+fish: ## Install fish plug-ins & Add direnv hook
 	which fish && fish -c \
 		"curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
 	which fish && touch .config/fish/fish_plugins
 	fish -c "fisher update"
 
+
+.PHONE: nix-update
+nix-update: ## Update nix
+	nix-channel --update
+	nix-env -u --all
+	nix-collect-garbage -d
 
 .PHONY: mac-defaults
 mac-defaults: ## Setup macos settings
@@ -98,3 +87,6 @@ ifeq  "$(OSNAME)" "Darwin"
 	sh etc/mac_defaults.sh
 	@echo "Reboot to reflect settings."
 endif
+
+
+
