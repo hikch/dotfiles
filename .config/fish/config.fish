@@ -5,6 +5,9 @@ set -x SHELL $(which zsh)
 # setup default editor
 set -x EDITOR vi
 
+# setup default pager
+set -x PAGER less
+
 # setup homebrew
 # test -e /opt/homebrew/bin/brew; and eval (/opt/homebrew/bin/brew shellenv)
 
@@ -38,5 +41,5 @@ test -e /Users/hu/.iterm2_shell_integration.fish ; and source /Users/hu/.iterm2_
 # user bin
 test -e ~/bin ; and set -x PATH ~/bin $PATH
 
-
+# Docker Desktop
 source /Users/hu/.docker/init-fish.sh || true # Added by Docker Desktop
