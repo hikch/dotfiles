@@ -165,3 +165,6 @@ done
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 source /Users/hu/.docker/init-zsh.sh || true # Added by Docker Desktop
+eval "$(devbox global shellenv --init-hook)"
+
+. "$HOME/.local/bin/env"
