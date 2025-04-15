@@ -2,53 +2,39 @@
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 	@echo ""
-	@echo "**Note** init is done after making nix, and home-manager."
-	@echo ""
 
 
-EXCLUSIONS := .DS_Store .git .gitmodules .gitignore .travis.yml
+# 明示的に除外したいファイルやディレクトリ
+BASE_EXCLUSIONS := .DS_Store .git .gitmodules .gitignore .travis.yml
+#
+# 部分的にリンクしたい相対パス（dotfiles 配下）
+PARTIAL_LINKS := \
+	.local/share/devbox/global/default
+
+# PARTIAL_LINKS からトップレベルディレクトリを抽出し EXCLUSIONS に追加
+PARTIAL_TOPS := $(sort $(foreach p,$(PARTIAL_LINKS),$(firstword $(subst /, ,$(p)))))
+EXCLUSIONS := $(BASE_EXCLUSIONS) $(PARTIAL_TOPS)
+
+# 検出対象（.??* は .で始まり2文字以上）
 CANDIDATES := $(wildcard .??*) bin etc
 DOTFILES   = $(filter-out $(EXCLUSIONS), $(CANDIDATES))
+
 DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 OSNAME     := $(shell uname -s)
 
-define INSTALL_NIX_HOME_MANAGER
-endef
-export INSTALL_NIX_HOME_MANAGER
-
-
-.PHONY: nix
-nix: ## Install nix
-	@echo "Install nix"
-	curl -L https://nixos.org/nix/install |sh
-
-
-
-.PHONY: home-manager
-home-manager: ## Install home-manager
-	@echo "Install nix home-manage..."
-	@which home-manager || \
-		( nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager; \
-		  nix-channel --update; \
-		  nix-shell '<home-manager>' -A install; \
-		)
-
 
 .PHONY: init
-init: deploy  home-manager-switch homebrew fish mac-defaults ## Initialize.
+init: deploy nix-clean-backups nix-install devbox-install debbox-global-install homebrew fish mac-defaults ## Initialize.
 
 .PHONY: deploy
 deploy: ## Deploy dotfiles.
 	@if ! [ -L $(HOME)/.config ]; then mv $(HOME)/.config $(HOME)/.config~; fi
-	@if ! [ -L $(HOME)/.nixpkgs ]; then mv $(HOME)/.nixpkgs $(HOME)/.nixpkgs~; fi
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+	@$(foreach path,$(PARTIAL_LINKS), \
+		mkdir -p $(HOME)/$(dir $(path)); \
+		ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path);)
 	@chown $$(id -un):$$(id -gn) ~/.ssh
 	@chmod 0700 ~/.ssh
-
-.PHONY: home-manager-switch
-home-manager-switch: ## Run home-manager switch
-	which home-manager \
-		&& home-manager switch
 
 
 .PHONY: homebrew
@@ -75,12 +61,6 @@ fish: ## Install fish plug-ins & Add direnv hook
 	fish -c "fisher update"
 
 
-.PHONE: nix-update
-nix-update: ## Update nix
-	nix-channel --update
-	nix-env -u --all
-	nix-collect-garbage -d
-
 .PHONY: mac-defaults
 mac-defaults: ## Setup macos settings
 ifeq  "$(OSNAME)" "Darwin"
@@ -88,5 +68,43 @@ ifeq  "$(OSNAME)" "Darwin"
 	@echo "Reboot to reflect settings."
 endif
 
+.PHONY: nix-install
+nix-install:
+	@echo "📦 Installing Nix with --daemon option..."
+	@curl -L https://nixos.org/nix/install | sh -s -- --daemon
 
+.PHONY: devbox-install
+devbox-install:
+	@echo "🧰 Installing Devbox..."
+	curl -fsSL https://get.jetify.com/devbox | bash
+
+
+.PHONY: devbox-global-install
+devbox-global-install: ## devbox global install
+	@echo "🧰 Installing Devbox globally..."
+	@devbox global install
+
+.PHONY: nix-clean-backups
+nix-clean-backups:
+	@echo "🧼 Cleaning up old Nix installer backup files..."
+
+	@for file in /etc/bashrc /etc/zshrc /etc/bash.bashrc; do \
+	  backup="$$file.backup-before-nix"; \
+	  if [ -f "$$backup" ]; then \
+	    timestamp=$$(date +%Y%m%d%H%M%S); \
+	    echo "📁 Found backup: $$backup"; \
+	    sudo cp "$$backup" "$$backup.bak.$$timestamp"; \
+	    echo "📦 Backed up $$backup to $$backup.bak.$$timestamp"; \
+	    sudo cp "$$file" "$$file.bak.$$timestamp"; \
+	    echo "📦 Backed up $$file to $$file.bak.$$timestamp"; \
+	    sudo mv "$$backup" "$$file"; \
+	    echo "✅ Restored $$file from $$backup"; \
+	  else \
+	    echo "✅ No backup found for $$file"; \
+	  fi; \
+	done
+
+	@echo ""
+	@echo "✅ All conflicting backups resolved. You can now run:"
+	@echo "   make nix-install"
 

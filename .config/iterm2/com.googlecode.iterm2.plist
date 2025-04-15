@@ -343,7 +343,7 @@ The script should do this: \(ai.prompt)</string>
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Text</key>
-			<string>/Users/hu/.nix-profile/bin/fish</string>
+			<string>/Users/hu/.local/share/devbox/global/default/.devbox/nix/profile/default/bin/fish</string>
 			<key>Jobs to Ignore</key>
 			<array>
 				<string>rlogin</string>
