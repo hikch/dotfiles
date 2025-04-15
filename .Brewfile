@@ -1,21 +1,17 @@
 cask_args appdir: "/Applications"
 
 tap "homebrew/bundle"
-tap "homebrew/cask"
 tap "homebrew/cask-fonts"
-tap "homebrew/core"
 tap "homebrew/services"
 
 brew "mas"
 
 cask "alfred"
-cask "anydesk"
 cask "appcleaner"
 cask "deepl"
 cask "discord"
 cask "docker"
 cask "dropbox"
-cask "dropbox-passwords"
 cask "evernote"
 cask "firefox"
 cask "font-menlo-for-powerline"
