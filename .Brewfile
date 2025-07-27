@@ -5,6 +5,7 @@ tap "homebrew/cask-fonts"
 tap "homebrew/services"
 
 brew "mas"
+brew "syncthing"
 
 cask "alfred"
 cask "appcleaner"
