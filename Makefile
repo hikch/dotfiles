@@ -24,7 +24,7 @@ OSNAME     := $(shell uname -s)
 
 
 .PHONY: init
-init: deploy nix-clean-backups nix-install devbox-install debbox-global-install homebrew fish mac-defaults ## Initialize.
+init: deploy nix-clean-backups devbox-install devbox-global-install homebrew fish mac-defaults ## Initialize.
 
 .PHONY: deploy
 deploy: ## Deploy dotfiles.
