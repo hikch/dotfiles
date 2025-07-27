@@ -55,6 +55,28 @@ vim                            Install vim plug-ins
 .config is not managed by git.
 Use .gitignore to remove exclusions only for files you want to manage.
 
+### Syncthing Usage
+
+Both GUI and CLI versions are installed via Brewfile:
+
+**For desktop use (MacBook Air, etc.):**
+``` sh
+# Launch GUI application
+open /Applications/Syncthing.app
+```
+
+**For server use (iMac, etc.):**
+``` sh
+# Start as background service
+brew services start syncthing
+
+# Stop service
+brew services stop syncthing
+
+# Manual run (no browser, no auto-restart)
+/opt/homebrew/Cellar/syncthing/1.30.0/bin/syncthing -no-browser -no-restart
+```
+
 ## Toolset
 
 - [devbox](https://www.jetify.com/devbox) - Primary package manager for development tools
