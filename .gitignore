@@ -4,3 +4,6 @@
 result
 
 *.old
+
+# Claude Code settings and cache
+.claude/
