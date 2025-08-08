@@ -9,12 +9,15 @@
     "jq@latest",
     "mercurial@latest",
     "nix-direnv@latest",
-    "nodejs@latest",
     "openssl@latest",
     "pandoc@latest",
     "ripgrep@latest",
     "tmux@latest",
-    "tree@latest"
+    "tree@latest",
+    "claude-code@latest",
+    "nodejs@latest",
+    "uv@latest",
+    "htop@latest"
   ],
   "shell": {
     "init_hook": [
