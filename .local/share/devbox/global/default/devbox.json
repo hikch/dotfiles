@@ -16,8 +16,7 @@
     "tree@latest",
     "claude-code@latest",
     "nodejs@latest",
-    "uv@latest",
-    "htop@latest"
+    "uv@latest"
   ],
   "shell": {
     "init_hook": [
