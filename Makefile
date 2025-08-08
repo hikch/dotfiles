@@ -34,6 +34,10 @@ deploy: ## Deploy dotfiles.
 		mkdir -p $(HOME)/$(dir $(path)); \
 		ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path);)
 	@chown $$(id -un):$$(id -gn) ~/.ssh
+	# NOTE: devbox は ~/.local/share/devbox/global/default を symlink にするとエラーになる。
+	# そのため dotfiles 側で中身を管理し、ここでは rsync で実体ディレクトリにコピーする。
+	@mkdir -p $(HOME)/.local/share/devbox/global/default
+	@rsync -av --delete $(DOTPATH)/.local/share/devbox/global/default/ $(HOME)/.local/share/devbox/global/default/
 	@chmod 0700 ~/.ssh
 
 
@@ -107,4 +111,3 @@ nix-clean-backups:
 	@echo ""
 	@echo "✅ All conflicting backups resolved. You can now run:"
 	@echo "   make nix-install"
-
