@@ -82,7 +82,7 @@ devbox-install:
 .PHONY: devbox-global-install
 devbox-global-install: ## devbox global install
 	@echo "🧰 Installing Devbox globally..."
-	@devbox global install
+	@devbox global install 2>/dev/null || devbox global update
 
 .PHONY: nix-clean-backups
 nix-clean-backups:
