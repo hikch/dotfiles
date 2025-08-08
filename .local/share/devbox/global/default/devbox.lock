@@ -1,6 +1,54 @@
 {
   "lockfile_version": "1",
   "packages": {
+    "claude-code@latest": {
+      "last_modified": "2025-08-04T20:54:38Z",
+      "resolved": "github:NixOS/nixpkgs/cab778239e705082fe97bb4990e0d24c50924c04#claude-code",
+      "source": "devbox-search",
+      "version": "1.0.67",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/f968nrnp8176zl82wwniszg6gh559j0r-claude-code-1.0.67",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/f968nrnp8176zl82wwniszg6gh559j0r-claude-code-1.0.67"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/mva7xr29lc3q82i9668cpz9v1m7lhplr-claude-code-1.0.67",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/mva7xr29lc3q82i9668cpz9v1m7lhplr-claude-code-1.0.67"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/f9lrad5bb7ibc576xq4padidqqw4zakr-claude-code-1.0.67",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/f9lrad5bb7ibc576xq4padidqqw4zakr-claude-code-1.0.67"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/aidxz6v1br7laj0554cnfdb58r0bwisv-claude-code-1.0.67",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/aidxz6v1br7laj0554cnfdb58r0bwisv-claude-code-1.0.67"
+        }
+      }
+    },
     "direnv@latest": {
       "last_modified": "2024-12-23T21:10:33Z",
       "resolved": "github:NixOS/nixpkgs/de1864217bfa9b5845f465e771e0ecb48b30e02d#direnv",
@@ -376,6 +424,10 @@
           "store_path": "/nix/store/qb76l3bdjlld3xdvr2clbqwsi8l1rh5j-fzf-0.57.0"
         }
       }
+    },
+    "github:NixOS/nixpkgs/nixpkgs-unstable": {
+      "last_modified": "2025-07-13T22:45:35Z",
+      "resolved": "github:NixOS/nixpkgs/a421ac6595024edcfbb1ef950a3712b89161c359?lastModified=1752446735&narHash=sha256-Nz2vtUEaRB%2FUjvPfuhHpez060P%2F4mvGpXW4JCDIboA4%3D"
     },
     "jq@latest": {
       "last_modified": "2025-01-07T09:15:50Z",
@@ -987,6 +1039,54 @@
             }
           ],
           "store_path": "/nix/store/pwy12s99aabim8srvrrdkr080j4lgy76-tree-2.2.1"
+        }
+      }
+    },
+    "uv@latest": {
+      "last_modified": "2025-07-28T17:09:23Z",
+      "resolved": "github:NixOS/nixpkgs/648f70160c03151bc2121d179291337ad6bc564b#uv",
+      "source": "devbox-search",
+      "version": "0.8.2",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/db9y1b002zlnyjgpsnbl9hvlwsiqajl4-uv-0.8.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/db9y1b002zlnyjgpsnbl9hvlwsiqajl4-uv-0.8.2"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/bdps6h2gn2rysavc3cq2slqnjlsyyk03-uv-0.8.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/bdps6h2gn2rysavc3cq2slqnjlsyyk03-uv-0.8.2"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/91g6383zq1wbiik2an7g6yfrj294c19v-uv-0.8.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/91g6383zq1wbiik2an7g6yfrj294c19v-uv-0.8.2"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/swq8qrr7n5gkc1b4940q62a3ll52prgl-uv-0.8.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/swq8qrr7n5gkc1b4940q62a3ll52prgl-uv-0.8.2"
         }
       }
     }

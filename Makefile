@@ -8,7 +8,7 @@ help:
 BASE_EXCLUSIONS := .DS_Store .git .gitmodules .gitignore .travis.yml
 #
 # 部分的にリンクしたい相対パス（dotfiles 配下）
-PARTIAL_LINKS :=
+PARTIAL_LINKS := .local/share/devbox/global/default
 
 # PARTIAL_LINKS からトップレベルディレクトリを抽出し EXCLUSIONS に追加
 PARTIAL_TOPS := $(sort $(foreach p,$(PARTIAL_LINKS),$(firstword $(subst /, ,$(p)))))
@@ -31,12 +31,9 @@ deploy: ## Deploy dotfiles.
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@$(foreach path,$(PARTIAL_LINKS), \
 		mkdir -p $(HOME)/$(dir $(path)); \
+		rm -rf $(HOME)/$(path); \
 		ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path);)
 	@chown $$(id -un):$$(id -gn) ~/.ssh
-	# NOTE: devbox は ~/.local/share/devbox/global/default を symlink にするとエラーになる。
-	# そのため dotfiles 側で中身を管理し、ここでは rsync で実体ディレクトリにコピーする。
-	@mkdir -p $(HOME)/.local/share/devbox/global/default
-	@rsync -av --delete $(DOTPATH)/.local/share/devbox/global/default/ $(HOME)/.local/share/devbox/global/default/
 	@chmod 0700 ~/.ssh
 
 
