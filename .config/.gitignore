@@ -13,3 +13,5 @@ fish/fishd.*
 
 !/iterm2
 /iterm2/AppSupport
+
+!/direnv
