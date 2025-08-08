@@ -8,8 +8,7 @@ help:
 BASE_EXCLUSIONS := .DS_Store .git .gitmodules .gitignore .travis.yml
 #
 # 部分的にリンクしたい相対パス（dotfiles 配下）
-PARTIAL_LINKS := \
-	.local/share/devbox/global/default
+PARTIAL_LINKS :=
 
 # PARTIAL_LINKS からトップレベルディレクトリを抽出し EXCLUSIONS に追加
 PARTIAL_TOPS := $(sort $(foreach p,$(PARTIAL_LINKS),$(firstword $(subst /, ,$(p)))))
