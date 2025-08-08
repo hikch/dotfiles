@@ -84,6 +84,10 @@ make nix-clean-backups  # Clean up old Nix installer backups
 ## Notes
 
 - The `.config` directory is not version controlled by default - use `.gitignore` exclusions to manage specific config files
+- To add new `.config` subdirectories to git management:
+  1. Add `!/<subdirectory_name>` to `.config/.gitignore` 
+  2. Run `git add .config/<subdirectory_name>` to stage the files
+  3. Commit the changes including the updated `.config/.gitignore`
 - Devbox replaced Nix as the primary package manager but some legacy Nix cleanup utilities remain
 - Fish shell is the primary shell with extensive plugin ecosystem via Fisher
 - macOS system defaults are automated via `etc/mac_defaults.sh`
