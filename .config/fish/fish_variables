@@ -20,7 +20,7 @@ SETUVAR Z_EXCLUDE:\x5e/Users/hu\x24
 SETUVAR __fish_init_2_39_8:\x1d
 SETUVAR __fish_init_2_3_0:\x1d
 SETUVAR __fish_init_3_x:\x1d
-SETUVAR __fish_initialized:3800
+SETUVAR __fish_initialized:3400
 SETUVAR _fish_abbr_brew:/opt/homebrew/bin/brew
 SETUVAR _fish_abbr_mas:/opt/homebrew/bin/mas
 SETUVAR _fish_abbr_ocaml:rlwrap\x20ocaml
@@ -60,4 +60,4 @@ SETUVAR fish_pager_color_description:B3A06D
 SETUVAR fish_pager_color_prefix:cyan\x1e\x2d\x2dunderline
 SETUVAR fish_pager_color_progress:brwhite\x1e\x2d\x2dbackground\x3dcyan
 SETUVAR fish_pager_color_selected_background:\x2dr
-SETUVAR fish_user_paths:/opt/homebrew/opt/openssl\x401\x2e1/bin\x1e/Users/hu/\x2epyenv/bin\x1e/opt/homebrew/opt/fzf/bin\x1e/Users/hu/\x2ecache/dein/repos/github\x2ecom/junegunn/fzf/bin
+SETUVAR fish_user_paths:/Users/hu/bin\x1e/opt/homebrew/opt/openssl\x401\x2e1/bin\x1e/Users/hu/\x2epyenv/bin\x1e/opt/homebrew/opt/fzf/bin\x1e/Users/hu/\x2ecache/dein/repos/github\x2ecom/junegunn/fzf/bin
