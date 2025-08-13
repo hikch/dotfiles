@@ -36,19 +36,22 @@ This will install Devbox, configure global packages, install Homebrew applicatio
 
 ``` sh
 $ cd ~/dotfiles
-$ make
+$ make help
 deploy                         Deploy dotfiles.
-devbox-install                 Install Devbox package manager
-devbox-global-install          Install global Devbox packages
+devbox-global-install          devbox global install
 fish                           Install fish plug-ins & Add direnv hook
 homebrew                       Install homebrew packages
 init                           Initialize.
 mac-defaults                   Setup macos settings
-nix-clean-backups              Clean up old Nix installer backups
 vim                            Install vim plug-ins
 ```
 
 ## Configuration
+
+### .config
+
+.config is not managed by git.
+Use .gitignore to remove exclusions only for files you want to manage.
 
 ### Deployment Settings
 
@@ -61,11 +64,6 @@ To modify what gets deployed:
 1. Edit `CANDIDATES` to add new deploy targets
 2. Edit `EXCLUSIONS` to exclude files/directories  
 3. Run `make deploy` to apply changes
-
-### .config
-
-.config is not managed by git.
-Use .gitignore to remove exclusions only for files you want to manage.
 
 ### Syncthing Usage
 
@@ -86,7 +84,7 @@ brew services start syncthing
 brew services stop syncthing
 
 # Manual run (no browser, no auto-restart)
-/opt/homebrew/Cellar/syncthing/1.30.0/bin/syncthing -no-browser -no-restart
+$(brew --prefix syncthing)/bin/syncthing -no-browser -no-restart
 ```
 
 ## Toolset
