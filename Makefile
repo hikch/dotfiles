@@ -4,9 +4,8 @@ help:
 	@echo ""
 
 
-# Load deployment configuration from external files
-BASE_EXCLUSIONS := $(shell grep -v '^\#' EXCLUSIONS | grep -v '^$$' | tr '\n' ' ')
-CANDIDATES_PATTERNS := $(shell grep -v '^\#' CANDIDATES | grep -v '^$$' | tr '\n' ' ')
+# 明示的に除外したいファイルやディレクトリ
+BASE_EXCLUSIONS := .DS_Store .git .gitmodules .gitignore .travis.yml
 #
 # 部分的にリンクしたい相対パス（dotfiles 配下）
 PARTIAL_LINKS := .local/share/devbox/global/default
@@ -15,8 +14,8 @@ PARTIAL_LINKS := .local/share/devbox/global/default
 PARTIAL_TOPS := $(sort $(foreach p,$(PARTIAL_LINKS),$(firstword $(subst /, ,$(p)))))
 EXCLUSIONS := $(BASE_EXCLUSIONS) $(PARTIAL_TOPS)
 
-# 検出対象を CANDIDATES ファイルから展開
-CANDIDATES := $(foreach pattern,$(CANDIDATES_PATTERNS),$(wildcard $(pattern)))
+# 検出対象（.??* は .で始まり2文字以上）
+CANDIDATES := $(wildcard .??*) bin etc
 DOTFILES   = $(filter-out $(EXCLUSIONS), $(CANDIDATES))
 
 DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))

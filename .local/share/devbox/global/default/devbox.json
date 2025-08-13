@@ -16,8 +16,7 @@
     "tree@latest",
     "claude-code@latest",
     "nodejs@latest",
-    "uv@latest",
-    "gh@latest"
+    "uv@latest"
   ],
   "shell": {
     "init_hook": [
@@ -26,9 +25,6 @@
     "scripts": {
       "test": [
         "echo \"Error: no test specified\" && exit 1"
-      ],
-      "gemini": [
-        "npx @google/gemini-cli"
       ]
     }
   }

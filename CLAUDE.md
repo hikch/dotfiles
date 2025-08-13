@@ -81,19 +81,6 @@ make nix-clean-backups  # Clean up old Nix installer backups
    - GUI applications → `.Brewfile`
    - Fish plugins → `.config/fish/fish_plugins`
 
-## Deployment Configuration
-
-Deployment behavior is controlled by external configuration files:
-
-- **`CANDIDATES`**: Files and directories to be symlinked to `$HOME` (whitelist)
-- **`EXCLUSIONS`**: Files and directories to exclude from deployment
-- **`Makefile`**: Handles partial links like `.local/share/devbox/global/default`
-
-To modify what gets deployed:
-1. Edit `CANDIDATES` to add new deploy targets
-2. Edit `EXCLUSIONS` to exclude files/directories  
-3. Run `make deploy` to apply changes
-
 ## Notes
 
 - The `.config` directory is not version controlled by default - use `.gitignore` exclusions to manage specific config files
