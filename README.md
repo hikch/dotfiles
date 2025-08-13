@@ -48,7 +48,19 @@ nix-clean-backups              Clean up old Nix installer backups
 vim                            Install vim plug-ins
 ```
 
-## Note
+## Configuration
+
+### Deployment Settings
+
+The deployment behavior is controlled by external configuration files:
+
+- **`CANDIDATES`** - Files and directories to be symlinked to `$HOME` (whitelist)
+- **`EXCLUSIONS`** - Files and directories to exclude from deployment
+
+To modify what gets deployed:
+1. Edit `CANDIDATES` to add new deploy targets
+2. Edit `EXCLUSIONS` to exclude files/directories  
+3. Run `make deploy` to apply changes
 
 ### .config
 
@@ -82,6 +94,7 @@ brew services stop syncthing
 - [devbox](https://www.jetify.com/devbox) - Primary package manager for development tools
 - [direnv](https://github.com/direnv/direnv)
 - [fish](https://fishshell.com) - Shell with Fisher plugin management
+- [gemini-cli](https://github.com/google-gemini/gemini-cli) - Google Gemini CLI (via `devbox run gemini`)
 - [homebrew](https://brew.sh) - macOS applications and some CLI tools
 - [jq](https://stedolan.github.io/jq/)
 - [macvim](https://macvim-dev.github.io/macvim/)
