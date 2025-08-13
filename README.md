@@ -92,7 +92,6 @@ $(brew --prefix syncthing)/bin/syncthing -no-browser -no-restart
 - [devbox](https://www.jetify.com/devbox) - Primary package manager for development tools
 - [direnv](https://github.com/direnv/direnv)
 - [fish](https://fishshell.com) - Shell with Fisher plugin management
-- [gemini-cli](https://github.com/google-gemini/gemini-cli) - Google Gemini CLI (via `devbox run gemini`)
 - [homebrew](https://brew.sh) - macOS applications and some CLI tools
 - [jq](https://stedolan.github.io/jq/)
 - [macvim](https://macvim-dev.github.io/macvim/)
