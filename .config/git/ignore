@@ -144,5 +144,3 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/pycharm
 n
 **/.claude/settings.local.json
-
-**/.claude/settings.local.json
