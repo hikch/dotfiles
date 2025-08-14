@@ -425,6 +425,54 @@
         }
       }
     },
+    "gemini-cli@latest": {
+      "last_modified": "2025-08-11T16:06:55Z",
+      "resolved": "github:NixOS/nixpkgs/4e942f9ef5b35526597c354d1ded817d1c285ef1#gemini-cli",
+      "source": "devbox-search",
+      "version": "0.1.18",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/9a6sq7wmwgdxabzlk7791g5cab896a1i-gemini-cli-0.1.18",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/9a6sq7wmwgdxabzlk7791g5cab896a1i-gemini-cli-0.1.18"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/019wbdhyhspjbwz3ikj9dsrwjnphk5i6-gemini-cli-0.1.18",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/019wbdhyhspjbwz3ikj9dsrwjnphk5i6-gemini-cli-0.1.18"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/gvkh3glzilfkgpkbc1ih37lw2jw7w3gc-gemini-cli-0.1.18",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/gvkh3glzilfkgpkbc1ih37lw2jw7w3gc-gemini-cli-0.1.18"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/jdh21afmi9vijcnaksgns7plg460llyw-gemini-cli-0.1.18",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/jdh21afmi9vijcnaksgns7plg460llyw-gemini-cli-0.1.18"
+        }
+      }
+    },
     "gh@latest": {
       "last_modified": "2025-08-01T06:30:45Z",
       "resolved": "github:NixOS/nixpkgs/a7822a17050fedda63794775b9090880c8214290#gh",
