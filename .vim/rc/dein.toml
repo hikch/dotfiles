@@ -11,7 +11,7 @@ hook_add = '''
 # copilot
 repo = "github/copilot.vim"
 hook_add = '''
-    let g:copilot_node_command = '~/.nix-profile/bin/node'
+    let g:copilot_node_command = '~/.local/share/devbox/global/default/.devbox/nix/profile/default/bin/node'
     let g:copilot_filetypes = { 'gitcommit': v:true }
 '''
 
@@ -82,6 +82,7 @@ hook_add = '''
     "
     let g:airline#extensions#coc#enabled = 1
     let g:coc_global_extensions = [ 'coc-css', 'coc-cssmodules', 'coc-html', 'coc-htmlhint', 'coc-json', 'coc-markdownlint', 'coc-pydocstring', 'coc-pyright', 'coc-sh', 'coc-snippets', 'coc-sql', 'coc-yaml' ]
+    let g:coc_node_path = '~/.local/share/devbox/global/default/.devbox/nix/profile/default/bin/node'
 '''
 
 
