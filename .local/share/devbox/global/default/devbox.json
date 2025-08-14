@@ -17,7 +17,8 @@
     "claude-code@latest",
     "nodejs@latest",
     "uv@latest",
-    "gh@latest"
+    "gh@latest",
+    "gemini-cli@latest"
   ],
   "shell": {
     "init_hook": [
