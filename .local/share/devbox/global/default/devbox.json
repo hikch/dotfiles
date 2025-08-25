@@ -18,7 +18,8 @@
     "nodejs@latest",
     "uv@latest",
     "gh@latest",
-    "gemini-cli@latest"
+    "gemini-cli@latest",
+    "mas@latest"
   ],
   "shell": {
     "init_hook": [
