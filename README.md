@@ -34,6 +34,8 @@ This will install Devbox, configure global packages, install Homebrew applicatio
 
 ## Usage
 
+### Core Commands
+
 ``` sh
 $ cd ~/dotfiles
 $ make help
@@ -46,12 +48,67 @@ mac-defaults                   Setup macos settings
 vim                            Install vim plug-ins
 ```
 
+### Homebrew Bundle Management
+
+New Brewfile management with host-specific configuration:
+
+``` sh
+# Package operations
+make brew/setup                # Install/upgrade packages from .Brewfile (and host include)
+make brew/check                # Check if everything is satisfied (with details)
+make brew/cleanup              # Show removable packages not in Brewfiles  
+make brew/cleanup-force        # Remove packages not in Brewfiles
+make brew/upgrade              # Upgrade all (formulae & casks)
+
+# Adding packages
+make brew/cask-add NAME=app    # Add GUI app to common .Brewfile
+make brew/host-cask-add NAME=app # Add GUI app to current host Brewfile
+
+# Utilities
+make brew/dump-actual          # Snapshot current state to Brewfile.actual
+```
+
 ## Configuration
 
 ### .config
 
 .config is not managed by git.
 Use .gitignore to remove exclusions only for files you want to manage.
+
+### Package Management Strategy
+
+This repository uses a hybrid approach for optimal package management:
+
+- **Devbox**: CLI tools and development utilities (Node.js, jq, ripgrep, mas, etc.)
+- **Homebrew Cask**: GUI applications only (browsers, editors, productivity apps)
+- **Host-specific configuration**: Different packages per machine via `hosts/` directory
+
+#### Service Management Policy
+
+Background services are managed based on their scope:
+
+- **`brew services`**: System-wide, always-on daemons (tailscaled, syncthing, shared databases, GUI agents)
+  - Integrated with macOS LaunchAgents/Daemons
+  - Persist across reboots and user sessions
+- **`devbox services`**: Project-scoped, version-pinned dependencies (development databases, local services)
+  - Started/stopped with project environments
+  - Ensures reproducibility across different projects
+
+**Rule of thumb**: System-wide → `brew services`, project-specific → `devbox services`
+
+#### Homebrew Host Configuration
+
+The `.Brewfile` supports automatic host-specific includes:
+
+```
+dotfiles/
+  .Brewfile                    # Common GUI applications
+  hosts/
+    iMac-2020.Brewfile        # iMac-specific packages (e.g., server tools)
+    MacBookAir2025.Brewfile   # MacBookAir-specific packages (e.g., dev tools)
+```
+
+Host files are automatically detected using `hostname -s` and included during `brew bundle` operations.
 
 ### Deployment Settings
 
@@ -67,24 +124,22 @@ To modify what gets deployed:
 
 ### Syncthing Usage
 
-Both GUI and CLI versions are installed via Brewfile:
+Syncthing installation varies by host:
 
-**For desktop use (MacBook Air, etc.):**
+**Common (all machines):**
+- GUI application via `cask "syncthing"`
+
+**Host-specific (iMac only):**
+- CLI version via `brew "syncthing"` for server functionality
+
+**Usage:**
 ``` sh
-# Launch GUI application
+# Desktop use (all machines)
 open /Applications/Syncthing.app
-```
 
-**For server use (iMac, etc.):**
-``` sh
-# Start as background service
+# Server use (iMac only)  
 brew services start syncthing
-
-# Stop service
 brew services stop syncthing
-
-# Manual run (no browser, no auto-restart)
-$(brew --prefix syncthing)/bin/syncthing -no-browser -no-restart
 ```
 
 ## Toolset
@@ -102,6 +157,7 @@ and more...
 ## TODO
 
 - [ ] Make script for creating ssh settings when adding a remote host.
+- [ ] Split Makefile into modular files (make/deploy.mk, make/homebrew.mk, make/devtools.mk, make/macos.mk)
 - [x] Use the defaults command to automate MacOS settings
 - [x] Switch to package management using Devbox
 - [x] Migrate from Nix to Devbox for better compatibility

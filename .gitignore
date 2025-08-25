@@ -5,5 +5,12 @@ result
 
 *.old
 
+# Brewfile local override / snapshots
+.Brewfile.local
+Brewfile.actual
+
+# macOS
+.DS_Store
+
 # Claude Code settings and cache
 .claude/

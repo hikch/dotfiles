@@ -38,6 +38,17 @@ deploy: ## Deploy dotfiles.
 	@chmod 0700 ~/.ssh
 
 
+# ==========================================
+# Homebrew Bundle Operations
+# ==========================================
+
+SHELL := /bin/bash
+ROOT  := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+HOST  := $(shell hostname -s)
+BREWFILE          := $(ROOT)/.Brewfile
+HOST_BREWFILE     := $(ROOT)/hosts/$(HOST).Brewfile
+LOCAL_BREWFILE    := $(ROOT)/.Brewfile.local
+
 .PHONY: homebrew
 homebrew:  ## Install homebrew packages
 ifeq  "$(OSNAME)" "Darwin"
@@ -46,6 +57,90 @@ ifeq  "$(OSNAME)" "Darwin"
 	eval "$$(/opt/homebrew/bin/brew shellenv)"; \
 		brew bundle --file="./.Brewfile" 2>&1 || true
 endif
+
+# ---- Brew bundle operations ----
+.PHONY: brew/setup
+brew/setup: ## Install/upgrade packages from .Brewfile (and host include)
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew bundle --file=$(BREWFILE)
+
+.PHONY: brew/check
+brew/check: ## Check if everything is satisfied (with details)
+	@set -e; \
+	eval "$$(/opt/homebrew/bin/brew shellenv)"; \
+	echo "==> Check common"; \
+	brew bundle check --file=$(BREWFILE) --verbose || true; \
+	if [[ -f "$(HOST_BREWFILE)" ]]; then \
+		echo "==> Check host ($(HOST))"; \
+		brew bundle check --file=$(HOST_BREWFILE) --verbose || true; \
+	else \
+		echo "(no host file: $(HOST_BREWFILE))"; \
+	fi
+
+.PHONY: brew/cleanup
+brew/cleanup: ## Show removable packages not in Brewfiles
+	@set -e; \
+	eval "$$(/opt/homebrew/bin/brew shellenv)"; \
+	echo "==> Cleanup candidates (common)"; \
+	brew bundle cleanup --file=$(BREWFILE) || true; \
+	if [[ -f "$(HOST_BREWFILE)" ]]; then \
+		echo "==> Cleanup candidates (host: $(HOST))"; \
+		brew bundle cleanup --file=$(HOST_BREWFILE) || true; \
+	fi; \
+	echo "Run 'make brew/cleanup-force' to actually remove."
+
+.PHONY: brew/cleanup-force
+brew/cleanup-force: ## Remove packages not in Brewfiles
+	@set -e; \
+	eval "$$(/opt/homebrew/bin/brew shellenv)"; \
+	echo "==> Removing extras (common)"; \
+	brew bundle cleanup --file=$(BREWFILE) --force || true; \
+	if [[ -f "$(HOST_BREWFILE)" ]]; then \
+		echo "==> Removing extras (host: $(HOST))"; \
+		brew bundle cleanup --file=$(HOST_BREWFILE) --force || true; \
+	fi
+
+.PHONY: brew/outdated
+brew/outdated: ## Show outdated packages
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew outdated || true
+
+.PHONY: brew/upgrade
+brew/upgrade: ## Upgrade all (formulae & casks)
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew update && brew upgrade && brew upgrade --cask || true
+
+.PHONY: brew/dump-actual
+brew/dump-actual: ## Snapshot current state to Brewfile.actual
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew bundle dump --describe --force --file=$(ROOT)/Brewfile.actual
+	@echo "Wrote snapshot: $(ROOT)/Brewfile.actual"
+
+# ---- convenience for adding entries ----
+.PHONY: brew/add
+brew/add: ## Add package to common .Brewfile (e.g., make brew/add NAME=jq)
+	@test -n "$(NAME)" || (echo "NAME is required (e.g., make brew/add NAME=jq)"; exit 1)
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew bundle add --file=$(BREWFILE) $(NAME)
+
+.PHONY: brew/host-add
+brew/host-add: ## Add package to host Brewfile (e.g., make brew/host-add NAME=jq-foo)
+	@test -n "$(NAME)" || (echo "NAME is required (e.g., make brew/host-add NAME=jq)"; exit 1)
+	@mkdir -p $(ROOT)/hosts
+	@if [ ! -f $(HOST_BREWFILE) ]; then echo "# $(HOST) only" > $(HOST_BREWFILE); fi
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew bundle add --file=$(HOST_BREWFILE) $(NAME)
+
+.PHONY: brew/cask-add
+brew/cask-add: ## Add cask to common .Brewfile (e.g., make brew/cask-add NAME=iterm2)
+	@test -n "$(NAME)" || (echo "NAME is required (e.g., make brew/cask-add NAME=iterm2)"; exit 1)
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew bundle add --file=$(BREWFILE) --cask $(NAME)
+
+.PHONY: brew/host-cask-add
+brew/host-cask-add: ## Add cask to host Brewfile (e.g., make brew/host-cask-add NAME=anydesk)
+	@test -n "$(NAME)" || (echo "NAME is required (e.g., make brew/host-cask-add NAME=anydesk)"; exit 1)
+	@mkdir -p $(ROOT)/hosts
+	@if [ ! -f $(HOST_BREWFILE) ]; then echo "# $(HOST) only" > $(HOST_BREWFILE); fi
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew bundle add --file=$(HOST_BREWFILE) --cask $(NAME)
+
+.PHONY: brew/tap-add
+brew/tap-add: ## Add tap to common .Brewfile (e.g., make brew/tap-add NAME=homebrew/ffmpeg)
+	@test -n "$(NAME)" || (echo "NAME is required (e.g., make brew/tap-add NAME=homebrew/ffmpeg)"; exit 1)
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew tap $(NAME) && brew bundle dump --force --file=$(BREWFILE)
 
 
 .PHONY: vim
