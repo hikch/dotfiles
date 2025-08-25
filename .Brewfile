@@ -6,7 +6,6 @@ cask_args appdir: "/Applications"
 
 # Common taps
 tap "homebrew/bundle"
-tap "homebrew/cask-fonts"
 tap "homebrew/services"
 
 # Common formulae
@@ -37,7 +36,6 @@ cask "omnioutliner"
 cask "pycharm-ce"
 cask "resilio-sync"
 cask "sourcetree"
-cask "syncthing"
 cask "vlc"
 cask "zoom"
 
