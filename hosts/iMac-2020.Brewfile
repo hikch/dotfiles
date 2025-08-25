@@ -3,3 +3,4 @@
 
 # Server tools for iMac
 brew "syncthing"
+brew "tailscale"

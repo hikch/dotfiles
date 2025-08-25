@@ -3,4 +3,6 @@
 
 # Database and productivity tools for MacBookAir
 cask "dbeaver-community"
+cask "syncthing"
 cask "vincelwt-chatgpt"
+
