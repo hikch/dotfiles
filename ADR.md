@@ -11,3 +11,8 @@ Simple journal-style decisions for this dotfiles repository.
   - `brew services` → For system-wide, always-on daemons (e.g., tailscaled, syncthing, shared Postgres/Redis, GUI agents). Managed via brew services and integrated with LaunchAgents/Daemons.
   - `devbox services` → For project-scoped or version-pinned dependencies (e.g., Postgres/Redis/Minio for development). Started/stopped alongside project environments for reproducibility.
   - Rule of thumb: system-wide → brew, project-specific → devbox.
+- **Setup Tooling**: Use `Makefile` and `bootstrap.sh` for initial setup. This minimizes dependencies, requiring only standard tools like `git` and `make`, and avoids needing to install specialized dotfiles managers (e.g., Stow, chezmoi).
+- **`.zshrc` Compatibility**: Maintain `.zshrc` for system compatibility, as Zsh is the default shell on macOS. This ensures tools that rely on Zsh for initialization (e.g., Docker, Devbox) function correctly, even if Zsh is not the primary interactive shell.
+- **Layout Principle (Home Directory Mirror)**: The repository's root is structured to be a direct mirror of the user's home directory (`~/`). This principle dictates the location of all dotfiles.
+    - **Rationale**: This simplifies deployment to a simple copy or symlink operation.
+    - **Examples**: As a result, files like `.vimrc`, `.gvimrc`, and `.ansible.cfg` are placed in the root of the repository, corresponding to their intended location in `~/` and ensuring automatic discovery by their respective applications.
