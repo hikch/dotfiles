@@ -65,39 +65,16 @@ brew/setup: ## Install/upgrade packages from .Brewfile (and host include)
 
 .PHONY: brew/check
 brew/check: ## Check if everything is satisfied (with details)
-	@set -e; \
-	eval "$$(/opt/homebrew/bin/brew shellenv)"; \
-	echo "==> Check common"; \
-	brew bundle check --file=$(BREWFILE) --verbose || true; \
-	if [[ -f "$(HOST_BREWFILE)" ]]; then \
-		echo "==> Check host ($(HOST))"; \
-		brew bundle check --file=$(HOST_BREWFILE) --verbose || true; \
-	else \
-		echo "(no host file: $(HOST_BREWFILE))"; \
-	fi
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew bundle check --file=$(BREWFILE) --verbose
 
 .PHONY: brew/cleanup
 brew/cleanup: ## Show removable packages not in Brewfiles
-	@set -e; \
-	eval "$$(/opt/homebrew/bin/brew shellenv)"; \
-	echo "==> Cleanup candidates (common)"; \
-	brew bundle cleanup --file=$(BREWFILE) || true; \
-	if [[ -f "$(HOST_BREWFILE)" ]]; then \
-		echo "==> Cleanup candidates (host: $(HOST))"; \
-		brew bundle cleanup --file=$(HOST_BREWFILE) || true; \
-	fi; \
-	echo "Run 'make brew/cleanup-force' to actually remove."
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew bundle cleanup --file=$(BREWFILE)
+	@echo "Run 'make brew/cleanup-force' to actually remove."
 
 .PHONY: brew/cleanup-force
 brew/cleanup-force: ## Remove packages not in Brewfiles
-	@set -e; \
-	eval "$$(/opt/homebrew/bin/brew shellenv)"; \
-	echo "==> Removing extras (common)"; \
-	brew bundle cleanup --file=$(BREWFILE) --force || true; \
-	if [[ -f "$(HOST_BREWFILE)" ]]; then \
-		echo "==> Removing extras (host: $(HOST))"; \
-		brew bundle cleanup --file=$(HOST_BREWFILE) --force || true; \
-	fi
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew bundle cleanup --file=$(BREWFILE) --force
 
 .PHONY: brew/outdated
 brew/outdated: ## Show outdated packages
