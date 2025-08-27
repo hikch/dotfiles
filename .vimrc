@@ -254,6 +254,9 @@ set cursorcolumn
 " Auto commands.
 "
 
+" taskpaper file.
+autocmd BufRead,BufNewFile *.taskpaper setlocal noexpandtab tabstop=2 shiftwidth=2 list listchars=tab:··,trail:·
+
 " formating XML file.
 autocmd FileType xml exe ":silent 1,$!xmllint --format --recover - 2>/dev/null"
 
