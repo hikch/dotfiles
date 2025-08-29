@@ -16,3 +16,12 @@ Simple journal-style decisions for this dotfiles repository.
 - **Layout Principle (Home Directory Mirror)**: The repository's root is structured to be a direct mirror of the user's home directory (`~/`). This principle dictates the location of all dotfiles.
     - **Rationale**: This simplifies deployment to a simple copy or symlink operation.
     - **Examples**: As a result, files like `.vimrc`, `.gvimrc`, and `.ansible.cfg` are placed in the root of the repository, corresponding to their intended location in `~/` and ensuring automatic discovery by their respective applications.
+
+## 2025-08-29
+
+- **AI Tools Configuration Strategy**: Established configuration management for AI development tools (Claude Code, Gemini CLI) with dynamic environment awareness:
+  - **Approach**: Use EXCLUSIONS/CANDIDATES deployment control rather than complex .gitignore patterns for granular file-level deployment
+  - **Claude Code**: `.claude/` directory excluded from deployment, but `.claude/CLAUDE.md` individually symlinked to provide environment context while allowing AI tool to manage its own cache/state files
+  - **Gemini CLI**: Standard `.config/gemini/` subdirectory management via `.config/.gitignore` inclusion pattern
+  - **Dynamic Package Reference**: Both tools reference Devbox global configuration (`~/.local/share/devbox/global/default/devbox.json`) and use commands like `devbox global list` to discover available development tools
+  - **Rationale**: This hybrid approach allows AI tools to understand the development environment context while maintaining clean separation between configuration (git-managed) and runtime data (user-specific)
