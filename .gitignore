@@ -12,8 +12,7 @@ Brewfile.actual
 # macOS
 .DS_Store
 
-# Claude Code settings and cache
-.claude/
-# But allow configuration files
+# Claude Code settings and cache (but allow config files)
+.claude/*
 !.claude/CLAUDE.md
 
