@@ -16,6 +16,4 @@ fish/fishd.*
 
 !/direnv
 
-!/claude
-
 !/gemini
