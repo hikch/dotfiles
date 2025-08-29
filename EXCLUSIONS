@@ -12,6 +12,9 @@
 # Internal dotfiles tools
 nix
 
+# Claude settings (user-specific)
+.claude
+
 # Partial links (handled separately)
 # Note: PARTIAL_LINKS are defined in Makefile
 # .local
