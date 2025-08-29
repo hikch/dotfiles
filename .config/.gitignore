@@ -15,3 +15,7 @@ fish/fishd.*
 /iterm2/AppSupport
 
 !/direnv
+
+!/claude
+
+!/gemini
