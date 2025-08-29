@@ -56,6 +56,9 @@ make mac-defaults     # Apply macOS system settings
 
 ### Package Management
 ```bash
+# Check available packages in Devbox
+devbox global list
+
 # Update Devbox packages
 devbox global install
 
@@ -81,6 +84,22 @@ make nix-clean-backups  # Clean up old Nix installer backups
    - GUI applications → `.Brewfile`
    - Fish plugins → `.config/fish/fish_plugins`
 
+## AI Tools Configuration
+
+This repository includes configuration for AI development tools:
+
+### Claude Code
+- **Configuration File**: `.claude/CLAUDE.md` (symlinked to `~/.claude/CLAUDE.md`)
+- **Purpose**: Provides environment context and available package information
+- **Deployment**: Individual file deployment (directory excluded, specific file included)
+
+### Gemini CLI  
+- **Configuration File**: `.config/gemini/README.md` 
+- **Purpose**: Provides environment context and available package information
+- **Deployment**: Standard `.config` subdirectory management
+
+Both configurations reference the Devbox global package list dynamically, ensuring AI tools are aware of available development tools.
+
 ## Deployment Configuration
 
 Deployment behavior is controlled by external configuration files:
@@ -88,6 +107,10 @@ Deployment behavior is controlled by external configuration files:
 - **`CANDIDATES`**: Files and directories to be symlinked to `$HOME` (whitelist)
 - **`EXCLUSIONS`**: Files and directories to exclude from deployment
 - **`Makefile`**: Handles partial links like `.local/share/devbox/global/default`
+
+### Special Deployment Cases
+- **`.claude`**: Directory excluded (`EXCLUSIONS`), but `.claude/CLAUDE.md` individually included (`CANDIDATES`)
+- **`.config`**: Directory symlinked, but contents selectively managed via `.config/.gitignore`
 
 To modify what gets deployed:
 1. Edit `CANDIDATES` to add new deploy targets
