@@ -44,3 +44,5 @@ test -e ~/bin ; and set -x PATH ~/bin $PATH
 # Docker Desktop
 source /Users/hu/.docker/init-fish.sh || true # Added by Docker Desktop
 
+# Ollama configuration for Tailscale-only access (client side)
+set -gx OLLAMA_HOST "imac-2020:11434"
