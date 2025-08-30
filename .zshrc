@@ -2,6 +2,9 @@
 
 ## Environment variable configuration
 #
+# SHELL
+export SHELL=$(which zsh)
+
 # LANG
 #
 export LANG=ja_JP.UTF-8
@@ -165,5 +168,6 @@ done
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 source /Users/hu/.docker/init-zsh.sh || true # Added by Docker Desktop
-eval "$(devbox global shellenv --init-hook)"
+which brew > /dev/null 2>&1 && eval "$(brew shellenv)"
+which devbox > /dev/null 2>&1 && eval "$(devbox global shellenv --init-hook)"
 
