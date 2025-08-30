@@ -1,18 +1,12 @@
 ## 
 # setup shell
-set -x SHELL $(which zsh)
+set -gx SHELL $(which fish)
 
 # setup default editor
 set -x EDITOR vi
 
 # setup default pager
 set -x PAGER less
-
-# setup homebrew
-# test -e /opt/homebrew/bin/brew; and eval (/opt/homebrew/bin/brew shellenv)
-
-# openssl
-# test -e /opt/homebrew/opt/openssl@1.1/bin; and fish_add_path /opt/homebrew/opt/openssl@1.1/bin
 
 # setup direnv
 which direnv > /dev/null; and eval (direnv hook fish)
@@ -46,3 +40,19 @@ source /Users/hu/.docker/init-fish.sh || true # Added by Docker Desktop
 
 # Ollama configuration for Tailscale-only access (client side)
 set -gx OLLAMA_HOST "imac-2020:11434"
+
+# Homebrew
+if which brew > /dev/null 2>&1
+    if test -d (brew --prefix)"/share/fish/completions"
+        set -p fish_complete_path (brew --prefix)/share/fish/completions
+    end
+
+    if test -d (brew --prefix)"/share/fish/vendor_completions.d"
+        set -p fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
+    end
+end
+
+# Devbox
+if which devbox > /dev/null 2>&1
+    devbox global shellenv --init-hook | source
+end
