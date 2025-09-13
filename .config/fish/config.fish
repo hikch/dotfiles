@@ -41,12 +41,17 @@ source /Users/hu/.docker/init-fish.sh || true # Added by Docker Desktop
 # Ollama configuration for Tailscale-only access (client side)
 set -gx OLLAMA_HOST "imac-2020:11434"
 
-# Homebrew
+# Homebrew: ensure PATH and completions
+if test -x /opt/homebrew/bin/brew
+    eval (/opt/homebrew/bin/brew shellenv)
+else if test -x /usr/local/bin/brew
+    eval (/usr/local/bin/brew shellenv)
+end
+
 if which brew > /dev/null 2>&1
     if test -d (brew --prefix)"/share/fish/completions"
         set -p fish_complete_path (brew --prefix)/share/fish/completions
     end
-
     if test -d (brew --prefix)"/share/fish/vendor_completions.d"
         set -p fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
     end
