@@ -168,6 +168,14 @@ done
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 source /Users/hu/.docker/init-zsh.sh || true # Added by Docker Desktop
-which brew > /dev/null 2>&1 && eval "$(brew shellenv)"
-which devbox > /dev/null 2>&1 && eval "$(devbox global shellenv --init-hook)"
 
+# Initialize Homebrew for interactive shells (handles non-login shells)
+if [ -x "/opt/homebrew/bin/brew" ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x "/usr/local/bin/brew" ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+elif command -v brew >/dev/null 2>&1; then
+  eval "$(brew shellenv)"
+fi
+
+which devbox > /dev/null 2>&1 && eval "$(devbox global shellenv --init-hook)"
