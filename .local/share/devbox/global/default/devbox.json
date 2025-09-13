@@ -19,7 +19,8 @@
     "uv@latest",
     "gh@latest",
     "gemini-cli@latest",
-    "mas@latest"
+    "mas@latest",
+    "git-filter-repo@latest"
   ],
   "shell": {
     "init_hook": [
