@@ -521,51 +521,67 @@
         }
       }
     },
-    "gemini-cli@latest": {
-      "last_modified": "2025-08-11T16:06:55Z",
-      "resolved": "github:NixOS/nixpkgs/4e942f9ef5b35526597c354d1ded817d1c285ef1#gemini-cli",
+    "git-filter-repo@latest": {
+      "last_modified": "2025-07-28T17:09:23Z",
+      "resolved": "github:NixOS/nixpkgs/648f70160c03151bc2121d179291337ad6bc564b#git-filter-repo",
       "source": "devbox-search",
-      "version": "0.1.18",
+      "version": "2.47.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/9a6sq7wmwgdxabzlk7791g5cab896a1i-gemini-cli-0.1.18",
+              "path": "/nix/store/29qizzs0h1zbapw5825p1yzi3r7pmv7l-python3.13-git-filter-repo-2.47.0",
               "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/hwd8rsyx3bg5hixmcgq8lhy3k3imwncd-python3.13-git-filter-repo-2.47.0-dist"
             }
           ],
-          "store_path": "/nix/store/9a6sq7wmwgdxabzlk7791g5cab896a1i-gemini-cli-0.1.18"
+          "store_path": "/nix/store/29qizzs0h1zbapw5825p1yzi3r7pmv7l-python3.13-git-filter-repo-2.47.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/019wbdhyhspjbwz3ikj9dsrwjnphk5i6-gemini-cli-0.1.18",
+              "path": "/nix/store/r8gkv0rxwlffzgmd72i0xkwhpp3703k0-python3.13-git-filter-repo-2.47.0",
               "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/yr0qq7ny42ycsbddsnkqjfq7ci1rnf0s-python3.13-git-filter-repo-2.47.0-dist"
             }
           ],
-          "store_path": "/nix/store/019wbdhyhspjbwz3ikj9dsrwjnphk5i6-gemini-cli-0.1.18"
+          "store_path": "/nix/store/r8gkv0rxwlffzgmd72i0xkwhpp3703k0-python3.13-git-filter-repo-2.47.0"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/gvkh3glzilfkgpkbc1ih37lw2jw7w3gc-gemini-cli-0.1.18",
+              "path": "/nix/store/hg7f0yr4l50dm67cndy5iskcmwyyciwc-python3.13-git-filter-repo-2.47.0",
               "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/z1bhf3yhh4c4kvr0ys63fvi9z5r2a46v-python3.13-git-filter-repo-2.47.0-dist"
             }
           ],
-          "store_path": "/nix/store/gvkh3glzilfkgpkbc1ih37lw2jw7w3gc-gemini-cli-0.1.18"
+          "store_path": "/nix/store/hg7f0yr4l50dm67cndy5iskcmwyyciwc-python3.13-git-filter-repo-2.47.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/jdh21afmi9vijcnaksgns7plg460llyw-gemini-cli-0.1.18",
+              "path": "/nix/store/hhrq9y6sfnvhzkirsbv7xchs5w3v2ap9-python3.13-git-filter-repo-2.47.0",
               "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/lv8f2a0inb57vgy1rd0as6rabick6qhg-python3.13-git-filter-repo-2.47.0-dist"
             }
           ],
-          "store_path": "/nix/store/jdh21afmi9vijcnaksgns7plg460llyw-gemini-cli-0.1.18"
+          "store_path": "/nix/store/hhrq9y6sfnvhzkirsbv7xchs5w3v2ap9-python3.13-git-filter-repo-2.47.0"
         }
       }
     },
