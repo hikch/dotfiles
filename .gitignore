@@ -12,4 +12,7 @@ Brewfile.actual
 # macOS
 .DS_Store
 
+# Local development and planning
+TODO/
+
 
