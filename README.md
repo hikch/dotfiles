@@ -48,6 +48,16 @@ mac-defaults                   Setup macos settings
 vim                            Install vim plug-ins
 ```
 
+### Dry-run Deploy (Safe Test)
+
+Quickly validate what `make deploy` would symlink without touching your real home by using a temporary HOME:
+
+``` sh
+HOME=$(mktemp -d) make deploy
+```
+
+This simulates deployment in an isolated sandbox directory so you can review output safely.
+
 ### Homebrew Bundle Management
 
 New Brewfile management with host-specific configuration:
