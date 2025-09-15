@@ -2,12 +2,14 @@
 
 ## Environment variable configuration
 #
+# Load shared POSIX profile (env, Homebrew, devbox)
+[ -f "$HOME/.profile" ] && . "$HOME/.profile"
+
 # SHELL
 export SHELL=$(which zsh)
 
-# LANG
-#
-export LANG=ja_JP.UTF-8
+# LANG (kept for backward compatibility; shared default is in .profile)
+export LANG=${LANG:-ja_JP.UTF-8}
 case ${UID} in
 0)
     LANG=C
@@ -106,10 +108,8 @@ export EDITOR=/usr/bin/vi;
 #
 setopt complete_aliases     # aliased ls needs if file/dir completions work
 
-alias du="du -h"
-alias df="df -h"
-
-alias vim='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
+# Load shared aliases and terminal colors
+[ -f "$HOME/.shellrc" ] && . "$HOME/.shellrc"
 
 
 ## terminal configuration
