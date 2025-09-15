@@ -1,0 +1,16 @@
+# Codex CLI Configuration
+
+[mcp]
+# Serena MCP Server
+[[mcp.servers]]
+name = "serena"
+command = "npx"
+args = ["@serena-ai/mcp-server"]
+env = {}
+
+# Playwright MCP Server
+[[mcp.servers]]
+name = "playwright"
+command = "npx"
+args = ["@playwright/test", "mcp-server"]
+env = {}
