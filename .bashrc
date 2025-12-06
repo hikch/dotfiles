@@ -15,3 +15,8 @@ set -o emacs
 bind '"\e[A": history-search-backward'
 bind '"\e[B": history-search-forward'
 
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/hu/.lmstudio/bin"
+# End of LM Studio CLI section
+

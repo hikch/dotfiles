@@ -61,3 +61,8 @@ end
 if which devbox > /dev/null 2>&1
     devbox global shellenv --init-hook | source
 end
+
+# Added by LM Studio CLI (lms)
+set -gx PATH $PATH /Users/hu/.lmstudio/bin
+# End of LM Studio CLI section
+

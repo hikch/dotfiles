@@ -24,3 +24,8 @@ if command -v devbox >/dev/null 2>&1; then
   eval "$(devbox global shellenv --init-hook)"
 fi
 
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/hu/.lmstudio/bin"
+# End of LM Studio CLI section
+

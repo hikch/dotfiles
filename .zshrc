@@ -179,3 +179,8 @@ elif command -v brew >/dev/null 2>&1; then
 fi
 
 which devbox > /dev/null 2>&1 && eval "$(devbox global shellenv --init-hook)"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/hu/.lmstudio/bin"
+# End of LM Studio CLI section
+
