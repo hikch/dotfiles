@@ -14,13 +14,15 @@
     "ripgrep@latest",
     "tmux@latest",
     "tree@latest",
-    "claude-code@latest",
     "nodejs@latest",
     "uv@latest",
     "gh@latest",
     "gemini-cli@latest",
     "mas@latest",
-    "git-filter-repo@latest"
+    "git-filter-repo@latest",
+    "playwright-mcp@latest",
+    "rclone@latest",
+    "claude-code@2.0.37"
   ],
   "shell": {
     "init_hook": [
