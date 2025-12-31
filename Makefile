@@ -24,7 +24,7 @@ OSNAME     := $(shell uname -s)
 
 
 .PHONY: init
-init: deploy nix-clean-backups devbox-install devbox-global-install homebrew fish mac-defaults ## Initialize.
+init: deploy nix-clean-backups devbox-install devbox-global-install homebrew fish mac-defaults pmset-settings ## Initialize.
 
 .PHONY: deploy
 deploy: ## Deploy dotfiles.
@@ -139,6 +139,12 @@ mac-defaults: ## Setup macos settings
 ifeq  "$(OSNAME)" "Darwin"
 	sh etc/mac_defaults.sh
 	@echo "Reboot to reflect settings."
+endif
+
+.PHONY: pmset-settings
+pmset-settings: ## Setup power management settings (model-specific)
+ifeq  "$(OSNAME)" "Darwin"
+	sh etc/pmset_settings.sh
 endif
 
 .PHONY: nix-install
