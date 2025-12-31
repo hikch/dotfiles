@@ -46,7 +46,12 @@ apply_imac2020_settings() {
     sudo pmset -a halfdim 1                  # Dim display before sleep
     sudo pmset -a gpuswitch 2                # Automatic GPU switching
 
+    # Scheduled auto power-on (for remote access during business trips)
+    # Power on every day at 5:00 AM
+    sudo pmset repeat poweron MTWRFSU 05:00:00
+
     echo "✓ Power management settings applied successfully"
+    echo "  - Scheduled daily auto power-on at 5:00 AM"
 }
 
 # Function to apply MacBook settings (example for future use)
