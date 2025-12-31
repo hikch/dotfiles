@@ -35,7 +35,8 @@ apply_imac2020_settings() {
     sudo pmset -a highstandbythreshold 50    # Battery threshold for standby
 
     # Power button behavior
-    sudo pmset -a Sleep\ On\ Power\ Button 1 # Sleep on power button press
+    # Note: Sleep On Power Button setting may not be configurable via pmset on all macOS versions
+    # sudo pmset -a Sleep\ On\ Power\ Button 1 # Sleep on power button press
 
     # Other settings
     sudo pmset -a ttyskeepawake 1            # Prevent sleep when remote session active
@@ -47,8 +48,8 @@ apply_imac2020_settings() {
     sudo pmset -a gpuswitch 2                # Automatic GPU switching
 
     # Scheduled auto power-on (for remote access during business trips)
-    # Power on every day at 5:00 AM
-    sudo pmset repeat poweron MTWRFSU 05:00:00
+    # Wake or power on every day at 5:00 AM
+    sudo pmset repeat wakeorpoweron MTWRFSU 05:00:00
 
     echo "✓ Power management settings applied successfully"
     echo "  - Scheduled daily auto power-on at 5:00 AM"
