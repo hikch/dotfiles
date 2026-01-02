@@ -5,6 +5,6 @@
 cask "dbeaver-community"
 cask "jordanbaird-ice"
 cask "lm-studio"
-cask "syncthing"
+cask "syncthing-app"
 cask "vincelwt-chatgpt"
 
