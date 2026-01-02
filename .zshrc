@@ -2,19 +2,8 @@
 
 ## Environment variable configuration
 #
-# Load shared POSIX profile (env, Homebrew, devbox)
-[ -f "$HOME/.profile" ] && . "$HOME/.profile"
-
-# SHELL
+# SHELL (.profile is already loaded by .zprofile)
 export SHELL=$(which zsh)
-
-# LANG (kept for backward compatibility; shared default is in .profile)
-export LANG=${LANG:-ja_JP.UTF-8}
-case ${UID} in
-0)
-    LANG=C
-    ;;
-esac
 
 
 ## Default shell configuration
@@ -93,7 +82,6 @@ compinit
 ## zsh editor
 #
 autoload zed
-export EDITOR=/usr/bin/vi;
 
 
 ## Prediction configuration
@@ -114,40 +102,6 @@ setopt complete_aliases     # aliased ls needs if file/dir completions work
 
 ## terminal configuration
 #
-case "${TERM}" in
-screen)
-    TERM=xterm
-    ;;
-esac
-
-case "${TERM}" in
-xterm|xterm-color|xterm-16color|xterm-256color)
-    export LSCOLORS=exfxcxdxbxegedabagacad
-    export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
-    zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
-    ;;
-kterm-color)
-    stty erase '^H'
-    export LSCOLORS=exfxcxdxbxegedabagacad
-    export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
-    zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
-    ;;
-kterm)
-    stty erase '^H'
-    ;;
-cons25)
-    unset LANG
-    export LSCOLORS=ExFxCxdxBxegedabagacad
-    export LS_COLORS='di=01;34:ln=01;35:so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
-    zstyle ':completion:*' list-colors 'di=;34;1' 'ln=;35;1' 'so=;32;1' 'ex=31;1' 'bd=46;34' 'cd=43;34'
-    ;;
-jfbterm-color)
-    export LSCOLORS=gxFxCxdxBxegedabagacad
-    export LS_COLORS='di=01;36:ln=01;35:so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
-    zstyle ':completion:*' list-colors 'di=;36;1' 'ln=;35;1' 'so=;32;1' 'ex=31;1' 'bd=46;34' 'cd=43;34'
-    ;;
-esac
-
 # set terminal title including current directory
 #
 case "${TERM}" in
@@ -168,19 +122,3 @@ done
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 source /Users/hu/.docker/init-zsh.sh || true # Added by Docker Desktop
-
-# Initialize Homebrew for interactive shells (handles non-login shells)
-if [ -x "/opt/homebrew/bin/brew" ]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [ -x "/usr/local/bin/brew" ]; then
-  eval "$(/usr/local/bin/brew shellenv)"
-elif command -v brew >/dev/null 2>&1; then
-  eval "$(brew shellenv)"
-fi
-
-which devbox > /dev/null 2>&1 && eval "$(devbox global shellenv --init-hook)"
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/hu/.lmstudio/bin"
-# End of LM Studio CLI section
-

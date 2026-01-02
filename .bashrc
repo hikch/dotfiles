@@ -1,7 +1,6 @@
 # Bash interactive configuration
 
-# Load shared login profile and shell settings
-[ -f "$HOME/.profile" ] && . "$HOME/.profile"
+# Load shared shell settings (.profile is already loaded by .bash_profile)
 [ -f "$HOME/.shellrc" ] && . "$HOME/.shellrc"
 
 # History configuration (rough parity with zsh settings)
@@ -14,9 +13,3 @@ shopt -s histappend
 set -o emacs
 bind '"\e[A": history-search-backward'
 bind '"\e[B": history-search-forward'
-
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/hu/.lmstudio/bin"
-# End of LM Studio CLI section
-
