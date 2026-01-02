@@ -174,9 +174,69 @@ packages/status:  ## Show package status
 	@echo "=== Homebrew outdated ==="
 	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew outdated || true
 
+.PHONY: devbox/cleanup
+devbox/cleanup:  ## Remove Devbox cache and rebuild
+	@echo "=== Devbox Cleanup ==="
+	@echo "This will remove cache and reinstall packages"
+	@read -p "Continue? [y/N] " confirm && [ "$$confirm" = "y" ] || exit 1
+	@devbox global run -- sh -c "devbox cache clean" || true
+	@devbox global install
+	@echo "✓ Devbox cleanup complete"
+
 .PHONY: packages/cleanup
-packages/cleanup: brew/cleanup  ## Clean up unused packages
-	@echo "Note: Devbox cleanup not yet implemented"
+packages/cleanup:  ## Clean up unused packages
+	@echo "=== Homebrew Cleanup ==="
+	@$(MAKE) brew/cleanup
+	@echo ""
+	@echo "To clean Devbox cache: make devbox/cleanup"
+
+.PHONY: packages/doctor
+packages/doctor:  ## Run health checks on package managers
+	@echo "=== Package Manager Health Check ==="
+	@echo ""
+	@echo "--- Homebrew ---"
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew doctor || true
+	@echo ""
+	@echo "--- Devbox ---"
+	@echo "Version: $$(devbox version)"
+	@echo "Global path: $$(devbox global path)"
+	@if [ -f "$$(devbox global path)/devbox.json" ]; then \
+		echo "✓ Config exists"; \
+	else \
+		echo "✗ Config missing"; \
+	fi
+	@echo "Packages: $$(devbox global list 2>/dev/null | grep -c '✓' || true)"
+
+.PHONY: packages/outdated
+packages/outdated:  ## Show outdated packages with details
+	@echo "=== Outdated Packages ==="
+	@echo ""
+	@echo "--- Homebrew ---"
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew outdated --greedy --verbose || echo "✓ All up to date"
+	@echo ""
+	@echo "--- Devbox ---"
+	@echo "Devbox uses latest nixpkgs. Run 'devbox global update' to update."
+
+.PHONY: packages/search
+packages/search:  ## Search for package (PKG=name)
+	@test -n "$(PKG)" || (echo "Usage: make packages/search PKG=jq"; exit 1)
+	@echo "=== Homebrew ==="
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew search $(PKG) | head -20
+	@echo ""
+	@echo "=== Devbox ==="
+	@devbox search $(PKG) 2>/dev/null | head -20 || echo "Install devbox to search"
+
+.PHONY: packages/add
+packages/add:  ## Add package (TYPE=cli|gui PKG=name)
+	@test -n "$(PKG)" || (echo "Usage: make packages/add PKG=jq TYPE=cli"; exit 1)
+	@if [ "$(TYPE)" = "gui" ]; then \
+		$(MAKE) brew/cask-add NAME=$(PKG); \
+	elif [ "$(TYPE)" = "cli" ]; then \
+		echo "Run: devbox global add $(PKG)"; \
+		echo "Then: git add .local/share/devbox/global/default/devbox.json"; \
+	else \
+		echo "TYPE must be 'cli' or 'gui'"; exit 1; \
+	fi
 
 
 .PHONY: vim
