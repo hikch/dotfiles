@@ -8,6 +8,3 @@
 # Explicit directories
 bin
 etc
-
-# Claude configuration file only
-.claude/CLAUDE.md
