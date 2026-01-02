@@ -126,11 +126,13 @@ The deployment behavior is controlled by external configuration files:
 
 - **`CANDIDATES`** - Files and directories to be symlinked to `$HOME` (whitelist)
 - **`EXCLUSIONS`** - Files and directories to exclude from deployment
+- **`PARTIAL_LINKS`** - Nested paths to symlink individually (parent dirs auto-excluded)
 
 To modify what gets deployed:
 1. Edit `CANDIDATES` to add new deploy targets
-2. Edit `EXCLUSIONS` to exclude files/directories  
-3. Run `make deploy` to apply changes
+2. Edit `EXCLUSIONS` to exclude files/directories
+3. Edit `PARTIAL_LINKS` to add selective nested path symlinks
+4. Run `make deploy` to apply changes
 
 ### Syncthing Usage
 

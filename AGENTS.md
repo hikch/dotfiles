@@ -26,7 +26,7 @@ Always verify tool availability before use, as the package list may change over 
 - `hosts/`: host-specific Homebrew bundles like `$(hostname -s).Brewfile`.
 - `.Brewfile`, `.Brewfile.local`: common GUI apps and local overrides.
 - `.config/`: not tracked by git by default; opt-in via `.gitignore` edits.
-- Control deployment via `CANDIDATES` (whitelist) and `EXCLUSIONS` (ignore).
+- Control deployment via `CANDIDATES` (whitelist), `EXCLUSIONS` (ignore), and `PARTIAL_LINKS` (nested paths).
 
 ## Build, Test, and Development Commands
 - `make help`: list available tasks.
