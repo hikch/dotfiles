@@ -4,20 +4,32 @@ help:
 	@echo ""
 
 
-# Load deployment configuration from external files
-BASE_EXCLUSIONS := $(shell grep -v '^\#' EXCLUSIONS | grep -v '^$$' | tr '\n' ' ')
-CANDIDATES_PATTERNS := $(shell grep -v '^\#' CANDIDATES | grep -v '^$$' | tr '\n' ' ')
+# ========================================
+# Deployment Configuration
+# ========================================
+# Load configuration from external files (UNIX-style whitelist/blacklist approach)
 #
-# 部分的にリンクしたい相対パス（dotfiles 配下）
-PARTIAL_LINKS := .local/share/devbox/global/default
+# CANDIDATES:     Whitelist of files/patterns to deploy
+# EXCLUSIONS:     Blacklist of files/patterns to exclude
+# PARTIAL_LINKS:  Nested paths to symlink individually (parent dirs are auto-excluded)
 
-# PARTIAL_LINKS からトップレベルディレクトリを抽出し EXCLUSIONS に追加
+# Load whitelist patterns and blacklist
+EXCLUSIONS_FROM_FILE := $(shell grep -v '^\#' EXCLUSIONS | grep -v '^$$' | tr '\n' ' ')
+CANDIDATES_PATTERNS := $(shell grep -v '^\#' CANDIDATES | grep -v '^$$' | tr '\n' ' ')
+
+# Load partial link paths (nested paths to symlink individually)
+PARTIAL_LINKS := $(shell grep -v '^\#' PARTIAL_LINKS | grep -v '^$$' | tr '\n' ' ')
+
+# Auto-exclude top-level directories of partial links
+# Example: .local/share/devbox/global/default -> .local
 PARTIAL_TOPS := $(sort $(foreach p,$(PARTIAL_LINKS),$(firstword $(subst /, ,$(p)))))
-EXCLUSIONS := $(BASE_EXCLUSIONS) $(PARTIAL_TOPS)
 
-# 検出対象を CANDIDATES ファイルから展開
+# Combine all exclusions
+EXCLUSIONS := $(EXCLUSIONS_FROM_FILE) $(PARTIAL_TOPS)
+
+# Expand wildcard patterns and apply exclusion filters
 CANDIDATES := $(foreach pattern,$(CANDIDATES_PATTERNS),$(wildcard $(pattern)))
-DOTFILES   = $(filter-out $(EXCLUSIONS), $(CANDIDATES))
+DOTFILES := $(filter-out $(EXCLUSIONS), $(CANDIDATES))
 
 DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 OSNAME     := $(shell uname -s)

@@ -1,8 +1,9 @@
 # Phase 2: Deployment Simplification
 
+**Status:** IMPLEMENTED (Alternative Approach)
 **Priority:** HIGH
-**Estimated Effort:** 2-3 hours
-**Impact:** 60% reduction in deployment complexity
+**Estimated Effort:** 30 minutes (actual)
+**Impact:** Minimal code change, maintains UNIX philosophy
 
 ## Current Problems
 
@@ -26,11 +27,35 @@ DOTFILES   = $(filter-out $(EXCLUSIONS), $(CANDIDATES))
 4. **Cognitive overhead**: Must understand grep, tr, foreach, subst, wildcard, filter-out
 5. **Difficult to debug**: Takes 15+ minutes to understand for newcomers
 
-## Proposed Solution
+## Implemented Solution
 
-### Option A: Declarative Deployment Config (Recommended)
+### Minimal Improvement: PARTIAL_LINKS File (UNIX-style approach)
 
-Create a single, simple configuration file that replaces the current 3-file system.
+**Decision:** Maintain CANDIDATES/EXCLUSIONS pattern, add PARTIAL_LINKS file
+
+**Rationale:**
+- CANDIDATES/EXCLUSIONS follows classic UNIX whitelist/blacklist pattern (similar to rsync, tar)
+- Current approach is not actually "complex" for UNIX users - it's standard text processing
+- Make functions (foreach, filter-out, etc.) are expected knowledge for Makefile users
+- Only real issue was hardcoded PARTIAL_LINKS in Makefile
+
+**Changes Made:**
+1. Created `PARTIAL_LINKS` file with same format as CANDIDATES/EXCLUSIONS
+2. Updated Makefile to load PARTIAL_LINKS from file instead of hardcoding
+3. Added clear comments explaining the deployment configuration flow
+
+**Benefits:**
+- ✅ Eliminates hardcoded configuration
+- ✅ Maintains consistency (all config in external files)
+- ✅ Preserves UNIX philosophy
+- ✅ No learning curve - same pattern as existing files
+- ✅ Easy to extend (just add lines to PARTIAL_LINKS)
+
+---
+
+## Alternative Considered: Declarative Deployment Config
+
+This option was considered but rejected in favor of maintaining UNIX conventions.
 
 #### New File: `deploy.conf`
 

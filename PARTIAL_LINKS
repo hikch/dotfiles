@@ -1,0 +1,12 @@
+# Partial link targets
+# Parent directories are excluded, but these specific nested paths are symlinked
+# One per line, comments start with #
+#
+# Use this for selective deployment of subdirectories without symlinking
+# the entire parent directory.
+#
+# Example: .local is excluded by default, but we want to symlink
+# .local/share/devbox/global/default specifically
+
+# Devbox global configuration
+.local/share/devbox/global/default
