@@ -16,5 +16,8 @@ nix
 .claude
 
 # Partial links (handled separately)
-# Note: PARTIAL_LINKS are defined in Makefile
+# Note: PARTIAL_LINKS in Makefile specifies nested paths that should be symlinked
+# while their parent directories are excluded. This allows selective deployment of
+# subdirectories without symlinking the entire parent.
+# Example: .local is excluded, but .local/share/devbox/global/default is symlinked
 # .local

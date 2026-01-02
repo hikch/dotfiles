@@ -24,7 +24,7 @@ OSNAME     := $(shell uname -s)
 
 
 .PHONY: init
-init: deploy nix-clean-backups devbox-install devbox-global-install homebrew fish mac-defaults pmset-settings ## Initialize.
+init: deploy devbox-install devbox-global-install homebrew fish mac-defaults pmset-settings ## Initialize.
 
 .PHONY: deploy
 deploy: ## Deploy dotfiles.
@@ -36,6 +36,25 @@ deploy: ## Deploy dotfiles.
 		ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path);)
 	@chown $$(id -un):$$(id -gn) ~/.ssh
 	@chmod 0700 ~/.ssh
+
+.PHONY: deploy/dry-run
+deploy/dry-run:  ## Preview deployment without making changes
+	@echo "=== Deployment Preview ==="
+	@echo "Standard symlinks:"
+	@$(foreach val, $(DOTFILES), echo "  $(abspath $(val)) -> $(HOME)/$(val)";)
+	@echo ""
+	@echo "Partial symlinks:"
+	@$(foreach path,$(PARTIAL_LINKS), echo "  $(DOTPATH)/$(path) -> $(HOME)/$(path)";)
+
+.PHONY: status
+status:  ## Show repository and package status
+	@echo "=== Git Status ==="
+	@git status --short
+	@echo ""
+	@echo "=== Broken Symlinks in HOME ==="
+	@find $(HOME) -maxdepth 1 -type l ! -exec test -e {} \; -print 2>/dev/null | grep -v ".Trash" || echo "No broken symlinks found"
+	@echo ""
+	@$(MAKE) --no-print-directory packages/status
 
 
 # ==========================================
@@ -120,6 +139,34 @@ brew/tap-add: ## Add tap to common .Brewfile (e.g., make brew/tap-add NAME=homeb
 	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew tap $(NAME) && brew bundle dump --force --file=$(BREWFILE)
 
 
+# ==========================================
+# Unified Package Management (Devbox + Homebrew)
+# ==========================================
+
+.PHONY: packages/install
+packages/install: devbox-global-install homebrew  ## Install all packages (Devbox + Homebrew)
+
+.PHONY: packages/update
+packages/update:  ## Update all packages
+	@echo "=== Updating Devbox packages ==="
+	@devbox global update
+	@echo ""
+	@echo "=== Updating Homebrew packages ==="
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew update && brew upgrade && brew upgrade --cask || true
+
+.PHONY: packages/status
+packages/status:  ## Show package status
+	@echo "=== Devbox packages ==="
+	@devbox global list
+	@echo ""
+	@echo "=== Homebrew outdated ==="
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew outdated || true
+
+.PHONY: packages/cleanup
+packages/cleanup: brew/cleanup  ## Clean up unused packages
+	@echo "Note: Devbox cleanup not yet implemented"
+
+
 .PHONY: vim
 vim: ## Install vim plug-ins
 	which vim && curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
@@ -147,11 +194,6 @@ ifeq  "$(OSNAME)" "Darwin"
 	sh etc/pmset_settings.sh
 endif
 
-.PHONY: nix-install
-nix-install:
-	@echo "📦 Installing Nix with --daemon option..."
-	@curl -L https://nixos.org/nix/install | sh -s -- --daemon
-
 .PHONY: devbox-install
 devbox-install:
 	@echo "🧰 Installing Devbox..."
@@ -162,27 +204,3 @@ devbox-install:
 devbox-global-install: ## devbox global install
 	@echo "🧰 Installing Devbox globally..."
 	@devbox global install 2>/dev/null || devbox global update
-
-.PHONY: nix-clean-backups
-nix-clean-backups:
-	@echo "🧼 Cleaning up old Nix installer backup files..."
-
-	@for file in /etc/bashrc /etc/zshrc /etc/bash.bashrc; do \
-	  backup="$$file.backup-before-nix"; \
-	  if [ -f "$$backup" ]; then \
-	    timestamp=$$(date +%Y%m%d%H%M%S); \
-	    echo "📁 Found backup: $$backup"; \
-	    sudo cp "$$backup" "$$backup.bak.$$timestamp"; \
-	    echo "📦 Backed up $$backup to $$backup.bak.$$timestamp"; \
-	    sudo cp "$$file" "$$file.bak.$$timestamp"; \
-	    echo "📦 Backed up $$file to $$file.bak.$$timestamp"; \
-	    sudo mv "$$backup" "$$file"; \
-	    echo "✅ Restored $$file from $$backup"; \
-	  else \
-	    echo "✅ No backup found for $$file"; \
-	  fi; \
-	done
-
-	@echo ""
-	@echo "✅ All conflicting backups resolved. You can now run:"
-	@echo "   make nix-install"
