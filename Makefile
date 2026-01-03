@@ -34,13 +34,74 @@ DOTFILES := $(filter-out $(EXCLUSIONS), $(CANDIDATES))
 DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 OSNAME     := $(shell uname -s)
 
+# Migration backup directory for PARTIAL_LINKS conversion
+MIGRATION_BACKUP_DIR := /tmp/dotfiles-migration-$(shell date +%Y%m%d_%H%M%S)
+
 
 .PHONY: init
 init: deploy devbox-install devbox-global-install homebrew fish mac-defaults pmset-settings ## Initialize.
 
+# ========================================
+# PARTIAL_LINKS Migration
+# ========================================
+# Migrates parent directories from full symlinks to real directories
+# when converting from full-directory symlinks to selective PARTIAL_LINKS
+
+.PHONY: deploy/migrate-partial-tops
+deploy/migrate-partial-tops:
+	@echo "=== Migrating PARTIAL_TOPS: symlink -> real directory ==="
+	@$(foreach top,$(PARTIAL_TOPS), \
+		echo "Processing $(top)..."; \
+		if [ -L $(HOME)/$(top) ]; then \
+			echo "  $(HOME)/$(top) is a symlink, migrating..."; \
+			mkdir -p $(MIGRATION_BACKUP_DIR); \
+			echo "  Backing up non-PARTIAL_LINKS items from repo/$(top)/..."; \
+			$(MAKE) --no-print-directory _migrate_copy_unlinked TOP=$(top) BACKUP=$(MIGRATION_BACKUP_DIR)/$(top); \
+			echo "  Removing old symlink $(HOME)/$(top)"; \
+			rm $(HOME)/$(top); \
+			echo "  Creating real directory $(HOME)/$(top)"; \
+			mkdir -p $(HOME)/$(top); \
+			echo "  Restoring non-PARTIAL_LINKS items to $(HOME)/$(top)/..."; \
+			if [ -d $(MIGRATION_BACKUP_DIR)/$(top) ]; then \
+				cp -a $(MIGRATION_BACKUP_DIR)/$(top)/. $(HOME)/$(top)/; \
+			fi; \
+		elif [ ! -e $(HOME)/$(top) ]; then \
+			echo "  Creating $(HOME)/$(top) as real directory"; \
+			mkdir -p $(HOME)/$(top); \
+		else \
+			echo "  $(HOME)/$(top) already exists as real directory"; \
+		fi;)
+	@if [ -d $(MIGRATION_BACKUP_DIR) ]; then \
+		echo ""; \
+		echo "Migration complete. Backup kept at: $(MIGRATION_BACKUP_DIR)"; \
+	fi
+
+.PHONY: _migrate_copy_unlinked
+_migrate_copy_unlinked:
+	@if [ -d $(DOTPATH)/$(TOP) ]; then \
+		mkdir -p $(BACKUP); \
+		for item in $(DOTPATH)/$(TOP)/*; do \
+			if [ ! -e "$$item" ]; then continue; fi; \
+			basename=$$(basename $$item); \
+			is_linked=0; \
+			for link in $(PARTIAL_LINKS); do \
+				if [ "$$link" = "$(TOP)/$$basename" ] || echo "$$link" | grep -q "^$(TOP)/$$basename/"; then \
+					is_linked=1; \
+					break; \
+				fi; \
+			done; \
+			if [ $$is_linked -eq 0 ]; then \
+				echo "    Copying $$basename (not in PARTIAL_LINKS)"; \
+				cp -a $$item $(BACKUP)/; \
+			else \
+				echo "    Skipping $$basename (in PARTIAL_LINKS)"; \
+			fi; \
+		done; \
+	fi
+
 .PHONY: deploy
-deploy: ## Deploy dotfiles.
-	@if ! [ -L $(HOME)/.config ]; then mv $(HOME)/.config $(HOME)/.config~; fi
+deploy: deploy/migrate-partial-tops  ## Deploy dotfiles.
+	@# Note: .config migration is now handled by deploy/migrate-partial-tops
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@$(foreach path,$(PARTIAL_LINKS), \
 		mkdir -p $(HOME)/$(dir $(path)); \

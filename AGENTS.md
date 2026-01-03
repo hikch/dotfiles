@@ -139,6 +139,41 @@ To modify what gets deployed:
 3. Edit `PARTIAL_LINKS` to add selective nested path symlinks
 4. Run `make deploy` to apply changes
 
+### PARTIAL_LINKS Migration Mechanism
+
+The Makefile includes automatic migration logic for converting full-directory symlinks to selective PARTIAL_LINKS:
+
+**How it works:**
+- When `make deploy` is run, the `deploy/migrate-partial-tops` target executes first
+- It detects if any PARTIAL_TOPS directories (e.g., `.config`) are currently full symlinks
+- If detected:
+  1. Backs up all non-PARTIAL_LINKS content to `/tmp/dotfiles-migration-YYYYMMDD_HHMMSS/`
+  2. Removes the old full symlink
+  3. Creates a real directory in its place
+  4. Restores non-managed files to the new directory
+  5. PARTIAL_LINKS symlinks are then created by the main deploy logic
+
+**Example:** Converting `.config` from full symlink to selective links:
+```
+Before: ~/.config -> ~/dotfiles/.config (full symlink)
+After:  ~/.config/ (real directory)
+         ├── fish -> ~/dotfiles/.config/fish (PARTIAL_LINK)
+         ├── git -> ~/dotfiles/.config/git (PARTIAL_LINK)
+         ├── gcloud/ (copied from repo, not a symlink)
+         └── coc/ (copied from repo, not a symlink)
+```
+
+**Safety features:**
+- Migration is idempotent (safe to run multiple times)
+- All non-PARTIAL_LINKS files are preserved
+- Backup is always created at `/tmp/dotfiles-migration-*/`
+- No data loss occurs during conversion
+
+**Note:** This migration is particularly important because:
+- Git-untracked files may exist in repository directories (e.g., `.config/gcloud/`)
+- These files must be copied to `$HOME` during migration
+- Without this mechanism, circular symlink references would occur
+
 ## Build, Test, and Development Commands
 - `make help`: list available tasks.
 - `make deploy`: symlink managed files into `$HOME` (idempotent); fixes `~/.ssh` perms.
