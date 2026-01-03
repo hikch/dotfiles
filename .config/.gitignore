@@ -6,6 +6,7 @@
 
 !/fish
 fish/fishd.*
+fish/fish_variables
 
 !/git
 
