@@ -1,12 +1,12 @@
-## 
-# setup shell
+##
+# Setup shell
 set -gx SHELL $(which fish)
 
-# setup default editor
-set -x EDITOR vi
+# Setup default editor
+set -gx EDITOR vi
 
-# setup default pager
-set -x PAGER less
+# Setup default pager
+set -gx PAGER less
 
 # setup direnv
 which direnv > /dev/null; and eval (direnv hook fish)
@@ -24,16 +24,16 @@ if test -e "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path
 end
 
 # setup poetry
-which poetry > /dev/null; and set -x PATH ~/.poetry/bin $PATH
+which poetry > /dev/null; and set -gx PATH ~/.poetry/bin $PATH
 
 # pip cache
-which pip > /dev/null; and set -x PIP_DOWNLOAD_CACHE ~/.cache/pip
+which pip > /dev/null; and set -gx PIP_DOWNLOAD_CACHE ~/.cache/pip
 
 # iTerm
 test -e /Users/hu/.iterm2_shell_integration.fish ; and source /Users/hu/.iterm2_shell_integration.fish ; or true
 
 # user bin
-test -e ~/bin ; and set -x PATH ~/bin $PATH
+test -e ~/bin ; and set -gx PATH ~/bin $PATH
 
 # Docker Desktop
 source /Users/hu/.docker/init-fish.sh || true # Added by Docker Desktop

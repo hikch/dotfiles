@@ -1,0 +1,15 @@
+# Local Fish Configuration (Machine-specific)
+# Copy this file to 99-local.fish and customize for this machine
+# 99-local.fish is gitignored and won't be committed
+
+# Example: Machine-specific environment variables
+# set -gx MY_LOCAL_VAR "value"
+
+# Example: Machine-specific PATH
+# set -gx PATH /custom/local/path $PATH
+
+# Example: Machine-specific aliases
+# alias mylocal "echo 'This is local'"
+
+# Example: Machine-specific API tokens (NEVER commit these!)
+# set -gx API_TOKEN "your-secret-token-here"

@@ -1,9 +1,11 @@
-set -q FZF_TMUX_HEIGHT; or set -U FZF_TMUX_HEIGHT "40%"
-set -q FZF_DEFAULT_OPTS; or set -U FZF_DEFAULT_OPTS "--height $FZF_TMUX_HEIGHT"
-set -q FZF_LEGACY_KEYBINDINGS; or set -U FZF_LEGACY_KEYBINDINGS 1
-set -q FZF_DISABLE_KEYBINDINGS; or set -U FZF_DISABLE_KEYBINDINGS 0
-set -q FZF_PREVIEW_FILE_CMD; or set -U FZF_PREVIEW_FILE_CMD "head -n 10"
-set -q FZF_PREVIEW_DIR_CMD; or set -U FZF_PREVIEW_DIR_CMD "ls"
+# FZF Configuration
+# Managed explicitly instead of Universal Variables
+set -g FZF_TMUX_HEIGHT "40%"
+set -gx FZF_DEFAULT_OPTS "--height $FZF_TMUX_HEIGHT"
+set -g FZF_LEGACY_KEYBINDINGS 1
+set -g FZF_DISABLE_KEYBINDINGS 0
+set -g FZF_PREVIEW_FILE_CMD "head -n 10"
+set -g FZF_PREVIEW_DIR_CMD "ls"
 
 if test "$FZF_DISABLE_KEYBINDINGS" -ne 1
     if test "$FZF_LEGACY_KEYBINDINGS" -eq 1

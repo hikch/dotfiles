@@ -1,20 +1,67 @@
 # .config is basically unmanaged
-# Exclude only the files you want to manage 
+# Whitelist approach: Exclude everything, then explicitly include what we want to manage
 /*
 
+# ========================================
+# COC (Conquer of Completion)
+# ========================================
+!/coc
+/coc/*
 !/coc/ultisnips
 
+# ========================================
+# Fish Shell
+# ========================================
 !/fish
-fish/fishd.*
-fish/fish_variables
+/fish/*
 
+# Core fish files
+!/fish/config.fish
+!/fish/fish_plugins
+
+# Fish conf.d (whitelist specific files)
+!/fish/conf.d
+/fish/conf.d/*
+!/fish/conf.d/00-env.fish
+!/fish/conf.d/10-colors.fish
+!/fish/conf.d/20-abbr.fish
+!/fish/conf.d/fzf.fish
+!/fish/conf.d/z.fish
+!/fish/conf.d/tailscale.fish
+!/fish/conf.d/99-local.fish.sample
+
+# Exclude dynamic/generated files
+/fish/fish_variables
+/fish/fishd.*
+/fish/completions
+/fish/functions
+/fish/themes
+/fish/.DS_Store
+
+# ========================================
+# Git
+# ========================================
 !/git
 
+# ========================================
+# Home Manager
+# ========================================
 !/home-manager
 
+# ========================================
+# iTerm2
+# ========================================
 !/iterm2
+/iterm2/*
+!/iterm2/com.googlecode.iterm2.plist
 /iterm2/AppSupport
 
+# ========================================
+# Direnv
+# ========================================
 !/direnv
 
+# ========================================
+# Gemini CLI
+# ========================================
 !/gemini
