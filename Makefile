@@ -65,6 +65,8 @@ deploy/migrate-partial-tops:
 			if [ -d $(MIGRATION_BACKUP_DIR)/$(top) ]; then \
 				cp -a $(MIGRATION_BACKUP_DIR)/$(top)/. $(HOME)/$(top)/; \
 			fi; \
+			echo "  Cleaning up non-PARTIAL_LINKS items from repo/$(top)/..."; \
+			$(MAKE) --no-print-directory _migrate_remove_unlinked TOP=$(top) BACKUP=$(MIGRATION_BACKUP_DIR)/$(top); \
 		elif [ -f $(HOME)/$(top) ]; then \
 			echo "  ERROR: $(HOME)/$(top) exists as a file, expected directory or symlink"; \
 			exit 1; \
@@ -97,6 +99,41 @@ _migrate_copy_unlinked:
 				cp -a "$$item" $(BACKUP)/; \
 			else \
 				echo "    Skipping $$basename (in PARTIAL_LINKS)"; \
+			fi; \
+		done; \
+	fi
+
+.PHONY: _migrate_remove_unlinked
+_migrate_remove_unlinked:
+	@# Safety check: Verify backup exists before removing anything
+	@if [ ! -d $(BACKUP) ]; then \
+		echo "    ⚠️  WARNING: Backup directory $(BACKUP) not found"; \
+		echo "    Skipping cleanup for safety (files NOT removed from repository)"; \
+		exit 0; \
+	fi
+	@# Check if backup has files
+	@if [ -z "$$(ls -A $(BACKUP) 2>/dev/null)" ]; then \
+		echo "    ℹ️  Backup directory is empty, nothing to clean up"; \
+		exit 0; \
+	fi
+	@# Remove non-PARTIAL_LINKS items from repository
+	@if [ -d $(DOTPATH)/$(TOP) ]; then \
+		removed_count=0; \
+		find $(DOTPATH)/$(TOP) -mindepth 1 -maxdepth 1 | while IFS= read -r item; do \
+			basename=$$(basename "$$item"); \
+			is_linked=0; \
+			for link in $(PARTIAL_LINKS); do \
+				if [ "$$link" = "$(TOP)/$$basename" ] || echo "$$link/" | grep -qF "$(TOP)/$$basename/"; then \
+					is_linked=1; \
+					break; \
+				fi; \
+			done; \
+			if [ $$is_linked -eq 0 ]; then \
+				echo "    Removing $$basename (not in PARTIAL_LINKS, backup confirmed)"; \
+				rm -rf "$$item"; \
+				removed_count=$$((removed_count + 1)); \
+			else \
+				echo "    Keeping $$basename (in PARTIAL_LINKS)"; \
 			fi; \
 		done; \
 	fi
