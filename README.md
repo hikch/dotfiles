@@ -80,10 +80,31 @@ make brew/dump-actual          # Snapshot current state to Brewfile.actual
 
 ## Configuration
 
-### .config
+### `.config` and `.local` Management Policy
 
-.config is not managed by git.
-Use .gitignore to remove exclusions only for files you want to manage.
+This repository follows a strict **whitelist approach** for managing configuration files:
+
+**What Gets Tracked:**
+- Only **hand-edited declarative configuration** files
+- Files that are **reproducible** and **meaningful across machines**
+- Files that contain **no secrets, state, or auto-generated content**
+
+**Decision Rules** (all must be YES to track):
+1. Did I manually edit this file?
+2. Is it meaningful on other machines?
+3. Is it NOT a secret, state, or auto-generated file?
+
+**`.config` Directory:**
+- Default: Exclude everything
+- Explicitly include: `fish/config.fish`, `fish/conf.d/*.fish`, `git/config`, `direnv/direnv.toml`, etc.
+- Explicitly exclude: `fish_variables` (working state), completions, auto-generated functions
+
+**`.local` Directory:**
+- Default: Exclude everything
+- Exception: Self-written scripts (e.g., `.local/bin/`)
+- Devbox: Currently managed via `PARTIAL_LINKS` for `.local/share/devbox/global/default/`
+
+See `.config/.gitignore` for the complete whitelist configuration.
 
 ### Package Management Strategy
 
