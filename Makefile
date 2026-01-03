@@ -65,6 +65,9 @@ deploy/migrate-partial-tops:
 			if [ -d $(MIGRATION_BACKUP_DIR)/$(top) ]; then \
 				cp -a $(MIGRATION_BACKUP_DIR)/$(top)/. $(HOME)/$(top)/; \
 			fi; \
+		elif [ -f $(HOME)/$(top) ]; then \
+			echo "  ERROR: $(HOME)/$(top) exists as a file, expected directory or symlink"; \
+			exit 1; \
 		elif [ ! -e $(HOME)/$(top) ]; then \
 			echo "  Creating $(HOME)/$(top) as real directory"; \
 			mkdir -p $(HOME)/$(top); \
@@ -80,19 +83,18 @@ deploy/migrate-partial-tops:
 _migrate_copy_unlinked:
 	@if [ -d $(DOTPATH)/$(TOP) ]; then \
 		mkdir -p $(BACKUP); \
-		for item in $(DOTPATH)/$(TOP)/*; do \
-			if [ ! -e "$$item" ]; then continue; fi; \
-			basename=$$(basename $$item); \
+		find $(DOTPATH)/$(TOP) -mindepth 1 -maxdepth 1 | while IFS= read -r item; do \
+			basename=$$(basename "$$item"); \
 			is_linked=0; \
 			for link in $(PARTIAL_LINKS); do \
-				if [ "$$link" = "$(TOP)/$$basename" ] || echo "$$link" | grep -q "^$(TOP)/$$basename/"; then \
+				if [ "$$link" = "$(TOP)/$$basename" ] || echo "$$link/" | grep -qF "$(TOP)/$$basename/"; then \
 					is_linked=1; \
 					break; \
 				fi; \
 			done; \
 			if [ $$is_linked -eq 0 ]; then \
 				echo "    Copying $$basename (not in PARTIAL_LINKS)"; \
-				cp -a $$item $(BACKUP)/; \
+				cp -a "$$item" $(BACKUP)/; \
 			else \
 				echo "    Skipping $$basename (in PARTIAL_LINKS)"; \
 			fi; \
