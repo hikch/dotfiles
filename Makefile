@@ -34,8 +34,8 @@ DOTFILES := $(filter-out $(EXCLUSIONS), $(CANDIDATES))
 DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 OSNAME     := $(shell uname -s)
 
-# Migration backup directory for PARTIAL_LINKS conversion
-MIGRATION_BACKUP_DIR := /tmp/dotfiles-migration-$(shell date +%Y%m%d_%H%M%S)
+# Migration backup directory for PARTIAL_LINKS conversion (overridable)
+MIGRATION_BACKUP_DIR ?= /tmp/dotfiles-migration-$(shell date +%Y%m%d_%H%M%S)
 
 
 .PHONY: init
@@ -69,7 +69,7 @@ migrate-top-symlink-to-real:  ## [Plan A] Migrate TOP from symlink to real direc
 			mkdir -p $(HOME)/$(top); \
 			echo "  Restoring non-PARTIAL_LINKS items to $(HOME)/$(top)/..."; \
 			if [ -d $(MIGRATION_BACKUP_DIR)/$(top) ]; then \
-				cp -a $(MIGRATION_BACKUP_DIR)/$(top)/. $(HOME)/$(top)/; \
+				rsync -a $(MIGRATION_BACKUP_DIR)/$(top)/ $(HOME)/$(top)/; \
 			fi; \
 			echo "  Cleaning up non-PARTIAL_LINKS items from repo/$(top)/..."; \
 			$(MAKE) --no-print-directory _migrate_remove_unlinked TOP=$(top) BACKUP=$(MIGRATION_BACKUP_DIR)/$(top); \
@@ -102,7 +102,7 @@ _migrate_copy_unlinked:
 			done; \
 			if [ $$is_linked -eq 0 ]; then \
 				echo "    Copying $$basename (not in PARTIAL_LINKS)"; \
-				cp -a "$$item" $(BACKUP)/; \
+				rsync -a "$$item" "$(BACKUP)/"; \
 			else \
 				echo "    Skipping $$basename (in PARTIAL_LINKS)"; \
 			fi; \
@@ -163,6 +163,10 @@ migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir → s
 	@# Check if path exists in home directory
 	@if [ ! -e $(HOME)/$(path) ]; then \
 		echo "✓ $(HOME)/$(path) does not exist, creating symlink directly"; \
+		if [ ! -d $(DOTPATH)/$(path) ]; then \
+			echo "→ Creating empty repository directory $(DOTPATH)/$(path)"; \
+			mkdir -p $(DOTPATH)/$(path); \
+		fi; \
 		mkdir -p $(HOME)/$$(dirname $(path)); \
 		ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path); \
 		echo "✓ Done. Add content to $(DOTPATH)/$(path) as needed"; \
@@ -183,10 +187,14 @@ migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir → s
 	@# It's a real directory - proceed with migration
 	@backup_dir="/tmp/partial-link-add-$$(date +%Y%m%d_%H%M%S)/$(path)"; \
 	echo "→ Backing up $(HOME)/$(path) to $$backup_dir"; \
-	mkdir -p "$$(dirname $$backup_dir)"; \
-	cp -a $(HOME)/$(path) $$backup_dir; \
+	mkdir -p "$$backup_dir"; \
+	rsync -a $(HOME)/$(path)/ $$backup_dir/; \
 	echo "→ Removing real directory $(HOME)/$(path)"; \
 	rm -rf $(HOME)/$(path); \
+	if [ ! -d $(DOTPATH)/$(path) ]; then \
+		echo "→ Creating empty repository directory $(DOTPATH)/$(path)"; \
+		mkdir -p $(DOTPATH)/$(path); \
+	fi; \
 	echo "→ Creating symlink $(DOTPATH)/$(path) -> $(HOME)/$(path)"; \
 	mkdir -p $(HOME)/$$(dirname $(path)); \
 	ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path); \
@@ -234,16 +242,16 @@ migrate-remove-partial-link:  ## [Plan C] Remove path from PARTIAL_LINKS (symlin
 	@# Backup repo content
 	@backup_dir="/tmp/partial-link-remove-$$(date +%Y%m%d_%H%M%S)/$(path)"; \
 	echo "→ Backing up repo content to $$backup_dir"; \
-	mkdir -p "$$(dirname $$backup_dir)"; \
+	mkdir -p "$$backup_dir"; \
 	if [ -d $(DOTPATH)/$(path) ]; then \
-		cp -a $(DOTPATH)/$(path) $$backup_dir; \
+		rsync -a $(DOTPATH)/$(path)/ $$backup_dir/; \
 	fi; \
 	echo "→ Removing symlink $(HOME)/$(path)"; \
 	rm $(HOME)/$(path); \
 	echo "→ Creating real directory and copying content from repo"; \
 	mkdir -p $(HOME)/$(path); \
 	if [ -d $(DOTPATH)/$(path) ]; then \
-		cp -a $(DOTPATH)/$(path)/. $(HOME)/$(path)/; \
+		rsync -a $(DOTPATH)/$(path)/ $(HOME)/$(path)/; \
 	fi; \
 	echo ""; \
 	echo "✓ Migration complete"; \
@@ -256,17 +264,54 @@ migrate-remove-partial-link:  ## [Plan C] Remove path from PARTIAL_LINKS (symlin
 	echo "  3. Or manually remove from repo: rm -rf $(DOTPATH)/$(path)"; \
 	echo "  4. Delete backup when satisfied: rm -rf /tmp/partial-link-remove-*"
 
+# ----------------------------------------
+# Validation: Pre-deploy safety checks
+# ----------------------------------------
+
+.PHONY: validate-partial-links
+validate-partial-links:  ## Validate PARTIAL_LINKS configuration before deploy
+	@echo "=== Validating PARTIAL_LINKS configuration ==="
+	@error_count=0; \
+	for path in $(PARTIAL_LINKS); do \
+		if echo "$$path" | grep -qE '(\.\./|^/)'; then \
+			echo "❌ ERROR: Invalid path in PARTIAL_LINKS: $$path"; \
+			echo "   Paths cannot contain '..' or start with '/'"; \
+			error_count=$$((error_count + 1)); \
+		fi; \
+		if [ ! -d $(DOTPATH)/$$path ]; then \
+			echo "⚠️  WARNING: $(DOTPATH)/$$path does not exist in repository"; \
+		fi; \
+		if [ -e $(HOME)/$$path ] && [ ! -L $(HOME)/$$path ]; then \
+			echo "⚠️  WARNING: $(HOME)/$$path exists as real file/dir"; \
+			echo "   Run: make migrate-add-partial-link path=$$path"; \
+		fi; \
+	done; \
+	if [ $$error_count -gt 0 ]; then \
+		echo ""; \
+		echo "❌ Validation failed with $$error_count error(s)"; \
+		exit 1; \
+	fi; \
+	echo "✓ Validation complete"
+
 .PHONY: deploy
-deploy:  ## Deploy dotfiles.
+deploy: validate-partial-links  ## Deploy dotfiles.
 	@# Idempotent, non-destructive symlink deployment
 	@# Note: For migration tasks, use migrate-* targets separately
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@$(foreach path,$(PARTIAL_LINKS), \
 		mkdir -p $(HOME)/$(dir $(path)); \
-		rm -rf $(HOME)/$(path); \
-		ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path);)
-	@chown $$(id -un):$$(id -gn) ~/.ssh
-	@chmod 0700 ~/.ssh
+		if [ -L $(HOME)/$(path) ] || [ ! -e $(HOME)/$(path) ]; then \
+			rm -f $(HOME)/$(path); \
+			ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path); \
+		elif [ -e $(HOME)/$(path) ]; then \
+			echo "ERROR: $(HOME)/$(path) exists as real file/dir"; \
+			echo "  Run: make migrate-add-partial-link path=$(path)"; \
+			exit 1; \
+		fi;)
+	@if [ -d ~/.ssh ]; then \
+		chown $$(id -un):$$(id -gn) ~/.ssh; \
+		chmod 0700 ~/.ssh; \
+	fi
 
 .PHONY: deploy/dry-run
 deploy/dry-run:  ## Preview deployment without making changes
