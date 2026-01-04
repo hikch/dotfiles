@@ -6,7 +6,7 @@ themes/
 .DS_Store
 
 # Auto-generated functions (keep hand-edited ones)
-functions/__fzf_*.fish
+functions/__fzf*.fish
 functions/__z*.fish
 functions/fisher.fish
 functions/fzf_key_bindings.fish
