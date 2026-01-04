@@ -111,18 +111,15 @@ _migrate_copy_unlinked:
 
 .PHONY: _migrate_remove_unlinked
 _migrate_remove_unlinked:
-	@# Safety check: Verify backup exists before removing anything
 	@if [ ! -d $(BACKUP) ]; then \
 		echo "    ⚠️  WARNING: Backup directory $(BACKUP) not found"; \
 		echo "    Skipping cleanup for safety (files NOT removed from repository)"; \
 		exit 0; \
 	fi
-	@# Check if backup has files
 	@if [ -z "$$(ls -A $(BACKUP) 2>/dev/null)" ]; then \
 		echo "    ℹ️  Backup directory is empty, nothing to clean up"; \
 		exit 0; \
 	fi
-	@# Remove non-PARTIAL_LINKS items from repository
 	@if [ -d $(DOTPATH)/$(TOP) ]; then \
 		removed_count=0; \
 		find $(DOTPATH)/$(TOP) -mindepth 1 -maxdepth 1 | while IFS= read -r item; do \
@@ -160,7 +157,6 @@ migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir → s
 		exit 1; \
 	fi
 	@echo "=== Adding $(path) to PARTIAL_LINKS management ==="
-	@# Check if path exists in home directory
 	@if [ ! -e $(HOME)/$(path) ]; then \
 		echo "✓ $(HOME)/$(path) does not exist, creating symlink directly"; \
 		if [ ! -d $(DOTPATH)/$(path) ]; then \
@@ -172,29 +168,34 @@ migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir → s
 		echo "✓ Done. Add content to $(DOTPATH)/$(path) as needed"; \
 		exit 0; \
 	fi
-	@# Check if already a symlink
 	@if [ -L $(HOME)/$(path) ]; then \
 		echo "ERROR: $(HOME)/$(path) is already a symlink"; \
 		echo "Current target: $$(readlink $(HOME)/$(path))"; \
 		exit 1; \
 	fi
-	@# Check if it's a file (not supported)
-	@if [ -f $(HOME)/$(path) ]; then \
-		echo "ERROR: $(HOME)/$(path) is a file, not a directory"; \
-		echo "This migration only supports directories"; \
-		exit 1; \
-	fi
-	@# It's a real directory - proceed with migration
 	@mkdir -p $(MIGRATION_BACKUP_DIR)/add; \
-	backup_dir="$(MIGRATION_BACKUP_DIR)/add/$(path)"; \
-	echo "→ Backing up $(HOME)/$(path) to $$backup_dir"; \
-	mkdir -p "$$backup_dir"; \
-	rsync -a $(HOME)/$(path)/ $$backup_dir/; \
-	echo "→ Removing real directory $(HOME)/$(path)"; \
-	rm -rf $(HOME)/$(path); \
-	if [ ! -d $(DOTPATH)/$(path) ]; then \
-		echo "→ Creating empty repository directory $(DOTPATH)/$(path)"; \
-		mkdir -p $(DOTPATH)/$(path); \
+	backup_path="$(MIGRATION_BACKUP_DIR)/add/$(path)"; \
+	if [ -d $(HOME)/$(path) ]; then \
+		echo "→ Backing up directory $(HOME)/$(path) to $$backup_path"; \
+		mkdir -p "$$backup_path"; \
+		rsync -a $(HOME)/$(path)/ $$backup_path/; \
+		echo "→ Removing real directory $(HOME)/$(path)"; \
+		rm -rf $(HOME)/$(path); \
+		if [ ! -d $(DOTPATH)/$(path) ]; then \
+			echo "→ Creating empty repository directory $(DOTPATH)/$(path)"; \
+			mkdir -p $(DOTPATH)/$(path); \
+		fi; \
+	else \
+		echo "→ Backing up file $(HOME)/$(path) to $$backup_path"; \
+		mkdir -p "$$(dirname $$backup_path)"; \
+		cp -p $(HOME)/$(path) $$backup_path; \
+		echo "→ Removing real file $(HOME)/$(path)"; \
+		rm -f $(HOME)/$(path); \
+		if [ ! -f $(DOTPATH)/$(path) ]; then \
+			echo "→ Copying file to repository $(DOTPATH)/$(path)"; \
+			mkdir -p $(DOTPATH)/$$(dirname $(path)); \
+			cp -p $$backup_path $(DOTPATH)/$(path); \
+		fi; \
 	fi; \
 	echo "→ Creating symlink $(HOME)/$(path) -> $(DOTPATH)/$(path)"; \
 	mkdir -p $(HOME)/$$(dirname $(path)); \
@@ -202,11 +203,11 @@ migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir → s
 	echo ""; \
 	echo "✓ Migration complete"; \
 	echo ""; \
-	echo "Backup location: $$backup_dir"; \
+	echo "Backup location: $$backup_path"; \
 	echo ""; \
 	echo "Next steps:"; \
 	echo "  1. Review backup and decide what to keep"; \
-	echo "  2. Manually copy desired files to $(DOTPATH)/$(path)"; \
+	echo "  2. Manually copy desired content to $(DOTPATH)/$(path)"; \
 	echo "  3. Git add/commit configuration files you want to track"; \
 	echo "  4. Delete backup when satisfied: rm -rf $(MIGRATION_BACKUP_DIR)"
 
@@ -226,21 +227,17 @@ migrate-remove-partial-link:  ## [Plan C] Remove path from PARTIAL_LINKS (symlin
 		exit 1; \
 	fi
 	@echo "=== Removing $(path) from PARTIAL_LINKS management ==="
-	@# Check if path exists in home directory
 	@if [ ! -e $(HOME)/$(path) ]; then \
 		echo "✓ $(HOME)/$(path) does not exist, nothing to migrate"; \
 		exit 0; \
 	fi
-	@# Check if it's a symlink
 	@if [ ! -L $(HOME)/$(path) ]; then \
 		echo "ERROR: $(HOME)/$(path) is not a symlink"; \
 		echo "It's already a real directory, no migration needed"; \
 		exit 1; \
 	fi
-	@# Get symlink target
 	@link_target=$$(readlink $(HOME)/$(path)); \
 	echo "Current symlink: $(HOME)/$(path) -> $$link_target"; \
-	@# Backup repo content
 	@mkdir -p $(MIGRATION_BACKUP_DIR)/remove; \
 	backup_dir="$(MIGRATION_BACKUP_DIR)/remove/$(path)"; \
 	echo "→ Backing up repo content to $$backup_dir"; \
@@ -297,8 +294,6 @@ validate-partial-links:  ## Validate PARTIAL_LINKS configuration before deploy
 
 .PHONY: deploy
 deploy: validate-partial-links  ## Deploy dotfiles.
-	@# Idempotent, non-destructive symlink deployment
-	@# Note: For migration tasks, use migrate-* targets separately
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@$(foreach path,$(PARTIAL_LINKS), \
 		mkdir -p $(HOME)/$(dir $(path)); \

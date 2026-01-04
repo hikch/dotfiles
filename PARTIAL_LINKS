@@ -12,10 +12,18 @@
 .local/share/devbox/global/default
 
 # Config management (replacing .config/.gitignore)
-# Directories: managed as whole directories
-.config/fish
+# Whitelist approach: only explicitly listed items are managed
+
+# Fish shell configuration (individual file/dir management)
+.config/fish/config.fish
+.config/fish/fish_plugins
+.config/fish/conf.d
+.config/fish/functions/fish_prompt.fish
+.config/fish/functions/fish_user_key_bindings.fish
+
+# Other config directories
 .config/gemini
 .config/iterm2
 
-# Files: individual file management to avoid unwanted files
+# Individual config files
 .config/git/ignore
