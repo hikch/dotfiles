@@ -1,0 +1,14 @@
+{
+  "Profiles": [
+    {
+      "Name": "Default",
+      "Guid": "9F662CE6-236A-4687-9282-6D4506853E1F",
+      "Normal Font": "Monaco 14",
+      "Terminal Type": "xterm-256color",
+      "Use Non-ASCII Font": false,
+      "Unlimited Scrollback": true,
+      "Description": "Default profile with Solarized Light theme",
+      "Tags": []
+    }
+  ]
+}

@@ -712,6 +712,16 @@ ifeq  "$(OSNAME)" "Darwin"
 	sh etc/pmset_settings.sh
 endif
 
+.PHONY: iterm2-profiles
+iterm2-profiles: ## Deploy iTerm2 Dynamic Profiles
+ifeq  "$(OSNAME)" "Darwin"
+	@echo "📦 Deploying iTerm2 Dynamic Profiles..."
+	@mkdir -p "$(HOME)/Library/Application Support/iTerm2/DynamicProfiles"
+	@cp -v apps/iterm2/profiles/*.json \
+		"$(HOME)/Library/Application Support/iTerm2/DynamicProfiles/"
+	@echo "✓ iTerm2 profiles deployed. Changes will be loaded automatically."
+endif
+
 .PHONY: devbox-install
 devbox-install:
 	@echo "🧰 Installing Devbox..."

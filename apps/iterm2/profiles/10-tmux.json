@@ -1,0 +1,14 @@
+{
+  "Profiles": [
+    {
+      "Name": "tmux",
+      "Guid": "6B2970A6-FD51-459A-A562-A86169B06C41",
+      "Dynamic Profile Parent Name": "Default",
+      "Initial Text": "/opt/homebrew/bin/fish",
+      "Disable Window Resizing": true,
+      "Unlimited Scrollback": true,
+      "Description": "tmux profile with fish shell",
+      "Tags": ["tmux"]
+    }
+  ]
+}
