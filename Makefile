@@ -196,7 +196,7 @@ migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir → s
 		echo "→ Creating empty repository directory $(DOTPATH)/$(path)"; \
 		mkdir -p $(DOTPATH)/$(path); \
 	fi; \
-	echo "→ Creating symlink $(DOTPATH)/$(path) -> $(HOME)/$(path)"; \
+	echo "→ Creating symlink $(HOME)/$(path) -> $(DOTPATH)/$(path)"; \
 	mkdir -p $(HOME)/$$(dirname $(path)); \
 	ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path); \
 	echo ""; \
