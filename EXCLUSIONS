@@ -21,3 +21,4 @@ nix
 # subdirectories without symlinking the entire parent.
 # Example: .local is excluded, but .local/share/devbox/global/default is symlinked
 # .local
+.config

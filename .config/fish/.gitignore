@@ -1,0 +1,14 @@
+# Auto-generated and dynamic files
+fish_variables
+fishd.*
+completions/
+themes/
+.DS_Store
+
+# Auto-generated functions (keep hand-edited ones)
+functions/__fzf_*.fish
+functions/__z*.fish
+functions/fisher.fish
+functions/fzf_key_bindings.fish
+functions/gcloud_sdk_argcomplete.fish
+functions/gi.fish
