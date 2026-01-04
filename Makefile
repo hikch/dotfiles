@@ -60,19 +60,19 @@ migrate-top-symlink-to-real:  ## [Plan A] Migrate TOP from symlink to real direc
 		echo "Processing $(top)..."; \
 		if [ -L $(HOME)/$(top) ]; then \
 			echo "  $(HOME)/$(top) is a symlink, migrating..."; \
-			mkdir -p $(MIGRATION_BACKUP_DIR); \
+			mkdir -p $(MIGRATION_BACKUP_DIR)/top-migration; \
 			echo "  Backing up non-PARTIAL_LINKS items from repo/$(top)/..."; \
-			$(MAKE) --no-print-directory _migrate_copy_unlinked TOP=$(top) BACKUP=$(MIGRATION_BACKUP_DIR)/$(top); \
+			$(MAKE) --no-print-directory _migrate_copy_unlinked TOP=$(top) BACKUP=$(MIGRATION_BACKUP_DIR)/top-migration/$(top); \
 			echo "  Removing old symlink $(HOME)/$(top)"; \
 			rm $(HOME)/$(top); \
 			echo "  Creating real directory $(HOME)/$(top)"; \
 			mkdir -p $(HOME)/$(top); \
 			echo "  Restoring non-PARTIAL_LINKS items to $(HOME)/$(top)/..."; \
-			if [ -d $(MIGRATION_BACKUP_DIR)/$(top) ]; then \
-				rsync -a $(MIGRATION_BACKUP_DIR)/$(top)/ $(HOME)/$(top)/; \
+			if [ -d $(MIGRATION_BACKUP_DIR)/top-migration/$(top) ]; then \
+				rsync -a $(MIGRATION_BACKUP_DIR)/top-migration/$(top)/ $(HOME)/$(top)/; \
 			fi; \
 			echo "  Cleaning up non-PARTIAL_LINKS items from repo/$(top)/..."; \
-			$(MAKE) --no-print-directory _migrate_remove_unlinked TOP=$(top) BACKUP=$(MIGRATION_BACKUP_DIR)/$(top); \
+			$(MAKE) --no-print-directory _migrate_remove_unlinked TOP=$(top) BACKUP=$(MIGRATION_BACKUP_DIR)/top-migration/$(top); \
 		elif [ -f $(HOME)/$(top) ]; then \
 			echo "  ERROR: $(HOME)/$(top) exists as a file, expected directory or symlink"; \
 			exit 1; \
@@ -185,7 +185,8 @@ migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir → s
 		exit 1; \
 	fi
 	@# It's a real directory - proceed with migration
-	@backup_dir="/tmp/partial-link-add-$$(date +%Y%m%d_%H%M%S)/$(path)"; \
+	@mkdir -p $(MIGRATION_BACKUP_DIR)/add; \
+	backup_dir="$(MIGRATION_BACKUP_DIR)/add/$(path)"; \
 	echo "→ Backing up $(HOME)/$(path) to $$backup_dir"; \
 	mkdir -p "$$backup_dir"; \
 	rsync -a $(HOME)/$(path)/ $$backup_dir/; \
@@ -207,7 +208,7 @@ migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir → s
 	echo "  1. Review backup and decide what to keep"; \
 	echo "  2. Manually copy desired files to $(DOTPATH)/$(path)"; \
 	echo "  3. Git add/commit configuration files you want to track"; \
-	echo "  4. Delete backup when satisfied: rm -rf /tmp/partial-link-add-*"
+	echo "  4. Delete backup when satisfied: rm -rf $(MIGRATION_BACKUP_DIR)"
 
 # ----------------------------------------
 # Plan C: Remove item from PARTIAL_LINKS (symlink → real directory)
@@ -240,7 +241,8 @@ migrate-remove-partial-link:  ## [Plan C] Remove path from PARTIAL_LINKS (symlin
 	@link_target=$$(readlink $(HOME)/$(path)); \
 	echo "Current symlink: $(HOME)/$(path) -> $$link_target"; \
 	@# Backup repo content
-	@backup_dir="/tmp/partial-link-remove-$$(date +%Y%m%d_%H%M%S)/$(path)"; \
+	@mkdir -p $(MIGRATION_BACKUP_DIR)/remove; \
+	backup_dir="$(MIGRATION_BACKUP_DIR)/remove/$(path)"; \
 	echo "→ Backing up repo content to $$backup_dir"; \
 	mkdir -p "$$backup_dir"; \
 	if [ -d $(DOTPATH)/$(path) ]; then \
@@ -262,7 +264,7 @@ migrate-remove-partial-link:  ## [Plan C] Remove path from PARTIAL_LINKS (symlin
 	echo "  1. Repository content preserved at $(DOTPATH)/$(path)"; \
 	echo "  2. Add $(path) to .gitignore if you don't want to track it"; \
 	echo "  3. Or manually remove from repo: rm -rf $(DOTPATH)/$(path)"; \
-	echo "  4. Delete backup when satisfied: rm -rf /tmp/partial-link-remove-*"
+	echo "  4. Delete backup when satisfied: rm -rf $(MIGRATION_BACKUP_DIR)"
 
 # ----------------------------------------
 # Validation: Pre-deploy safety checks
