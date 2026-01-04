@@ -12,4 +12,36 @@ Brewfile.actual
 # macOS
 .DS_Store
 
+# Security: Environment variables and credentials
+.env
+.env.*
+!.env.example
+!.env.template
+!.env.sample
+
+# Security: Credentials and secrets
+credentials.json
+secrets.yaml
+secrets.yml
+*.secret
+*.credentials
+
+# Security: Private keys and certificates
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Security: Cloud provider credentials
+.aws/credentials
+.aws/config
+.gcloud/
+.azure/
+
+# Security: Gitleaks reports (scan results)
+gitleaks-report.json
+gitleaks-report.sarif
+
 

@@ -22,7 +22,9 @@
     "git-filter-repo@latest",
     "playwright-mcp@latest",
     "rclone@latest",
-    "claude-code@2.0.37"
+    "claude-code@2.0.37",
+    "codex@latest",
+    "gitleaks@latest"
   ],
   "shell": {
     "init_hook": [

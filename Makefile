@@ -722,6 +722,56 @@ ifeq  "$(OSNAME)" "Darwin"
 	@echo "✓ iTerm2 profiles deployed. Changes will be loaded automatically."
 endif
 
+.PHONY: security-scan
+security-scan: ## Run full gitleaks scan of repository history
+	@if command -v gitleaks >/dev/null 2>&1; then \
+		echo "🔍 Scanning repository for secrets..."; \
+		gitleaks detect --verbose --report-path=gitleaks-report.json --report-format=json; \
+		if [ -f gitleaks-report.json ]; then \
+			echo ""; \
+			echo "⚠️  Report saved to: gitleaks-report.json"; \
+			echo "Review the report and remediate any findings."; \
+		fi; \
+	else \
+		echo "❌ gitleaks not installed. Run: devbox global add gitleaks@latest"; \
+		exit 1; \
+	fi
+
+.PHONY: security-protect
+security-protect: ## Scan staged changes before commit
+	@if command -v gitleaks >/dev/null 2>&1; then \
+		echo "🔍 Scanning staged changes for secrets..."; \
+		gitleaks protect --verbose --staged; \
+	else \
+		echo "❌ gitleaks not installed. Run: devbox global add gitleaks@latest"; \
+		exit 1; \
+	fi
+
+.PHONY: security-install
+security-install: ## Install security tools and hooks
+	@echo "🔒 Installing security tools..."
+	@if ! command -v gitleaks >/dev/null 2>&1; then \
+		echo "Installing gitleaks..."; \
+		devbox global add gitleaks@latest; \
+	else \
+		echo "✓ gitleaks already installed"; \
+	fi
+	@echo "Installing pre-commit hook..."
+	@if [ ! -f .git/hooks/pre-commit ]; then \
+		echo "#!/bin/sh" > .git/hooks/pre-commit; \
+		echo "# Pre-commit hook to detect secrets" >> .git/hooks/pre-commit; \
+		echo "gitleaks protect --verbose --redact --staged" >> .git/hooks/pre-commit; \
+		chmod +x .git/hooks/pre-commit; \
+		echo "✓ Pre-commit hook installed"; \
+	else \
+		echo "✓ Pre-commit hook already exists"; \
+	fi
+	@echo ""
+	@echo "✅ Security setup complete!"
+	@echo "  - Run 'make security-scan' to scan entire repository"
+	@echo "  - Run 'make security-protect' to scan staged changes"
+	@echo "  - Pre-commit hook will automatically check commits"
+
 .PHONY: devbox-install
 devbox-install:
 	@echo "🧰 Installing Devbox..."

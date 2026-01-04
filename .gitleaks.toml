@@ -1,0 +1,48 @@
+# Gitleaks Configuration
+# Detects secrets and sensitive information in git repositories
+# Documentation: https://github.com/gitleaks/gitleaks
+
+title = "Gitleaks Configuration for dotfiles"
+
+[extend]
+# Use gitleaks' built-in rules (AWS keys, GitHub tokens, private keys, etc.)
+useDefault = true
+
+# Custom rules for dotfiles-specific patterns
+[[rules]]
+id = "fish-variables-secrets"
+description = "Detect tokens in fish_variables file"
+regex = '''(?i)(gh|github|api|secret|token|key|password|pwd).*=.*['""]?[a-zA-Z0-9_-]{20,}['""]?'''
+path = '''fish_variables$'''
+tags = ["fish", "environment"]
+
+[[rules]]
+id = "env-file-secrets"
+description = "Detect secrets in .env files"
+regex = '''(?i)(api_key|apikey|secret|token|password|pwd).*=.*['""]?[a-zA-Z0-9_-]{20,}['""]?'''
+path = '''\.env'''
+tags = ["environment", "credentials"]
+
+[[rules]]
+id = "aws-credentials"
+description = "AWS credentials file"
+path = '''\.aws/(credentials|config)$'''
+tags = ["aws", "credentials"]
+
+[[rules]]
+id = "ssh-private-keys"
+description = "SSH private keys"
+path = '''\.ssh/id_[a-z]+$'''
+tags = ["ssh", "private-key"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API key pattern"
+regex = '''(?i)api[_-]?key['":\s]*[=:]\s*['""]?[a-zA-Z0-9_\-]{32,}['""]?'''
+tags = ["api-key"]
+
+[[rules]]
+id = "generic-secret"
+description = "Generic secret pattern"
+regex = '''(?i)secret['":\s]*[=:]\s*['""]?[a-zA-Z0-9_\-]{20,}['""]?'''
+tags = ["secret"]
