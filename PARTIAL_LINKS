@@ -23,7 +23,6 @@
 
 # Other config directories
 .config/gemini
-.config/iterm2
 
 # Individual config files
 .config/git/ignore
