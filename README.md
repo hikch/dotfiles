@@ -106,41 +106,85 @@ This repository follows a strict **whitelist approach** for managing configurati
 
 See `.config/.gitignore` for the complete whitelist configuration.
 
-#### PARTIAL_LINKS Migration
+#### PARTIAL_LINKS Management
 
-When converting from full-directory symlinks (e.g., `~/.config -> ~/dotfiles/.config`) to selective `PARTIAL_LINKS` symlinks, the Makefile automatically handles migration:
+This repository provides three migration tools for managing PARTIAL_LINKS:
 
-**What happens during `make deploy`:**
-1. **Detection**: Checks if parent directories (e.g., `.config`) are currently symlinks
-2. **Backup**: Copies all non-PARTIAL_LINKS content from repository to `/tmp/dotfiles-migration-*/`
-3. **Conversion**: Removes old symlink, creates real directory
-4. **Restoration**: Copies non-managed files back to home directory
-5. **Selective Linking**: Creates individual symlinks for PARTIAL_LINKS paths only
+##### Plan A: One-time Rescue Migration (TOP symlink → real directory)
 
-**Example migration (.config):**
+**When to use:** Migrating from legacy full-directory symlink structure (one-time only)
+
+```bash
+make migrate-top-symlink-to-real
+```
+
+**What it does:**
+1. Detects if parent directories (`.config`, `.local`) are currently symlinks
+2. Backs up all non-PARTIAL_LINKS content to `/tmp/dotfiles-migration-*/`
+3. Converts symlink to real directory
+4. Restores non-managed files to home directory
+5. Cleans up non-PARTIAL_LINKS items from repository
+6. Creates selective symlinks for PARTIAL_LINKS paths only
+
+**Example:**
 ```
 Before:
   ~/.config -> ~/dotfiles/.config (full symlink)
 
 After:
   ~/.config/ (real directory)
-    ├── fish -> ~/dotfiles/.config/fish (symlink)
-    ├── git -> ~/dotfiles/.config/git (symlink)
-    ├── iterm2 -> ~/dotfiles/.config/iterm2 (symlink)
-    ├── gcloud/ (real directory, preserved from migration)
-    ├── gh/ (real directory, preserved from migration)
-    └── coc/ (real directory, preserved from migration)
+    ├── fish -> ~/dotfiles/.config/fish (symlink, managed)
+    ├── git -> ~/dotfiles/.config/git (symlink, managed)
+    ├── gcloud/ (real directory, local state)
+    └── gh/ (real directory, local state)
+
+  ~/dotfiles/.config/ (repository)
+    ├── fish/ (tracked)
+    ├── git/ (tracked)
+    └── .gitignore (gcloud, gh removed from repo)
 ```
 
-**Files handled:**
-- **Symlinked**: Items in `PARTIAL_LINKS` (e.g., `fish`, `git`, `iterm2`)
-- **Copied**: Items NOT in `PARTIAL_LINKS` (e.g., `gcloud`, `gh`, `coc`)
-- **Preserved**: Backup kept at `/tmp/dotfiles-migration-YYYYMMDD_HHMMSS/`
+**Safety:** Destructive (requires backup), run only once during initial migration.
 
-**Safety:**
-- Migration is automatic and idempotent (safe to run multiple times)
-- Non-managed files are never lost
-- Backup is always created before conversion
+---
+
+##### Plan B: Adding to PARTIAL_LINKS (real directory → symlink)
+
+**When to use:** After adding new path to `PARTIAL_LINKS` file
+
+```bash
+# 1. Edit PARTIAL_LINKS to add .config/uv
+# 2. Run migration
+make migrate-add-partial-link path=.config/uv
+```
+
+**What it does:**
+1. Backs up existing `~/.config/uv` to `/tmp/partial-link-add-*/`
+2. Removes real directory
+3. Creates symlink `~/dotfiles/.config/uv -> ~/.config/uv`
+4. Prompts manual review of backup content
+
+**Important:** Does NOT auto-copy files. Review backup and manually copy desired configuration to repository.
+
+---
+
+##### Plan C: Removing from PARTIAL_LINKS (symlink → real directory)
+
+**When to use:** After removing path from `PARTIAL_LINKS` file
+
+```bash
+# 1. Edit PARTIAL_LINKS to remove .config/git
+# 2. Run migration
+make migrate-remove-partial-link path=.config/git
+```
+
+**What it does:**
+1. Backs up repository content to `/tmp/partial-link-remove-*/`
+2. Removes symlink
+3. Creates real directory and copies content from repository
+4. Preserves repository content (manual cleanup needed)
+
+**Important:** Repository content is preserved. Add to `.gitignore` or manually remove if no longer needed.
 
 ### Package Management Strategy
 

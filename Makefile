@@ -42,13 +42,19 @@ MIGRATION_BACKUP_DIR := /tmp/dotfiles-migration-$(shell date +%Y%m%d_%H%M%S)
 init: deploy devbox-install devbox-global-install homebrew fish mac-defaults pmset-settings ## Initialize.
 
 # ========================================
-# PARTIAL_LINKS Migration
+# PARTIAL_LINKS Migration Targets
 # ========================================
-# Migrates parent directories from full symlinks to real directories
-# when converting from full-directory symlinks to selective PARTIAL_LINKS
 
-.PHONY: deploy/migrate-partial-tops
-deploy/migrate-partial-tops:
+# ----------------------------------------
+# Plan A: One-time rescue migration (TOP symlink → real directory)
+# ----------------------------------------
+# Purpose: Clean up legacy full-symlink management of .config/.local
+# When to use: Only when migrating from old symlink structure
+# Destructive: Yes (requires backup)
+# Frequency: One-time only
+
+.PHONY: migrate-top-symlink-to-real
+migrate-top-symlink-to-real:  ## [Plan A] Migrate TOP from symlink to real directory (one-time rescue)
 	@echo "=== Migrating PARTIAL_TOPS: symlink -> real directory ==="
 	@$(foreach top,$(PARTIAL_TOPS), \
 		echo "Processing $(top)..."; \
@@ -138,9 +144,122 @@ _migrate_remove_unlinked:
 		done; \
 	fi
 
+# ----------------------------------------
+# Plan B: Add item to PARTIAL_LINKS (real directory → symlink)
+# ----------------------------------------
+# Purpose: Convert existing real directory to symlink management
+# When to use: After adding new path to PARTIAL_LINKS file
+# Destructive: Yes (requires manual review of backup)
+# Usage: make migrate-add-partial-link path=.config/uv
+
+.PHONY: migrate-add-partial-link
+migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir → symlink)
+	@if [ -z "$(path)" ]; then \
+		echo "ERROR: path parameter required"; \
+		echo "Usage: make migrate-add-partial-link path=.config/uv"; \
+		exit 1; \
+	fi
+	@echo "=== Adding $(path) to PARTIAL_LINKS management ==="
+	@# Check if path exists in home directory
+	@if [ ! -e $(HOME)/$(path) ]; then \
+		echo "✓ $(HOME)/$(path) does not exist, creating symlink directly"; \
+		mkdir -p $(HOME)/$$(dirname $(path)); \
+		ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path); \
+		echo "✓ Done. Add content to $(DOTPATH)/$(path) as needed"; \
+		exit 0; \
+	fi
+	@# Check if already a symlink
+	@if [ -L $(HOME)/$(path) ]; then \
+		echo "ERROR: $(HOME)/$(path) is already a symlink"; \
+		echo "Current target: $$(readlink $(HOME)/$(path))"; \
+		exit 1; \
+	fi
+	@# Check if it's a file (not supported)
+	@if [ -f $(HOME)/$(path) ]; then \
+		echo "ERROR: $(HOME)/$(path) is a file, not a directory"; \
+		echo "This migration only supports directories"; \
+		exit 1; \
+	fi
+	@# It's a real directory - proceed with migration
+	@backup_dir="/tmp/partial-link-add-$$(date +%Y%m%d_%H%M%S)/$(path)"; \
+	echo "→ Backing up $(HOME)/$(path) to $$backup_dir"; \
+	mkdir -p "$$(dirname $$backup_dir)"; \
+	cp -a $(HOME)/$(path) $$backup_dir; \
+	echo "→ Removing real directory $(HOME)/$(path)"; \
+	rm -rf $(HOME)/$(path); \
+	echo "→ Creating symlink $(DOTPATH)/$(path) -> $(HOME)/$(path)"; \
+	mkdir -p $(HOME)/$$(dirname $(path)); \
+	ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path); \
+	echo ""; \
+	echo "✓ Migration complete"; \
+	echo ""; \
+	echo "Backup location: $$backup_dir"; \
+	echo ""; \
+	echo "Next steps:"; \
+	echo "  1. Review backup and decide what to keep"; \
+	echo "  2. Manually copy desired files to $(DOTPATH)/$(path)"; \
+	echo "  3. Git add/commit configuration files you want to track"; \
+	echo "  4. Delete backup when satisfied: rm -rf /tmp/partial-link-add-*"
+
+# ----------------------------------------
+# Plan C: Remove item from PARTIAL_LINKS (symlink → real directory)
+# ----------------------------------------
+# Purpose: Stop managing path as symlink, convert back to real directory
+# When to use: After removing path from PARTIAL_LINKS file
+# Destructive: No (preserves repo content)
+# Usage: make migrate-remove-partial-link path=.config/git
+
+.PHONY: migrate-remove-partial-link
+migrate-remove-partial-link:  ## [Plan C] Remove path from PARTIAL_LINKS (symlink → real dir)
+	@if [ -z "$(path)" ]; then \
+		echo "ERROR: path parameter required"; \
+		echo "Usage: make migrate-remove-partial-link path=.config/git"; \
+		exit 1; \
+	fi
+	@echo "=== Removing $(path) from PARTIAL_LINKS management ==="
+	@# Check if path exists in home directory
+	@if [ ! -e $(HOME)/$(path) ]; then \
+		echo "✓ $(HOME)/$(path) does not exist, nothing to migrate"; \
+		exit 0; \
+	fi
+	@# Check if it's a symlink
+	@if [ ! -L $(HOME)/$(path) ]; then \
+		echo "ERROR: $(HOME)/$(path) is not a symlink"; \
+		echo "It's already a real directory, no migration needed"; \
+		exit 1; \
+	fi
+	@# Get symlink target
+	@link_target=$$(readlink $(HOME)/$(path)); \
+	echo "Current symlink: $(HOME)/$(path) -> $$link_target"; \
+	@# Backup repo content
+	@backup_dir="/tmp/partial-link-remove-$$(date +%Y%m%d_%H%M%S)/$(path)"; \
+	echo "→ Backing up repo content to $$backup_dir"; \
+	mkdir -p "$$(dirname $$backup_dir)"; \
+	if [ -d $(DOTPATH)/$(path) ]; then \
+		cp -a $(DOTPATH)/$(path) $$backup_dir; \
+	fi; \
+	echo "→ Removing symlink $(HOME)/$(path)"; \
+	rm $(HOME)/$(path); \
+	echo "→ Creating real directory and copying content from repo"; \
+	mkdir -p $(HOME)/$(path); \
+	if [ -d $(DOTPATH)/$(path) ]; then \
+		cp -a $(DOTPATH)/$(path)/. $(HOME)/$(path)/; \
+	fi; \
+	echo ""; \
+	echo "✓ Migration complete"; \
+	echo ""; \
+	echo "Backup location: $$backup_dir"; \
+	echo ""; \
+	echo "Next steps:"; \
+	echo "  1. Repository content preserved at $(DOTPATH)/$(path)"; \
+	echo "  2. Add $(path) to .gitignore if you don't want to track it"; \
+	echo "  3. Or manually remove from repo: rm -rf $(DOTPATH)/$(path)"; \
+	echo "  4. Delete backup when satisfied: rm -rf /tmp/partial-link-remove-*"
+
 .PHONY: deploy
-deploy: deploy/migrate-partial-tops  ## Deploy dotfiles.
-	@# Note: .config migration is now handled by deploy/migrate-partial-tops
+deploy:  ## Deploy dotfiles.
+	@# Idempotent, non-destructive symlink deployment
+	@# Note: For migration tasks, use migrate-* targets separately
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@$(foreach path,$(PARTIAL_LINKS), \
 		mkdir -p $(HOME)/$(dir $(path)); \
