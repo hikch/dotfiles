@@ -1,0 +1,135 @@
+#!/bin/sh
+# Global pre-commit hook - Smart wrapper
+# This hook runs gitleaks for security and chains to project-specific hooks
+# Deployed via git init.templateDir to all repositories
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Determine repository root
+if [ -n "$GIT_DIR" ]; then
+    REPO_ROOT="$(cd "$GIT_DIR/.." && pwd)"
+else
+    REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+fi
+
+# Track overall exit status
+OVERALL_EXIT=0
+
+# =============================================================================
+# Phase 1: Gitleaks Secret Detection (Global Security)
+# =============================================================================
+
+echo "${BLUE}[Global Hook]${NC} ${YELLOW}Running gitleaks secret detection...${NC}"
+
+# Check if gitleaks should be skipped
+SKIP_GITLEAKS=0
+
+# Skip if pre-commit framework has gitleaks configured
+if [ -f "$REPO_ROOT/.pre-commit-config.yaml" ]; then
+    if grep -q "gitleaks" "$REPO_ROOT/.pre-commit-config.yaml" 2>/dev/null; then
+        echo "${BLUE}[Global Hook]${NC} Skipping gitleaks (configured in pre-commit framework)"
+        SKIP_GITLEAKS=1
+    fi
+fi
+
+# Run gitleaks if not skipped
+if [ $SKIP_GITLEAKS -eq 0 ]; then
+    if command -v gitleaks >/dev/null 2>&1; then
+        if gitleaks protect --verbose --redact --staged 2>&1; then
+            echo "${GREEN}[Global Hook]${NC} ✓ No secrets detected"
+        else
+            echo "${RED}[Global Hook]${NC} ✗ Secrets detected! Commit blocked."
+            echo ""
+            echo "To fix:"
+            echo "  1. Remove the secrets from your files"
+            echo "  2. Add false positives to .gitleaks.toml allowlist"
+            echo ""
+            echo "To bypass (NOT RECOMMENDED):"
+            echo "  git commit --no-verify"
+            OVERALL_EXIT=1
+        fi
+    else
+        echo "${YELLOW}[Global Hook]${NC} Warning: gitleaks not found"
+        echo "Install: devbox global add gitleaks@latest"
+    fi
+fi
+
+# =============================================================================
+# Phase 2: Delegate to Project-Specific Hook Systems
+# =============================================================================
+
+# Priority 1: pre-commit framework (highest priority for modern projects)
+if [ -f "$REPO_ROOT/.pre-commit-config.yaml" ]; then
+    echo "${BLUE}[Global Hook]${NC} Detected pre-commit framework, delegating..."
+
+    if command -v pre-commit >/dev/null 2>&1; then
+        # Run pre-commit framework
+        if ! pre-commit run --hook-stage pre-commit; then
+            echo "${RED}[Global Hook]${NC} pre-commit framework failed"
+            OVERALL_EXIT=1
+        fi
+    else
+        echo "${YELLOW}[Global Hook]${NC} Warning: pre-commit framework detected but 'pre-commit' command not found"
+        echo "Install: pip install pre-commit"
+        OVERALL_EXIT=1
+    fi
+
+    exit $OVERALL_EXIT
+fi
+
+# Priority 2: Husky hooks (popular in Node.js projects)
+if [ -f "$REPO_ROOT/.husky/pre-commit" ]; then
+    echo "${BLUE}[Global Hook]${NC} Detected Husky, delegating..."
+
+    if ! "$REPO_ROOT/.husky/pre-commit"; then
+        echo "${RED}[Global Hook]${NC} Husky pre-commit hook failed"
+        OVERALL_EXIT=1
+    fi
+
+    exit $OVERALL_EXIT
+fi
+
+# Priority 3: Manual local hooks (legacy pattern)
+# Convention: .git/hooks.local/pre-commit for user-managed hooks
+if [ -f "$REPO_ROOT/.git/hooks.local/pre-commit" ]; then
+    echo "${BLUE}[Global Hook]${NC} Detected local hook, delegating..."
+
+    if ! "$REPO_ROOT/.git/hooks.local/pre-commit"; then
+        echo "${RED}[Global Hook]${NC} Local pre-commit hook failed"
+        OVERALL_EXIT=1
+    fi
+
+    exit $OVERALL_EXIT
+fi
+
+# Priority 4: Project-specific pre-commit script (custom pattern)
+# Some projects may have a pre-commit script in repository root
+if [ -x "$REPO_ROOT/scripts/pre-commit" ]; then
+    echo "${BLUE}[Global Hook]${NC} Detected project pre-commit script, delegating..."
+
+    if ! "$REPO_ROOT/scripts/pre-commit"; then
+        echo "${RED}[Global Hook]${NC} Project pre-commit script failed"
+        OVERALL_EXIT=1
+    fi
+
+    exit $OVERALL_EXIT
+fi
+
+# =============================================================================
+# No project-specific hooks detected
+# =============================================================================
+
+if [ $OVERALL_EXIT -eq 0 ]; then
+    echo "${GREEN}[Global Hook]${NC} ✓ All checks passed"
+else
+    echo "${RED}[Global Hook]${NC} ✗ Commit blocked due to errors"
+fi
+
+exit $OVERALL_EXIT

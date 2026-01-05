@@ -782,3 +782,52 @@ devbox-install:
 devbox-global-install: ## devbox global install
 	@echo "🧰 Installing Devbox globally..."
 	@devbox global install 2>/dev/null || devbox global update
+
+# ==============================================================================
+# Git Hooks Management (Global)
+# ==============================================================================
+
+.PHONY: git-hooks-setup
+git-hooks-setup: ## Setup global git hooks (configure + update existing repos)
+	@echo "🔧 Setting up global Git hooks..."
+	@echo ""
+	@if [ ! -d git/template/hooks ]; then \
+		echo "❌ Error: git/template/hooks not found"; \
+		echo "   Run 'make deploy' first to setup directory structure"; \
+		exit 1; \
+	fi
+	@echo "✓ Template directory verified"
+	@echo ""
+	@echo "📝 Configuring git init.templateDir..."
+	@git config --global init.templateDir ~/.dotfiles/git/template
+	@echo "✓ Git config updated"
+	@echo ""
+	@if command -v gitleaks >/dev/null 2>&1; then \
+		echo "✓ gitleaks found"; \
+	else \
+		echo "⚠️  Warning: gitleaks not found"; \
+		echo "   Install: devbox global add gitleaks@latest"; \
+		echo ""; \
+	fi
+	@echo "🔄 Updating existing repositories..."
+	@echo ""
+	@$(HOME)/bin/git-hooks-update || true
+	@echo ""
+	@echo "✅ Global git hooks setup complete!"
+	@echo ""
+	@echo "📚 What's configured:"
+	@echo "  • New repositories: Hooks auto-installed on git init/clone"
+	@echo "  • Existing repos: Updated with pre-commit hook"
+	@echo "  • Security: gitleaks runs on every commit"
+	@echo "  • Compatibility: Works with Husky, pre-commit framework, etc."
+	@echo ""
+	@echo "📖 See git/hooks/README.md for details"
+
+.PHONY: git-hooks-update
+git-hooks-update: ## Update existing repositories with global hooks
+	@if [ ! -x $(HOME)/bin/git-hooks-update ]; then \
+		echo "❌ Error: git-hooks-update script not found or not executable"; \
+		echo "   Run 'make deploy' first"; \
+		exit 1; \
+	fi
+	@$(HOME)/bin/git-hooks-update
