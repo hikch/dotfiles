@@ -1,139 +1,139 @@
 # Global Git Hooks
 
-グローバルGitフック管理システム。全てのGitリポジトリでセキュリティチェックを自動実行します。
+Global Git hooks management system that automatically runs security checks across all Git repositories.
 
-## 概要
+## Overview
 
-このディレクトリは、Git の `init.templateDir` 機能を使用してグローバルフックを管理します。新規リポジトリおよび既存リポジトリに自動的にフックを展開し、プロジェクト固有のフックシステムと共存します。
+This directory manages global hooks using Git's `init.templateDir` feature. Hooks are automatically deployed to new and existing repositories while coexisting with project-specific hook systems.
 
-### なぜ init.templateDir なのか？
+### Why init.templateDir?
 
-- **core.hooksPath の問題**: Husky などのツールがローカル設定でグローバル設定を上書きしてしまう
-- **init.templateDir の利点**:
-  - 新規リポジトリに自動適用
-  - 既存リポジトリも更新スクリプトで一括適用可能
-  - プロジェクト固有のフックシステム（Husky, pre-commit framework）と競合しない
+- **Problem with core.hooksPath**: Tools like Husky override global settings with local configuration
+- **Benefits of init.templateDir**:
+  - Automatically applied to new repositories
+  - Existing repositories can be updated in bulk via update script
+  - No conflicts with project-specific hook systems (Husky, pre-commit framework)
 
-## ディレクトリ構造
+## Directory Structure
 
 ```
 .config/git/
 ├── hooks/
-│   ├── pre-commit          # スマートラッパーフック（実体）
-│   └── README.md           # このファイル
-├── ignore                  # グローバル .gitignore
+│   ├── pre-commit          # Smart wrapper hook (actual implementation)
+│   └── README.md           # This file
+├── ignore                  # Global .gitignore
 └── template/
     └── hooks/
-        └── pre-commit      # テンプレート用シンボリックリンク
+        └── pre-commit      # Symlink for template
 ```
 
-## スマートラッパーフックの動作
+## Smart Wrapper Hook Behavior
 
-`pre-commit` フックは以下の順序で動作します：
+The `pre-commit` hook operates in the following order:
 
-### Phase 1: Gitleaks Secret Detection（必須セキュリティチェック）
+### Phase 1: Gitleaks Secret Detection (Required Security Check)
 
-1. **gitleaks 実行**: ステージされた変更に対してシークレット検出を実行
-2. **スキップ条件**: pre-commit framework で gitleaks が設定済みの場合は重複実行を回避
-3. **検出時**: シークレット検出時はコミットをブロック
+1. **Run gitleaks**: Execute secret detection on staged changes
+2. **Skip condition**: Avoid duplicate execution if gitleaks is already configured in pre-commit framework
+3. **On detection**: Block commit when secrets are detected
 
-### Phase 2: Project Hook Delegation（優先順位順）
+### Phase 2: Project Hook Delegation (Priority Order)
 
-プロジェクト固有のフックシステムを検出し、適切に委譲します：
+Detect and delegate to project-specific hook systems appropriately:
 
-**優先度1: pre-commit framework**
-- 検出: `.pre-commit-config.yaml` の存在
-- 動作: `pre-commit run` を実行
-- 用途: Python エコシステムで広く使用される標準的なフック管理
+**Priority 1: pre-commit framework**
+- Detection: Presence of `.pre-commit-config.yaml`
+- Behavior: Execute `pre-commit run`
+- Use case: Standard hook management widely used in Python ecosystem
 
-**優先度2: Husky**
-- 検出: `.husky/pre-commit` の存在
-- 動作: Husky の pre-commit スクリプトを実行
-- 用途: Node.js プロジェクトで広く使用される
+**Priority 2: Husky**
+- Detection: Presence of `.husky/pre-commit`
+- Behavior: Execute Husky's pre-commit script
+- Use case: Widely used in Node.js projects
 
-**優先度3: ローカル手動フック**
-- 検出: `.git/hooks.local/pre-commit` の存在
-- 動作: ローカルフックを実行
-- 用途: レガシーパターン、手動管理されたフック
+**Priority 3: Local Manual Hooks**
+- Detection: Presence of `.git/hooks.local/pre-commit`
+- Behavior: Execute local hook
+- Use case: Legacy pattern, manually managed hooks
 
-**優先度4: プロジェクトスクリプト**
-- 検出: `scripts/pre-commit` の存在（実行可能）
-- 動作: プロジェクトのカスタムスクリプトを実行
-- 用途: 独自のフック管理パターン
+**Priority 4: Project Scripts**
+- Detection: Presence of `scripts/pre-commit` (executable)
+- Behavior: Execute project's custom script
+- Use case: Custom hook management patterns
 
-## セットアップ
+## Setup
 
-### 初回セットアップ
+### Initial Setup
 
 ```bash
-# 1. Git テンプレートディレクトリを設定
+# 1. Configure Git template directory
 git config --global init.templateDir ~/.config/git/template
 
-# 2. 既存リポジトリに適用（オプション）
+# 2. Apply to existing repositories (optional)
 ~/bin/git-hooks-update
 ```
 
-### Makefile 経由での実行
+### Via Makefile
 
 ```bash
-# 全セットアップ（gitconfig更新 + 既存リポジトリ更新）
+# Full setup (update gitconfig + existing repositories)
 make git-hooks-setup
 
-# 既存リポジトリのみ更新
+# Update existing repositories only
 make git-hooks-update
 ```
 
-## 新規リポジトリでの自動適用
+## Automatic Application to New Repositories
 
-`init.templateDir` が設定されると、以下の操作で自動的にフックが適用されます：
+Once `init.templateDir` is configured, hooks are automatically applied with the following operations:
 
 ```bash
-# 新規リポジトリ作成
+# Create new repository
 git init my-project
 
-# リモートリポジトリのクローン
+# Clone remote repository
 git clone https://github.com/user/repo.git
 ```
 
-どちらの場合も、`.git/hooks/pre-commit` が自動的に作成されます。
+In both cases, `.git/hooks/pre-commit` is automatically created.
 
-## 既存リポジトリへの適用
+## Applying to Existing Repositories
 
-### 手動適用（単一リポジトリ）
+### Manual Application (Single Repository)
 
 ```bash
 cd /path/to/existing/repo
 git init
 ```
 
-`git init` を既存リポジトリで実行すると、テンプレートが再適用されます（既存ファイルは上書きされません）。
+Running `git init` in an existing repository reapplies the template (existing files are not overwritten).
 
-### 一括適用（全リポジトリ）
+### Bulk Application (All Repositories)
 
 ```bash
-# ~/dev/ 配下の全リポジトリを更新
-~/dotfiles/bin/git-hooks-update ~/dev
+# Update all repositories under ~/dev/
+~/bin/git-hooks-update ~/dev
 
-# 特定ディレクトリのみ
-~/dotfiles/bin/git-hooks-update ~/projects/work ~/projects/personal
+# Specific directories only
+~/bin/git-hooks-update ~/projects/work ~/projects/personal
 ```
 
-## プロジェクト固有フックとの共存
+## Coexistence with Project-Specific Hooks
 
-### Husky プロジェクトの場合
+### For Husky Projects
 
-グローバルフックが自動的に Husky を検出し、`.husky/pre-commit` に委譲します：
+The global hook automatically detects Husky and delegates to `.husky/pre-commit`:
 
 ```
-実行順序:
-1. グローバルフック: gitleaks 実行
-2. グローバルフック: Husky を検出
-3. Husky: .husky/pre-commit を実行
+Execution order:
+1. Global hook: Run gitleaks
+2. Global hook: Detect Husky
+3. Husky: Execute .husky/pre-commit
 ```
 
-### pre-commit framework の場合
+### For pre-commit Framework
 
-`.pre-commit-config.yaml` で gitleaks が設定されている場合、重複実行を回避：
+When gitleaks is configured in `.pre-commit-config.yaml`, duplicate execution is avoided:
 
 ```yaml
 repos:
@@ -144,156 +144,156 @@ repos:
 ```
 
 ```
-実行順序:
-1. グローバルフック: gitleaks 設定を検出、スキップ
-2. グローバルフック: pre-commit framework に委譲
-3. pre-commit: gitleaks を含む全フックを実行
+Execution order:
+1. Global hook: Detect gitleaks configuration, skip
+2. Global hook: Delegate to pre-commit framework
+3. pre-commit: Execute all hooks including gitleaks
 ```
 
-gitleaks が設定されていない場合：
+When gitleaks is not configured:
 
 ```
-実行順序:
-1. グローバルフック: gitleaks 実行
-2. グローバルフック: pre-commit framework に委譲
-3. pre-commit: 設定された全フックを実行
+Execution order:
+1. Global hook: Run gitleaks
+2. Global hook: Delegate to pre-commit framework
+3. pre-commit: Execute all configured hooks
 ```
 
-### ローカル手動フックの場合
+### For Local Manual Hooks
 
-既存の手動フックは `.git/hooks.local/` に移動すると引き続き実行されます：
+Existing manual hooks continue to run if moved to `.git/hooks.local/`:
 
 ```bash
-# 既存フックの移動
+# Move existing hook
 mkdir -p .git/hooks.local
 mv .git/hooks/pre-commit .git/hooks.local/pre-commit
-git init  # グローバルフックを適用
+git init  # Apply global hook
 ```
 
-## フックのカスタマイズ
+## Hook Customization
 
-### プロジェクトでグローバルフックを無効化
+### Disable Global Hook for a Project
 
-特定プロジェクトでグローバルフックをスキップする場合：
+To skip the global hook in a specific project:
 
 ```bash
-# プロジェクトローカルで無効化
+# Disable locally in project
 cd /path/to/project
 rm .git/hooks/pre-commit
 
-# または空のフックに置き換え
+# Or replace with empty hook
 echo '#!/bin/sh' > .git/hooks/pre-commit
 chmod +x .git/hooks/pre-commit
 ```
 
-### gitleaks 設定のカスタマイズ
+### Customize gitleaks Configuration
 
-プロジェクトルートに `.gitleaks.toml` を配置すると、そのプロジェクト専用の設定が適用されます：
+Place `.gitleaks.toml` in the project root to apply project-specific configuration:
 
 ```bash
-# dotfiles の設定をコピーして編集
-cp ~/.dotfiles/.gitleaks.toml ./.gitleaks.toml
+# Copy dotfiles configuration and edit
+cp ~/.gitleaks.toml ./.gitleaks.toml
 git add .gitleaks.toml
 ```
 
-## トラブルシューティング
+## Troubleshooting
 
-### フックが実行されない
+### Hook Not Executing
 
 ```bash
-# フックが存在するか確認
+# Check if hook exists
 ls -la .git/hooks/pre-commit
 
-# 実行権限を確認
+# Check execution permissions
 ls -l .git/hooks/pre-commit
 
-# 手動で再適用
+# Manually reapply
 git init
 ```
 
-### gitleaks がインストールされていない
+### gitleaks Not Installed
 
 ```bash
-# Devbox 経由でインストール
+# Install via Devbox
 devbox global add gitleaks@latest
 
-# または Homebrew
+# Or via Homebrew
 brew install gitleaks
 ```
 
-### pre-commit framework と重複実行される
+### Duplicate Execution with pre-commit Framework
 
-`.pre-commit-config.yaml` に gitleaks が設定されている場合、自動的にスキップされます。スキップされていない場合は設定を確認してください：
+If gitleaks is configured in `.pre-commit-config.yaml`, it's automatically skipped. If not skipped, verify the configuration:
 
 ```bash
-# gitleaks が設定されているか確認
+# Check if gitleaks is configured
 grep -i gitleaks .pre-commit-config.yaml
 ```
 
-### Husky が動作しなくなった
+### Husky Stopped Working
 
-グローバルフックは Husky を検出して委譲するため、通常は問題ありません。もし動作しない場合：
+The global hook detects and delegates to Husky, so this shouldn't normally be an issue. If it doesn't work:
 
 ```bash
-# Husky が正しく設定されているか確認
+# Check if Husky is correctly configured
 ls -la .husky/pre-commit
 
-# Husky を再インストール
+# Reinstall Husky
 npm install
 npx husky install
 ```
 
-## セキュリティ注意事項
+## Security Considerations
 
-### シークレット検出の限界
+### Limitations of Secret Detection
 
-gitleaks は強力なツールですが、全てのシークレットを検出できるわけではありません：
+While gitleaks is a powerful tool, it cannot detect all secrets:
 
-- **誤検知**: 正規表現ベースのため、誤検知が発生する可能性があります
-- **検出漏れ**: 独自形式のシークレットは検出できない場合があります
-- **暗号化データ**: 既に暗号化されたデータは検出されません
+- **False positives**: Regex-based detection may produce false positives
+- **Missed detections**: Custom secret formats may not be detected
+- **Encrypted data**: Already encrypted data is not detected
 
-### 多層防御アプローチ
+### Defense in Depth Approach
 
-1. **コミット前**: このグローバルフック（gitleaks）
-2. **リポジトリレベル**: `.gitignore` でシークレットファイルを除外
-3. **環境変数**: `.env` ファイルを使用し、`.env.example` のみコミット
-4. **CI/CD**: GitHub Actions などでさらにスキャン
-5. **定期スキャン**: `make security-scan` で履歴全体をスキャン
+1. **Pre-commit**: This global hook (gitleaks)
+2. **Repository level**: Exclude secret files via `.gitignore`
+3. **Environment variables**: Use `.env` files, commit only `.env.example`
+4. **CI/CD**: Additional scanning via GitHub Actions, etc.
+5. **Periodic scans**: Scan entire history with `make security-scan`
 
-### バイパスの使用
+### Using Bypass
 
-`--no-verify` フラグでフックをバイパスできますが、推奨されません：
+Hooks can be bypassed with the `--no-verify` flag, but this is not recommended:
 
 ```bash
-# 緊急時のみ使用（非推奨）
+# Use only in emergencies (not recommended)
 git commit --no-verify -m "emergency fix"
 ```
 
-バイパスした場合は、後で必ず修正してください：
+If bypassed, fix it later:
 
 ```bash
-# 最後のコミットを修正
+# Amend last commit
 git reset --soft HEAD~1
-# シークレットを削除
+# Remove secrets
 vim file-with-secret.txt
-# 再コミット（フック付き）
+# Recommit (with hook)
 git add file-with-secret.txt
 git commit -m "fix: remove secrets"
 ```
 
-## 関連ドキュメント
+## Related Documentation
 
 - [gitleaks Documentation](https://github.com/gitleaks/gitleaks)
 - [Git Hooks Documentation](https://git-scm.com/docs/githooks)
 - [pre-commit Framework](https://pre-commit.com/)
 - [Husky](https://typicode.github.io/husky/)
 
-## 参考
+## References
 
-このシステムは以下のベストプラクティスに基づいています：
+This system is based on the following best practices:
 
-- **Defense in Depth**: 多層防御でシークレット漏洩を防止
-- **Convention over Configuration**: 標準的なフックシステムを自動検出
-- **Non-Breaking**: 既存プロジェクトのワークフローを破壊しない
-- **Transparency**: フックの動作を明確にログ出力
+- **Defense in Depth**: Prevent secret leaks through multiple layers of defense
+- **Convention over Configuration**: Automatically detect standard hook systems
+- **Non-Breaking**: Don't disrupt existing project workflows
+- **Transparency**: Clearly log hook behavior
