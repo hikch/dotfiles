@@ -1,5 +1,7 @@
 # dotfiles
 
+> **Note**: This is a translation. Primary version (Japanese): [README.ja.md](README.ja.md)
+
 ## Installation
 
 Run this:

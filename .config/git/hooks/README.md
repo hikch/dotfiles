@@ -1,5 +1,7 @@
 # Global Git Hooks
 
+> **Note**: This is a translation. Primary version (Japanese): [README.ja.md](README.ja.md)
+
 Global Git hooks management system that automatically runs security checks across all Git repositories.
 
 ## Overview
