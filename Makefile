@@ -277,7 +277,7 @@ validate-partial-links:  ## Validate PARTIAL_LINKS configuration before deploy
 			echo "   Paths cannot contain '..' or start with '/'"; \
 			error_count=$$((error_count + 1)); \
 		fi; \
-		if [ ! -d $(DOTPATH)/$$path ]; then \
+		if [ ! -e $(DOTPATH)/$$path ]; then \
 			echo "⚠️  WARNING: $(DOTPATH)/$$path does not exist in repository"; \
 		fi; \
 		if [ -e $(HOME)/$$path ] && [ ! -L $(HOME)/$$path ]; then \
