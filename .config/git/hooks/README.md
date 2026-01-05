@@ -17,10 +17,11 @@
 ## ディレクトリ構造
 
 ```
-git/
+.config/git/
 ├── hooks/
 │   ├── pre-commit          # スマートラッパーフック（実体）
 │   └── README.md           # このファイル
+├── ignore                  # グローバル .gitignore
 └── template/
     └── hooks/
         └── pre-commit      # テンプレート用シンボリックリンク
@@ -66,10 +67,10 @@ git/
 
 ```bash
 # 1. Git テンプレートディレクトリを設定
-git config --global init.templateDir ~/.dotfiles/git/template
+git config --global init.templateDir ~/.config/git/template
 
 # 2. 既存リポジトリに適用（オプション）
-~/dotfiles/bin/git-hooks-update
+~/bin/git-hooks-update
 ```
 
 ### Makefile 経由での実行

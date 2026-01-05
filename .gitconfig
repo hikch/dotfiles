@@ -31,4 +31,4 @@
 	prompt = false
 [init]
 	defaultBranch = main
-	templateDir = ~/.dotfiles/git/template
+	templateDir = ~/.config/git/template

@@ -24,5 +24,7 @@
 # Other config directories
 .config/gemini
 
-# Individual config files
+# Git configuration
 .config/git/ignore
+.config/git/template
+.config/git/hooks

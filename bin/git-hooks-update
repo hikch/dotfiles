@@ -148,13 +148,13 @@ echo ""
 TEMPLATE_DIR=$(git config --global init.templateDir || echo "")
 if [ -z "$TEMPLATE_DIR" ]; then
     echo "${YELLOW}WARNING: init.templateDir is not configured globally.${NC}"
-    echo "${YELLOW}Run: git config --global init.templateDir ~/.dotfiles/git/template${NC}"
+    echo "${YELLOW}Run: git config --global init.templateDir ~/.config/git/template${NC}"
     echo ""
-elif [ "$TEMPLATE_DIR" != "$HOME/.dotfiles/git/template" ] && \
-     [ "$TEMPLATE_DIR" != "~/.dotfiles/git/template" ]; then
+elif [ "$TEMPLATE_DIR" != "$HOME/.config/git/template" ] && \
+     [ "$TEMPLATE_DIR" != "~/.config/git/template" ]; then
     echo "${YELLOW}WARNING: init.templateDir points to different location:${NC}"
     echo "${YELLOW}  Current: $TEMPLATE_DIR${NC}"
-    echo "${YELLOW}  Expected: ~/.dotfiles/git/template${NC}"
+    echo "${YELLOW}  Expected: ~/.config/git/template${NC}"
     echo ""
 fi
 
