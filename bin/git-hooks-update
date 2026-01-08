@@ -90,10 +90,16 @@ SUCCESS_COUNT=0
 FAIL_COUNT=0
 SKIPPED_COUNT=0
 
+# Create temporary file for storing repo list
+TMPFILE=$(mktemp "${TMPDIR:-/tmp}/git-hooks-update.XXXXXX")
+trap 'rm -f "$TMPFILE"' EXIT INT TERM
+
+echo "$REPOS" > "$TMPFILE"
+
 echo "${BLUE}Updating repositories...${NC}"
 echo ""
 
-echo "$REPOS" | while IFS= read -r repo; do
+while IFS= read -r repo; do
     if [ -z "$repo" ]; then
         continue
     fi
@@ -128,7 +134,7 @@ echo "$REPOS" | while IFS= read -r repo; do
         echo "${RED}[FAIL]${NC}"
         FAIL_COUNT=$((FAIL_COUNT + 1))
     fi
-done
+done < "$TMPFILE"
 
 # Summary
 echo ""
