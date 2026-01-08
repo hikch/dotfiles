@@ -21,7 +21,7 @@ p_done() {
 }
 
 is_exists() {
-    type -P $1 > /dev/null 2>&1
+    command -v "$1" > /dev/null 2>&1
 }
 
 #
@@ -30,7 +30,7 @@ is_exists() {
 
 is_install_unix_tooles() {
     if [ `uname -s` = 'Darwin' ]; then
-        if [[ "$(xcode-select -p)" == "" ]]; then
+        if [ "$(xcode-select -p)" = "" ]; then
             p_error "Not installed command line tools!"
             p_info "Run 'xcode-select --install' to install Command Line Tools."
             exit 1
@@ -58,7 +58,7 @@ download_dotfiles() {
 
     elif is_exists "curl" || is_exists "wget"; then
         # curl or wget
-        local tarball=$DOTFILES_GITHUB_ARCH
+        tarball=$DOTFILES_GITHUB_ARCH
         if is_exists "curl"; then
             curl -L "$tarball"
 
