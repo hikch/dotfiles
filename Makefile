@@ -156,6 +156,26 @@ migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir → s
 		echo "Usage: make migrate-add-partial-link path=.config/uv"; \
 		exit 1; \
 	fi
+	@echo "=== Validating path parameter ==="
+	@if echo "$(path)" | grep -qE '^/'; then \
+		echo "ERROR: Absolute paths are not allowed"; \
+		echo "  Provided: $(path)"; \
+		echo "  Expected: Relative path starting with '.' (e.g., .config/uv)"; \
+		exit 1; \
+	fi
+	@if echo "$(path)" | grep -qE '(^|/)\.\.(/|$$)'; then \
+		echo "ERROR: Path cannot contain '..' components"; \
+		echo "  Provided: $(path)"; \
+		echo "  Reason: '..' could escape repository scope and delete parent directories"; \
+		exit 1; \
+	fi
+	@if ! echo "$(path)" | grep -qE '^\.[^/]'; then \
+		echo "ERROR: Path must start with '.' (dotfile convention)"; \
+		echo "  Provided: $(path)"; \
+		echo "  Expected: Path like .config/foo, .local/bar, etc."; \
+		exit 1; \
+	fi
+	@echo "✓ Path validation passed"
 	@echo "=== Adding $(path) to PARTIAL_LINKS management ==="
 	@if [ ! -e $(HOME)/$(path) ]; then \
 		echo "✓ $(HOME)/$(path) does not exist, creating symlink directly"; \
@@ -226,6 +246,26 @@ migrate-remove-partial-link:  ## [Plan C] Remove path from PARTIAL_LINKS (symlin
 		echo "Usage: make migrate-remove-partial-link path=.config/git"; \
 		exit 1; \
 	fi
+	@echo "=== Validating path parameter ==="
+	@if echo "$(path)" | grep -qE '^/'; then \
+		echo "ERROR: Absolute paths are not allowed"; \
+		echo "  Provided: $(path)"; \
+		echo "  Expected: Relative path starting with '.' (e.g., .config/git)"; \
+		exit 1; \
+	fi
+	@if echo "$(path)" | grep -qE '(^|/)\.\.(/|$$)'; then \
+		echo "ERROR: Path cannot contain '..' components"; \
+		echo "  Provided: $(path)"; \
+		echo "  Reason: '..' could escape repository scope and delete parent directories"; \
+		exit 1; \
+	fi
+	@if ! echo "$(path)" | grep -qE '^\.[^/]'; then \
+		echo "ERROR: Path must start with '.' (dotfile convention)"; \
+		echo "  Provided: $(path)"; \
+		echo "  Expected: Path like .config/foo, .local/bar, etc."; \
+		exit 1; \
+	fi
+	@echo "✓ Path validation passed"
 	@echo "=== Removing $(path) from PARTIAL_LINKS management ==="
 	@if [ ! -e $(HOME)/$(path) ]; then \
 		echo "✓ $(HOME)/$(path) does not exist, nothing to migrate"; \
