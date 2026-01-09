@@ -42,12 +42,27 @@ $ cd ~/dotfiles
 $ make help
 deploy                         Deploy dotfiles.
 devbox-global-install          devbox global install
+doctor                         Run comprehensive environment health checks
 fish                           Install fish plug-ins & Add direnv hook
+git-hooks-setup                Setup global git hooks (configure + update existing repos)
+git-hooks-update               Update existing repositories with global hooks
 homebrew                       Install homebrew packages
 init                           Initialize.
+iterm2-profiles                Deploy iTerm2 Dynamic Profiles
 mac-defaults                   Setup macos settings
+migrate-add-partial-link       [Plan B] Add path to PARTIAL_LINKS (real dir → symlink)
+migrate-remove-partial-link    [Plan C] Remove path from PARTIAL_LINKS (symlink → real dir)
+migrate-top-symlink-to-real    [Plan A] Migrate TOP from symlink to real directory (one-time rescue)
+pmset-settings                 Setup power management settings (model-specific)
+security-install               Install security tools and hooks
+security-protect               Scan staged changes before commit
+security-scan                  Run full gitleaks scan of repository history
+status                         Quick environment status check
+validate-partial-links         Validate PARTIAL_LINKS configuration before deploy
 vim                            Install vim plug-ins
 ```
+
+**注：** `make help`はターゲット名に`/`を含むターゲット（`brew/*`、`packages/*`、`doctor/*`、`deploy/*`など）は表示しません。これらのターゲットの詳細はMakefileを直接参照してください。
 
 ### ドライラン デプロイ（安全なテスト）
 
@@ -125,7 +140,8 @@ make migrate-top-symlink-to-real
 3. シンボリックリンクを実ディレクトリに変換
 4. 管理外ファイルをホームディレクトリに復元
 5. PARTIAL_LINKS以外のアイテムをリポジトリからクリーンアップ
-6. PARTIAL_LINKSパスのみに選択的シンボリックリンクを作成
+
+**注：** このコマンド実行後は`make deploy`を実行してPARTIAL_LINKSのシンボリックリンクを作成する必要があります。
 
 **例：**
 ```
@@ -160,12 +176,12 @@ make migrate-add-partial-link path=.config/uv
 ```
 
 **動作内容：**
-1. 既存の`~/.config/uv`を`/tmp/partial-link-add-*/`にバックアップ
-2. 実ディレクトリを削除
-3. シンボリックリンク`~/dotfiles/.config/uv -> ~/.config/uv`を作成
+1. 既存の`~/.config/uv`を`$(MIGRATION_BACKUP_DIR)/add`（デフォルト：`/tmp/dotfiles-migration-.../add`）にバックアップ
+2. 実ディレクトリ/ファイルを削除
+3. シンボリックリンク`~/.config/uv -> ~/dotfiles/.config/uv`を作成
 4. バックアップ内容の手動レビューを促す
 
-**重要：** ファイルは自動コピーされません。バックアップをレビューし、必要な設定を手動でリポジトリにコピーしてください。
+**重要：** ディレクトリの場合は自動コピーされません。ファイルの場合は自動的にリポジトリにコピーされます。バックアップをレビューし、ディレクトリの場合は必要な設定を手動でリポジトリにコピーしてください。
 
 ---
 
@@ -180,7 +196,7 @@ make migrate-remove-partial-link path=.config/git
 ```
 
 **動作内容：**
-1. リポジトリ内容を`/tmp/partial-link-remove-*/`にバックアップ
+1. リポジトリ内容を`$(MIGRATION_BACKUP_DIR)/remove`（デフォルト：`/tmp/dotfiles-migration-.../remove`）にバックアップ
 2. シンボリックリンクを削除
 3. 実ディレクトリを作成しリポジトリから内容をコピー
 4. リポジトリ内容を保持（手動クリーンアップが必要）
