@@ -46,3 +46,9 @@ id = "generic-secret"
 description = "Generic secret pattern"
 regex = '''(?i)secret['":\s]*[=:]\s*['""]?[a-zA-Z0-9_\-]{20,}['""]?'''
 tags = ["secret"]
+
+[[rules]]
+id = "private-directory-paths"
+description = "Detect private directory paths (Library, Dropbox, etc.)"
+regex = '''(/Users/[^/]+/(Library|Dropbox|Downloads|Documents|Desktop)|/home/[^/]+/(Dropbox|Downloads))'''
+tags = ["privacy", "path"]

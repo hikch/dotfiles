@@ -23,6 +23,7 @@
 
 # Other config directories
 .config/gemini
+.config/claude
 
 # Git configuration
 .config/git/ignore
