@@ -24,6 +24,9 @@
 # Other config directories
 .config/claude
 
+# GitHub CLI configuration
+.config/gh/config.yml
+
 # Gemini settings
 .gemini/settings.json
 
