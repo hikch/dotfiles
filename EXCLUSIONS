@@ -15,6 +15,9 @@ nix
 # Claude settings (user-specific)
 .claude
 
+# Gemini settings (user-specific, but settings.json is managed via PARTIAL_LINKS)
+.gemini
+
 # Partial links (handled separately)
 # Note: PARTIAL_LINKS in Makefile specifies nested paths that should be symlinked
 # while their parent directories are excluded. This allows selective deployment of

@@ -1,0 +1,20 @@
+{
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
+  },
+  "ui": {
+    "theme": "GitHub Light"
+  },
+  "mcpServers": {
+    "serena": {
+      "command": "npx",
+      "args": ["@serena-ai/mcp-server"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  }
+}

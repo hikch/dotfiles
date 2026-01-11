@@ -22,8 +22,10 @@
 .config/fish/functions/fish_user_key_bindings.fish
 
 # Other config directories
-.config/gemini
 .config/claude
+
+# Gemini settings
+.gemini/settings.json
 
 # Git configuration
 .config/git/ignore
