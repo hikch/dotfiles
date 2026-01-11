@@ -41,6 +41,7 @@ secrets.yml
 .azure/
 
 # Security: Gitleaks reports (scan results)
+gitleaks.json
 gitleaks-report.json
 gitleaks-report.sarif
 
