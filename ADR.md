@@ -22,7 +22,7 @@ Simple journal-style decisions for this dotfiles repository.
 - **AI Tools Configuration Strategy**: Established configuration management for AI development tools (Claude Code, Gemini CLI) with dynamic environment awareness:
   - **Approach**: Use EXCLUSIONS/CANDIDATES deployment control rather than complex .gitignore patterns for granular file-level deployment
   - **Claude Code**: `.claude/` directory excluded from deployment, but `.claude/CLAUDE.md` individually symlinked to provide environment context while allowing AI tool to manage its own cache/state files
-  - **Gemini CLI**: Standard `.config/gemini/` subdirectory management via `.config/.gitignore` inclusion pattern
+  - **Gemini CLI**: File-level management of `.gemini/settings.json` via PARTIAL_LINKS (parent `.gemini/` excluded to protect credentials)
   - **Dynamic Package Reference**: Both tools reference Devbox global configuration (`~/.local/share/devbox/global/default/devbox.json`) and use commands like `devbox global list` to discover available development tools
   - **Rationale**: This hybrid approach allows AI tools to understand the development environment context while maintaining clean separation between configuration (git-managed) and runtime data (user-specific)
 

@@ -115,9 +115,9 @@ make nix-clean-backups  # Clean up old Nix installer backups
 This repository includes configuration for AI development tools:
 
 **Gemini CLI:**
-- **Configuration File**: `.config/gemini/README.md`
-- **Purpose**: Provides environment context and available package information
-- **Deployment**: Standard `.config` subdirectory management
+- **Configuration File**: `.gemini/settings.json`
+- **Purpose**: Manages MCP servers, UI theme, and authentication settings
+- **Deployment**: File-level PARTIAL_LINKS management (credentials excluded)
 
 Both configurations reference the Devbox global package list dynamically, ensuring AI tools are aware of available development tools.
 
