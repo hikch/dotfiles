@@ -11,7 +11,7 @@ tap "homebrew/services"
 # Common formulae
 # mas moved to Devbox global
 # syncthing CLI moved to host-specific (iMac only)
-brew "codex"
+cask "codex"
 brew "ollama"
 
 # Common casks
