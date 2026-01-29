@@ -20,6 +20,8 @@
 .config/fish/conf.d
 .config/fish/functions/fish_prompt.fish
 .config/fish/functions/fish_user_key_bindings.fish
+.config/fish/functions/gwd.fish
+.config/fish/functions/gwn.fish
 
 # Other config directories
 .config/claude
