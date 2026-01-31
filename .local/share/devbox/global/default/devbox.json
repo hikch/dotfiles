@@ -21,7 +21,7 @@
     "git-filter-repo":                 "latest",
     "playwright-mcp":                  "latest",
     "rclone":                          "latest",
-    "claude-code":                     "2.0.37",
+    "claude-code":                     "latest",
     "codex":                           "latest",
     "gitleaks":                        "latest",
     "nodejs_22":                       "latest"
