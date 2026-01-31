@@ -33,3 +33,6 @@
 .config/git/ignore
 .config/git/template
 .config/git/hooks
+
+# Claude Code settings
+.claude/settings.json

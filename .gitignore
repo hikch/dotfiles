@@ -45,4 +45,7 @@ gitleaks.json
 gitleaks-report.json
 gitleaks-report.sarif
 
+# Override global gitignore for managed Claude Code settings
+!.claude/settings.json
+
 

@@ -150,7 +150,9 @@ fabric.properties
 
 # AI tool directories (user-specific settings and cache)
 **/.claude/settings.local.json
-.claude/
+.claude/*
+!.claude/CLAUDE.md
+!.claude/settings.json
 
 # Editor backup files
 *~
