@@ -39,7 +39,7 @@ MIGRATION_BACKUP_DIR ?= /tmp/dotfiles-migration-$(shell date +%Y%m%d_%H%M%S)
 
 
 .PHONY: init
-init: deploy devbox-install devbox-global-install homebrew fish mac-defaults pmset-settings ## Initialize.
+init: deploy devbox-install devbox-global-install homebrew fish mac-defaults pmset-settings claude-mcp ## Initialize.
 
 # ========================================
 # PARTIAL_LINKS Migration Targets
@@ -822,6 +822,18 @@ devbox-install:
 devbox-global-install: ## devbox global install
 	@echo "🧰 Installing Devbox globally..."
 	@devbox global install 2>/dev/null || devbox global update
+
+
+.PHONY: claude-mcp
+claude-mcp: ## Setup Claude Code MCP servers
+	@echo "🤖 Setting up Claude Code MCP servers..."
+	@if command -v claude >/dev/null 2>&1; then \
+		claude mcp add --scope user playwright npx @playwright/mcp@latest 2>/dev/null || true; \
+		echo "✓ MCP servers configured"; \
+		claude mcp list; \
+	else \
+		echo "⚠️  claude command not found. Install via: devbox global add claude-code"; \
+	fi
 
 # ==============================================================================
 # Git Hooks Management (Global)

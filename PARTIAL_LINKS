@@ -23,9 +23,6 @@
 .config/fish/functions/gwd.fish
 .config/fish/functions/gwn.fish
 
-# Other config directories
-.config/claude
-
 # GitHub CLI configuration
 .config/gh/config.yml
 
