@@ -1,0 +1,61 @@
+#!/bin/sh
+# Global pre-push hook - Security scan before push
+# This hook runs gitleaks to scan commits about to be pushed
+# Deployed via git init.templateDir to all repositories
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Read push info from stdin
+# Format: <local ref> <local sha> <remote ref> <remote sha>
+while read local_ref local_sha remote_ref remote_sha; do
+    # Skip delete operations
+    if [ "$local_sha" = "0000000000000000000000000000000000000000" ]; then
+        continue
+    fi
+
+    # Determine range to scan
+    if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+        # New branch - scan all commits
+        RANGE="$local_sha"
+    else
+        # Existing branch - scan new commits only
+        RANGE="$remote_sha..$local_sha"
+    fi
+
+    echo "${YELLOW}🔍 Running gitleaks scan before push...${NC}"
+
+    if command -v gitleaks >/dev/null 2>&1; then
+        # Scan the commits being pushed
+        if gitleaks detect --log-opts="$RANGE" --verbose 2>&1; then
+            echo "${GREEN}✓ No secrets detected in commits to be pushed${NC}"
+        else
+            echo ""
+            echo "${RED}✗ Secrets detected in commits! Push blocked.${NC}"
+            echo ""
+            echo "The following commits contain potential secrets:"
+            echo "  Range: $RANGE"
+            echo ""
+            echo "To fix:"
+            echo "  1. Use 'git rebase -i' to edit the problematic commits"
+            echo "  2. Remove secrets and amend the commits"
+            echo "  3. Add false positives to .gitleaks.toml allowlist"
+            echo ""
+            echo "To bypass (NOT RECOMMENDED):"
+            echo "  git push --no-verify"
+            exit 1
+        fi
+    else
+        echo "${YELLOW}⚠️  Warning: gitleaks not found${NC}"
+        echo "Install: devbox global add gitleaks@latest"
+        # Don't block push if gitleaks is not installed
+    fi
+done
+
+exit 0
