@@ -1,388 +1,110 @@
+# ==============================================================================
+# Dotfiles Root Makefile
+# ==============================================================================
+# This Makefile orchestrates all dotfiles operations:
+# - Deployment: Delegated to home/Makefile
+# - Package management: Homebrew and Devbox (handled here)
+# - System configuration: Delegated to home/Makefile
+
 .PHONY: help
 help:
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_/-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 	@echo ""
+	@echo "For deployment-specific targets: make -C home help"
 
 
 # ========================================
-# Deployment Configuration
+# Common Variables
 # ========================================
-# Load configuration from external files (UNIX-style whitelist/blacklist approach)
-#
-# CANDIDATES:     Whitelist of files/patterns to deploy
-# EXCLUSIONS:     Blacklist of files/patterns to exclude
-# PARTIAL_LINKS:  Nested paths to symlink individually (parent dirs are auto-excluded)
+SHELL := /bin/bash
+ROOT  := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+HOST  := $(shell hostname -s)
+OSNAME := $(shell uname -s)
 
-# Load whitelist patterns and blacklist
-EXCLUSIONS_FROM_FILE := $(shell grep -v '^\#' EXCLUSIONS | grep -v '^$$' | tr '\n' ' ')
-CANDIDATES_PATTERNS := $(shell grep -v '^\#' CANDIDATES | grep -v '^$$' | tr '\n' ' ')
+# Brewfile locations
+BREWFILE          := $(ROOT)/.Brewfile
+HOST_BREWFILE     := $(ROOT)/hosts/$(HOST).Brewfile
+LOCAL_BREWFILE    := $(ROOT)/.Brewfile.local
 
-# Load partial link paths (nested paths to symlink individually)
-PARTIAL_LINKS := $(shell grep -v '^\#' PARTIAL_LINKS | grep -v '^$$' | tr '\n' ' ')
-
-# Auto-exclude top-level directories of partial links
-# Example: .local/share/devbox/global/default -> .local
-PARTIAL_TOPS := $(sort $(foreach p,$(PARTIAL_LINKS),$(firstword $(subst /, ,$(p)))))
-
-# Combine all exclusions
-EXCLUSIONS := $(EXCLUSIONS_FROM_FILE) $(PARTIAL_TOPS)
-
-# Expand wildcard patterns and apply exclusion filters
-CANDIDATES := $(foreach pattern,$(CANDIDATES_PATTERNS),$(wildcard $(pattern)))
-DOTFILES := $(filter-out $(EXCLUSIONS), $(CANDIDATES))
-
-DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
-OSNAME     := $(shell uname -s)
-
-# Migration backup directory for PARTIAL_LINKS conversion (overridable)
-MIGRATION_BACKUP_DIR ?= /tmp/dotfiles-migration-$(shell date +%Y%m%d_%H%M%S)
-
-
-.PHONY: init
-init: deploy devbox-install devbox-global-install homebrew fish mac-defaults pmset-settings claude-mcp ## Initialize.
 
 # ========================================
-# PARTIAL_LINKS Migration Targets
+# Delegated Targets (home/Makefile)
 # ========================================
-
-# ----------------------------------------
-# Plan A: One-time rescue migration (TOP symlink → real directory)
-# ----------------------------------------
-# Purpose: Clean up legacy full-symlink management of .config/.local
-# When to use: Only when migrating from old symlink structure
-# Destructive: Yes (requires backup)
-# Frequency: One-time only
-
-.PHONY: migrate-top-symlink-to-real
-migrate-top-symlink-to-real:  ## [Plan A] Migrate TOP from symlink to real directory (one-time rescue)
-	@echo "=== Migrating PARTIAL_TOPS: symlink -> real directory ==="
-	@$(foreach top,$(PARTIAL_TOPS), \
-		echo "Processing $(top)..."; \
-		if [ -L $(HOME)/$(top) ]; then \
-			echo "  $(HOME)/$(top) is a symlink, migrating..."; \
-			mkdir -p $(MIGRATION_BACKUP_DIR)/top-migration; \
-			echo "  Backing up non-PARTIAL_LINKS items from repo/$(top)/..."; \
-			$(MAKE) --no-print-directory _migrate_copy_unlinked TOP=$(top) BACKUP=$(MIGRATION_BACKUP_DIR)/top-migration/$(top); \
-			echo "  Removing old symlink $(HOME)/$(top)"; \
-			rm $(HOME)/$(top); \
-			echo "  Creating real directory $(HOME)/$(top)"; \
-			mkdir -p $(HOME)/$(top); \
-			echo "  Restoring non-PARTIAL_LINKS items to $(HOME)/$(top)/..."; \
-			if [ -d $(MIGRATION_BACKUP_DIR)/top-migration/$(top) ]; then \
-				rsync -a $(MIGRATION_BACKUP_DIR)/top-migration/$(top)/ $(HOME)/$(top)/; \
-			fi; \
-			echo "  Cleaning up non-PARTIAL_LINKS items from repo/$(top)/..."; \
-			$(MAKE) --no-print-directory _migrate_remove_unlinked TOP=$(top) BACKUP=$(MIGRATION_BACKUP_DIR)/top-migration/$(top); \
-		elif [ -f $(HOME)/$(top) ]; then \
-			echo "  ERROR: $(HOME)/$(top) exists as a file, expected directory or symlink"; \
-			exit 1; \
-		elif [ ! -e $(HOME)/$(top) ]; then \
-			echo "  Creating $(HOME)/$(top) as real directory"; \
-			mkdir -p $(HOME)/$(top); \
-		else \
-			echo "  $(HOME)/$(top) already exists as real directory"; \
-		fi;)
-	@if [ -d $(MIGRATION_BACKUP_DIR) ]; then \
-		echo ""; \
-		echo "Migration complete. Backup kept at: $(MIGRATION_BACKUP_DIR)"; \
-	fi
-
-.PHONY: _migrate_copy_unlinked
-_migrate_copy_unlinked:
-	@if [ -d $(DOTPATH)/$(TOP) ]; then \
-		mkdir -p $(BACKUP); \
-		find $(DOTPATH)/$(TOP) -mindepth 1 -maxdepth 1 | while IFS= read -r item; do \
-			basename=$$(basename "$$item"); \
-			is_linked=0; \
-			for link in $(PARTIAL_LINKS); do \
-				if [ "$$link" = "$(TOP)/$$basename" ] || echo "$$link/" | grep -qF "$(TOP)/$$basename/"; then \
-					is_linked=1; \
-					break; \
-				fi; \
-			done; \
-			if [ $$is_linked -eq 0 ]; then \
-				echo "    Copying $$basename (not in PARTIAL_LINKS)"; \
-				rsync -a "$$item" "$(BACKUP)/"; \
-			else \
-				echo "    Skipping $$basename (in PARTIAL_LINKS)"; \
-			fi; \
-		done; \
-	fi
-
-.PHONY: _migrate_remove_unlinked
-_migrate_remove_unlinked:
-	@if [ ! -d $(BACKUP) ]; then \
-		echo "    ⚠️  WARNING: Backup directory $(BACKUP) not found"; \
-		echo "    Skipping cleanup for safety (files NOT removed from repository)"; \
-		exit 0; \
-	fi
-	@if [ -z "$$(ls -A $(BACKUP) 2>/dev/null)" ]; then \
-		echo "    ℹ️  Backup directory is empty, nothing to clean up"; \
-		exit 0; \
-	fi
-	@if [ -d $(DOTPATH)/$(TOP) ]; then \
-		removed_count=0; \
-		find $(DOTPATH)/$(TOP) -mindepth 1 -maxdepth 1 | while IFS= read -r item; do \
-			basename=$$(basename "$$item"); \
-			is_linked=0; \
-			for link in $(PARTIAL_LINKS); do \
-				if [ "$$link" = "$(TOP)/$$basename" ] || echo "$$link/" | grep -qF "$(TOP)/$$basename/"; then \
-					is_linked=1; \
-					break; \
-				fi; \
-			done; \
-			if [ $$is_linked -eq 0 ]; then \
-				echo "    Removing $$basename (not in PARTIAL_LINKS, backup confirmed)"; \
-				rm -rf "$$item"; \
-				removed_count=$$((removed_count + 1)); \
-			else \
-				echo "    Keeping $$basename (in PARTIAL_LINKS)"; \
-			fi; \
-		done; \
-	fi
-
-# ----------------------------------------
-# Plan B: Add item to PARTIAL_LINKS (real directory → symlink)
-# ----------------------------------------
-# Purpose: Convert existing real directory to symlink management
-# When to use: After adding new path to PARTIAL_LINKS file
-# Destructive: Yes (requires manual review of backup)
-# Usage: make migrate-add-partial-link path=.config/uv
-
-.PHONY: migrate-add-partial-link
-migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir → symlink)
-	@if [ -z "$(path)" ]; then \
-		echo "ERROR: path parameter required"; \
-		echo "Usage: make migrate-add-partial-link path=.config/uv"; \
-		exit 1; \
-	fi
-	@echo "=== Validating path parameter ==="
-	@if echo "$(path)" | grep -qE '^/'; then \
-		echo "ERROR: Absolute paths are not allowed"; \
-		echo "  Provided: $(path)"; \
-		echo "  Expected: Relative path starting with '.' (e.g., .config/uv)"; \
-		exit 1; \
-	fi
-	@if echo "$(path)" | grep -qE '(^|/)\.\.(/|$$)'; then \
-		echo "ERROR: Path cannot contain '..' components"; \
-		echo "  Provided: $(path)"; \
-		echo "  Reason: '..' could escape repository scope and delete parent directories"; \
-		exit 1; \
-	fi
-	@if ! echo "$(path)" | grep -qE '^\.[^/]'; then \
-		echo "ERROR: Path must start with '.' (dotfile convention)"; \
-		echo "  Provided: $(path)"; \
-		echo "  Expected: Path like .config/foo, .local/bar, etc."; \
-		exit 1; \
-	fi
-	@echo "✓ Path validation passed"
-	@echo "=== Adding $(path) to PARTIAL_LINKS management ==="
-	@if [ ! -e $(HOME)/$(path) ]; then \
-		echo "✓ $(HOME)/$(path) does not exist, creating symlink directly"; \
-		if [ ! -d $(DOTPATH)/$(path) ]; then \
-			echo "→ Creating empty repository directory $(DOTPATH)/$(path)"; \
-			mkdir -p $(DOTPATH)/$(path); \
-		fi; \
-		mkdir -p $(HOME)/$$(dirname $(path)); \
-		ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path); \
-		echo "✓ Done. Add content to $(DOTPATH)/$(path) as needed"; \
-		exit 0; \
-	fi
-	@if [ -L $(HOME)/$(path) ]; then \
-		echo "ERROR: $(HOME)/$(path) is already a symlink"; \
-		echo "Current target: $$(readlink $(HOME)/$(path))"; \
-		exit 1; \
-	fi
-	@mkdir -p $(MIGRATION_BACKUP_DIR)/add; \
-	backup_path="$(MIGRATION_BACKUP_DIR)/add/$(path)"; \
-	if [ -d $(HOME)/$(path) ]; then \
-		echo "→ Backing up directory $(HOME)/$(path) to $$backup_path"; \
-		mkdir -p "$$backup_path"; \
-		rsync -a $(HOME)/$(path)/ $$backup_path/; \
-		echo "→ Removing real directory $(HOME)/$(path)"; \
-		rm -rf $(HOME)/$(path); \
-		if [ ! -d $(DOTPATH)/$(path) ]; then \
-			echo "→ Creating empty repository directory $(DOTPATH)/$(path)"; \
-			mkdir -p $(DOTPATH)/$(path); \
-		fi; \
-	else \
-		echo "→ Backing up file $(HOME)/$(path) to $$backup_path"; \
-		mkdir -p "$$(dirname $$backup_path)"; \
-		cp -p $(HOME)/$(path) $$backup_path; \
-		echo "→ Removing real file $(HOME)/$(path)"; \
-		rm -f $(HOME)/$(path); \
-		if [ ! -f $(DOTPATH)/$(path) ]; then \
-			echo "→ Copying file to repository $(DOTPATH)/$(path)"; \
-			mkdir -p $(DOTPATH)/$$(dirname $(path)); \
-			cp -p $$backup_path $(DOTPATH)/$(path); \
-		fi; \
-	fi; \
-	echo "→ Creating symlink $(HOME)/$(path) -> $(DOTPATH)/$(path)"; \
-	mkdir -p $(HOME)/$$(dirname $(path)); \
-	ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path); \
-	echo ""; \
-	echo "✓ Migration complete"; \
-	echo ""; \
-	echo "Backup location: $$backup_path"; \
-	echo ""; \
-	echo "Next steps:"; \
-	echo "  1. Review backup and decide what to keep"; \
-	echo "  2. Manually copy desired content to $(DOTPATH)/$(path)"; \
-	echo "  3. Git add/commit configuration files you want to track"; \
-	echo "  4. Delete backup when satisfied: rm -rf $(MIGRATION_BACKUP_DIR)"
-
-# ----------------------------------------
-# Plan C: Remove item from PARTIAL_LINKS (symlink → real directory)
-# ----------------------------------------
-# Purpose: Stop managing path as symlink, convert back to real directory
-# When to use: After removing path from PARTIAL_LINKS file
-# Destructive: No (preserves repo content)
-# Usage: make migrate-remove-partial-link path=.config/git
-
-.PHONY: migrate-remove-partial-link
-migrate-remove-partial-link:  ## [Plan C] Remove path from PARTIAL_LINKS (symlink → real dir)
-	@if [ -z "$(path)" ]; then \
-		echo "ERROR: path parameter required"; \
-		echo "Usage: make migrate-remove-partial-link path=.config/git"; \
-		exit 1; \
-	fi
-	@echo "=== Validating path parameter ==="
-	@if echo "$(path)" | grep -qE '^/'; then \
-		echo "ERROR: Absolute paths are not allowed"; \
-		echo "  Provided: $(path)"; \
-		echo "  Expected: Relative path starting with '.' (e.g., .config/git)"; \
-		exit 1; \
-	fi
-	@if echo "$(path)" | grep -qE '(^|/)\.\.(/|$$)'; then \
-		echo "ERROR: Path cannot contain '..' components"; \
-		echo "  Provided: $(path)"; \
-		echo "  Reason: '..' could escape repository scope and delete parent directories"; \
-		exit 1; \
-	fi
-	@if ! echo "$(path)" | grep -qE '^\.[^/]'; then \
-		echo "ERROR: Path must start with '.' (dotfile convention)"; \
-		echo "  Provided: $(path)"; \
-		echo "  Expected: Path like .config/foo, .local/bar, etc."; \
-		exit 1; \
-	fi
-	@echo "✓ Path validation passed"
-	@echo "=== Removing $(path) from PARTIAL_LINKS management ==="
-	@if [ ! -e $(HOME)/$(path) ]; then \
-		echo "✓ $(HOME)/$(path) does not exist, nothing to migrate"; \
-		exit 0; \
-	fi
-	@if [ ! -L $(HOME)/$(path) ]; then \
-		echo "ERROR: $(HOME)/$(path) is not a symlink"; \
-		echo "It's already a real directory, no migration needed"; \
-		exit 1; \
-	fi
-	@link_target=$$(readlink $(HOME)/$(path)); \
-	echo "Current symlink: $(HOME)/$(path) -> $$link_target"; \
-	@mkdir -p $(MIGRATION_BACKUP_DIR)/remove; \
-	backup_dir="$(MIGRATION_BACKUP_DIR)/remove/$(path)"; \
-	echo "→ Backing up repo content to $$backup_dir"; \
-	mkdir -p "$$backup_dir"; \
-	if [ -d $(DOTPATH)/$(path) ]; then \
-		rsync -a $(DOTPATH)/$(path)/ $$backup_dir/; \
-	fi; \
-	echo "→ Removing symlink $(HOME)/$(path)"; \
-	rm $(HOME)/$(path); \
-	echo "→ Creating real directory and copying content from repo"; \
-	mkdir -p $(HOME)/$(path); \
-	if [ -d $(DOTPATH)/$(path) ]; then \
-		rsync -a $(DOTPATH)/$(path)/ $(HOME)/$(path)/; \
-	fi; \
-	echo ""; \
-	echo "✓ Migration complete"; \
-	echo ""; \
-	echo "Backup location: $$backup_dir"; \
-	echo ""; \
-	echo "Next steps:"; \
-	echo "  1. Repository content preserved at $(DOTPATH)/$(path)"; \
-	echo "  2. Add $(path) to .gitignore if you don't want to track it"; \
-	echo "  3. Or manually remove from repo: rm -rf $(DOTPATH)/$(path)"; \
-	echo "  4. Delete backup when satisfied: rm -rf $(MIGRATION_BACKUP_DIR)"
-
-# ----------------------------------------
-# Validation: Pre-deploy safety checks
-# ----------------------------------------
-
-.PHONY: validate-partial-links
-validate-partial-links:  ## Validate PARTIAL_LINKS configuration before deploy
-	@echo "=== Validating PARTIAL_LINKS configuration ==="
-	@error_count=0; \
-	for path in $(PARTIAL_LINKS); do \
-		if echo "$$path" | grep -qE '(\.\./|^/)'; then \
-			echo "❌ ERROR: Invalid path in PARTIAL_LINKS: $$path"; \
-			echo "   Paths cannot contain '..' or start with '/'"; \
-			error_count=$$((error_count + 1)); \
-		fi; \
-		if [ ! -e $(DOTPATH)/$$path ]; then \
-			echo "⚠️  WARNING: $(DOTPATH)/$$path does not exist in repository"; \
-		fi; \
-		if [ -e $(HOME)/$$path ] && [ ! -L $(HOME)/$$path ]; then \
-			echo "⚠️  WARNING: $(HOME)/$$path exists as real file/dir"; \
-			echo "   Run: make migrate-add-partial-link path=$$path"; \
-		fi; \
-	done; \
-	if [ $$error_count -gt 0 ]; then \
-		echo ""; \
-		echo "❌ Validation failed with $$error_count error(s)"; \
-		exit 1; \
-	fi; \
-	echo "✓ Validation complete"
 
 .PHONY: deploy
-deploy: validate-partial-links  ## Deploy dotfiles.
-	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
-	@$(foreach path,$(PARTIAL_LINKS), \
-		mkdir -p $(HOME)/$(dir $(path)); \
-		if [ -L $(HOME)/$(path) ] || [ ! -e $(HOME)/$(path) ]; then \
-			rm -f $(HOME)/$(path); \
-			ln -sfnv $(DOTPATH)/$(path) $(HOME)/$(path); \
-		elif [ -e $(HOME)/$(path) ]; then \
-			echo "ERROR: $(HOME)/$(path) exists as real file/dir"; \
-			echo "  Run: make migrate-add-partial-link path=$(path)"; \
-			exit 1; \
-		fi;)
-	@if [ -d ~/.ssh ]; then \
-		chown $$(id -un):$$(id -gn) ~/.ssh; \
-		chmod 0700 ~/.ssh; \
-	fi
+deploy:  ## Deploy dotfiles
+	$(MAKE) -C home deploy
 
 .PHONY: deploy/dry-run
 deploy/dry-run:  ## Preview deployment without making changes
-	@echo "=== Deployment Preview ==="
-	@echo "Standard symlinks:"
-	@$(foreach val, $(DOTFILES), echo "  $(abspath $(val)) -> $(HOME)/$(val)";)
-	@echo ""
-	@echo "Partial symlinks:"
-	@$(foreach path,$(PARTIAL_LINKS), echo "  $(DOTPATH)/$(path) -> $(HOME)/$(path)";)
+	$(MAKE) -C home deploy/dry-run
+
+.PHONY: validate-partial-links
+validate-partial-links:  ## Validate PARTIAL_LINKS configuration
+	$(MAKE) -C home validate-partial-links
+
+.PHONY: migrate-top-symlink-to-real
+migrate-top-symlink-to-real:  ## [Plan A] Migrate TOP from symlink to real directory
+	$(MAKE) -C home migrate-top-symlink-to-real
+
+.PHONY: migrate-add-partial-link
+migrate-add-partial-link:  ## [Plan B] Add path to PARTIAL_LINKS (real dir -> symlink)
+	$(MAKE) -C home migrate-add-partial-link path=$(path)
+
+.PHONY: migrate-remove-partial-link
+migrate-remove-partial-link:  ## [Plan C] Remove path from PARTIAL_LINKS (symlink -> real dir)
+	$(MAKE) -C home migrate-remove-partial-link path=$(path)
+
+.PHONY: vim
+vim:  ## Install vim plug-ins
+	$(MAKE) -C home vim
+
+.PHONY: fish
+fish:  ## Install fish plug-ins
+	$(MAKE) -C home fish
+
+.PHONY: mac-defaults
+mac-defaults:  ## Setup macOS settings
+	$(MAKE) -C home mac-defaults
+
+.PHONY: pmset-settings
+pmset-settings:  ## Setup power management settings
+	$(MAKE) -C home pmset-settings
+
+
+# ========================================
+# Initialization
+# ========================================
+
+.PHONY: init
+init: deploy devbox-install devbox-global-install homebrew  ## Initialize environment
+	$(MAKE) -C home vim fish mac-defaults pmset-settings
+	$(MAKE) claude-mcp
+
+
+# ========================================
+# Status & Health Checks
+# ========================================
 
 .PHONY: status
 status:  ## Quick environment status check
 	@echo "=== Quick Status Check ==="
 	@echo ""
 	@echo "--- Git ---"
-	@git status --short || echo "✓ Clean"
+	@git status --short || echo "Clean"
 	@echo ""
 	@echo "--- Broken Symlinks ---"
 	@broken=$$(find $(HOME) -maxdepth 1 -type l ! -exec test -e {} \; -print 2>/dev/null | grep -v ".Trash" | wc -l | tr -d ' '); \
 	if [ $$broken -eq 0 ]; then \
-		echo "✓ None"; \
+		echo "None"; \
 	else \
-		echo "⚠️  $$broken found (run 'make doctor' for details)"; \
+		echo "$$broken found (run 'make doctor' for details)"; \
 	fi
 	@echo ""
 	@echo "--- Packages ---"
 	@echo "Run 'make packages/status' for details"
 	@echo ""
 	@echo "For comprehensive check: make doctor"
-
-
-# ========================================
-# Health Checks & Diagnostics
-# ========================================
 
 .PHONY: doctor
 doctor:  ## Run comprehensive environment health checks
@@ -393,17 +115,17 @@ doctor:  ## Run comprehensive environment health checks
 	@echo "=== 1. Repository Status ==="
 	@git status --short
 	@if git status --short | grep -q '^'; then \
-		echo "⚠️  Uncommitted changes found"; \
+		echo "Uncommitted changes found"; \
 	else \
-		echo "✓ Repository clean"; \
+		echo "Repository clean"; \
 	fi
 	@echo ""
 	@echo "=== 2. Deployment Verification ==="
 	@echo "Checking if all managed files are deployed..."
-	@$(MAKE) --no-print-directory doctor/deployment
+	@$(MAKE) -C home --no-print-directory doctor/deployment
 	@echo ""
 	@echo "=== 3. Symlink Integrity ==="
-	@$(MAKE) --no-print-directory doctor/symlinks
+	@$(MAKE) -C home --no-print-directory doctor/symlinks
 	@echo ""
 	@echo "=== 4. Tool Availability ==="
 	@$(MAKE) --no-print-directory doctor/tools
@@ -420,74 +142,6 @@ doctor:  ## Run comprehensive environment health checks
 	@echo "  Health Check Complete"
 	@echo "========================================"
 
-.PHONY: doctor/deployment
-doctor/deployment:  ## Verify all managed files are deployed
-	@echo "Checking deployment status..."
-	@deployed=0; missing=0; \
-	for file in $(DOTFILES); do \
-		if [ -L "$(HOME)/$$file" ]; then \
-			target=$$(readlink "$(HOME)/$$file"); \
-			expected="$(DOTPATH)/$$file"; \
-			if [ "$$target" = "$$expected" ]; then \
-				deployed=$$((deployed + 1)); \
-			else \
-				echo "⚠️  $$file -> wrong target ($$target instead of $$expected)"; \
-				missing=$$((missing + 1)); \
-			fi; \
-		else \
-			echo "✗ $$file not deployed"; \
-			missing=$$((missing + 1)); \
-		fi; \
-	done; \
-	echo "✓ $$deployed files deployed correctly"; \
-	if [ $$missing -gt 0 ]; then \
-		echo "⚠️  $$missing files missing or incorrect"; \
-		echo "Run 'make deploy' to fix"; \
-	fi
-	@echo ""
-	@echo "Checking partial links..."
-	@for path in $(PARTIAL_LINKS); do \
-		if [ -L "$(HOME)/$$path" ]; then \
-			target=$$(readlink "$(HOME)/$$path"); \
-			expected="$(DOTPATH)/$$path"; \
-			if [ "$$target" = "$$expected" ]; then \
-				echo "✓ $$path"; \
-			else \
-				echo "⚠️  $$path -> wrong target"; \
-			fi; \
-		else \
-			echo "✗ $$path not deployed"; \
-		fi; \
-	done
-
-.PHONY: doctor/symlinks
-doctor/symlinks:  ## Check symlink integrity
-	@echo "Checking for broken symlinks in HOME..."
-	@broken=$$(find $(HOME) -maxdepth 1 -type l ! -exec test -e {} \; -print 2>/dev/null | grep -v ".Trash" | wc -l | tr -d ' '); \
-	if [ $$broken -eq 0 ]; then \
-		echo "✓ No broken symlinks"; \
-	else \
-		echo "⚠️  $$broken broken symlinks found:"; \
-		find $(HOME) -maxdepth 1 -type l ! -exec test -e {} \; -print 2>/dev/null | grep -v ".Trash"; \
-	fi
-	@echo ""
-	@echo "Checking symlinks point to this repo..."
-	@wrong=0; \
-	for link in $$(find $(HOME) -maxdepth 1 -type l 2>/dev/null); do \
-		target=$$(readlink "$$link"); \
-		if echo "$$target" | grep -q "$(DOTPATH)"; then \
-			: ; \
-		elif echo "$$target" | grep -q "dotfiles"; then \
-			echo "⚠️  $$(basename $$link) -> different dotfiles repo ($$target)"; \
-			wrong=$$((wrong + 1)); \
-		fi; \
-	done; \
-	if [ $$wrong -eq 0 ]; then \
-		echo "✓ All dotfiles symlinks point to this repo"; \
-	else \
-		echo "⚠️  $$wrong symlinks point to other dotfiles repos"; \
-	fi
-
 .PHONY: doctor/tools
 doctor/tools:  ## Verify essential tools are available
 	@echo "Checking essential tools..."
@@ -495,15 +149,15 @@ doctor/tools:  ## Verify essential tools are available
 	for tool in make git fish zsh brew devbox vim tmux; do \
 		if command -v $$tool > /dev/null 2>&1; then \
 			version=$$($$tool --version 2>&1 | head -1 | cut -d' ' -f1-3); \
-			echo "✓ $$tool ($$version)"; \
+			echo "$$tool ($$version)"; \
 		else \
-			echo "✗ $$tool NOT FOUND"; \
+			echo "$$tool NOT FOUND"; \
 			missing=$$((missing + 1)); \
 		fi; \
 	done; \
 	if [ $$missing -gt 0 ]; then \
 		echo ""; \
-		echo "⚠️  $$missing tools missing. Run 'make init' to install."; \
+		echo "$$missing tools missing. Run 'make init' to install."; \
 	fi
 
 .PHONY: doctor/drift
@@ -513,7 +167,7 @@ doctor/drift:  ## Detect deployment drift (files in HOME not in repo)
 	for file in $(HOME)/.??*; do \
 		basename=$$(basename $$file); \
 		if [ -f "$$file" ] || [ -d "$$file" ]; then \
-			if [ ! -e "$(DOTPATH)/$$basename" ]; then \
+			if [ ! -e "$(ROOT)/home/$$basename" ]; then \
 				case "$$basename" in \
 					.Trash|.DS_Store|.CFUserTextEncoding|.cups) \
 						: ;; \
@@ -526,7 +180,7 @@ doctor/drift:  ## Detect deployment drift (files in HOME not in repo)
 		fi; \
 	done; \
 	if [ $$untracked -eq 0 ]; then \
-		echo "✓ No untracked dotfiles"; \
+		echo "No untracked dotfiles"; \
 	else \
 		echo ""; \
 		echo "Found $$untracked untracked dotfiles in HOME"; \
@@ -537,34 +191,27 @@ doctor/drift:  ## Detect deployment drift (files in HOME not in repo)
 doctor/ssh:  ## Check SSH configuration and permissions
 	@echo "Checking SSH configuration..."
 	@if [ -d ~/.ssh ]; then \
-		echo "✓ ~/.ssh exists"; \
+		echo "~/.ssh exists"; \
 		perms=$$(stat -f "%Op" ~/.ssh 2>/dev/null || stat -c "%a" ~/.ssh 2>/dev/null); \
 		if [ "$$perms" = "40700" ] || [ "$$perms" = "700" ]; then \
-			echo "✓ ~/.ssh permissions correct (700)"; \
+			echo "~/.ssh permissions correct (700)"; \
 		else \
-			echo "⚠️  ~/.ssh permissions incorrect ($$perms, should be 700)"; \
+			echo "~/.ssh permissions incorrect ($$perms, should be 700)"; \
 		fi; \
 		\
 		if [ -f ~/.ssh/id_rsa ] || [ -f ~/.ssh/id_ed25519 ]; then \
-			echo "✓ SSH keys found"; \
+			echo "SSH keys found"; \
 		else \
-			echo "⚠️  No SSH keys found"; \
+			echo "No SSH keys found"; \
 		fi; \
 	else \
-		echo "✗ ~/.ssh does not exist"; \
+		echo "~/.ssh does not exist"; \
 	fi
 
 
 # ==========================================
 # Homebrew Bundle Operations
 # ==========================================
-
-SHELL := /bin/bash
-ROOT  := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-HOST  := $(shell hostname -s)
-BREWFILE          := $(ROOT)/.Brewfile
-HOST_BREWFILE     := $(ROOT)/hosts/$(HOST).Brewfile
-LOCAL_BREWFILE    := $(ROOT)/.Brewfile.local
 
 .PHONY: homebrew
 homebrew:  ## Install homebrew packages
@@ -667,7 +314,7 @@ devbox/cleanup:  ## Remove Devbox cache and rebuild
 	@read -p "Continue? [y/N] " confirm && [ "$$confirm" = "y" ] || exit 1
 	@devbox global run -- sh -c "devbox cache clean" || true
 	@devbox global install
-	@echo "✓ Devbox cleanup complete"
+	@echo "Devbox cleanup complete"
 
 .PHONY: packages/cleanup
 packages/cleanup:  ## Clean up unused packages
@@ -687,18 +334,18 @@ packages/doctor:  ## Run health checks on package managers
 	@echo "Version: $$(devbox version)"
 	@echo "Global path: $$(devbox global path)"
 	@if [ -f "$$(devbox global path)/devbox.json" ]; then \
-		echo "✓ Config exists"; \
+		echo "Config exists"; \
 	else \
-		echo "✗ Config missing"; \
+		echo "Config missing"; \
 	fi
-	@echo "Packages: $$(devbox global list 2>/dev/null | grep -c '✓' || true)"
+	@echo "Packages: $$(devbox global list 2>/dev/null | grep -c '' || true)"
 
 .PHONY: packages/outdated
 packages/outdated:  ## Show outdated packages with details
 	@echo "=== Outdated Packages ==="
 	@echo ""
 	@echo "--- Homebrew ---"
-	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew outdated --greedy --verbose || echo "✓ All up to date"
+	@eval "$$(/opt/homebrew/bin/brew shellenv)" && brew outdated --greedy --verbose || echo "All up to date"
 	@echo ""
 	@echo "--- Devbox ---"
 	@echo "Devbox uses latest nixpkgs. Run 'devbox global update' to update."
@@ -725,76 +372,89 @@ packages/add:  ## Add package (TYPE=cli|gui PKG=name)
 	fi
 
 
-.PHONY: vim
-vim: ## Install vim plug-ins
-	which vim && curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
-	which vim && vim -c 'call dein#recache_runtimepath()' -c 'q'
+# ==========================================
+# Devbox Management
+# ==========================================
+
+.PHONY: devbox-install
+devbox-install:  ## Install Devbox package manager
+	@echo "Installing Devbox..."
+	curl -fsSL https://get.jetify.com/devbox | bash
+
+.PHONY: devbox-global-install
+devbox-global-install:  ## Install global Devbox packages
+	@echo "Installing Devbox globally..."
+	@devbox global install 2>/dev/null || devbox global update
 
 
-.PHONY: fish
-fish: ## Install fish plug-ins & Add direnv hook
-	which fish && fish -c \
-		"curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
-	which fish && touch .config/fish/fish_plugins
-	fish -c "fisher update"
+# ==========================================
+# AI Tools Configuration
+# ==========================================
+
+.PHONY: claude-mcp
+claude-mcp:  ## Setup Claude Code MCP servers
+	@echo "Setting up Claude Code MCP servers..."
+	@if command -v claude >/dev/null 2>&1; then \
+		claude mcp add --scope user playwright npx @playwright/mcp@latest 2>/dev/null || true; \
+		echo "MCP servers configured"; \
+		claude mcp list; \
+	else \
+		echo "claude command not found. Install via: devbox global add claude-code"; \
+	fi
 
 
-.PHONY: mac-defaults
-mac-defaults: ## Setup macos settings
-ifeq  "$(OSNAME)" "Darwin"
-	sh etc/mac_defaults.sh
-	@echo "Reboot to reflect settings."
-endif
-
-.PHONY: pmset-settings
-pmset-settings: ## Setup power management settings (model-specific)
-ifeq  "$(OSNAME)" "Darwin"
-	sh etc/pmset_settings.sh
-endif
+# ==========================================
+# iTerm2 Profiles
+# ==========================================
 
 .PHONY: iterm2-profiles
-iterm2-profiles: ## Deploy iTerm2 Dynamic Profiles
+iterm2-profiles:  ## Deploy iTerm2 Dynamic Profiles
 ifeq  "$(OSNAME)" "Darwin"
-	@echo "📦 Deploying iTerm2 Dynamic Profiles..."
+	@echo "Deploying iTerm2 Dynamic Profiles..."
 	@mkdir -p "$(HOME)/Library/Application Support/iTerm2/DynamicProfiles"
 	@cp -v apps/iterm2/profiles/*.json \
 		"$(HOME)/Library/Application Support/iTerm2/DynamicProfiles/"
-	@echo "✓ iTerm2 profiles deployed. Changes will be loaded automatically."
+	@echo "iTerm2 profiles deployed. Changes will be loaded automatically."
 endif
 
+
+# ==========================================
+# Security Scanning
+# ==========================================
+
 .PHONY: security-scan
-security-scan: ## Run full gitleaks scan of repository history
+security-scan:  ## Run full gitleaks scan of repository history
 	@if command -v gitleaks >/dev/null 2>&1; then \
-		echo "🔍 Scanning repository for secrets..."; \
+		echo "Scanning repository for secrets..."; \
 		gitleaks detect --verbose --report-path=gitleaks-report.json --report-format=json; \
 		if [ -f gitleaks-report.json ]; then \
 			echo ""; \
-			echo "⚠️  Report saved to: gitleaks-report.json"; \
+			echo "Report saved to: gitleaks-report.json"; \
 			echo "Review the report and remediate any findings."; \
 		fi; \
 	else \
-		echo "❌ gitleaks not installed. Run: devbox global add gitleaks@latest"; \
+		echo "gitleaks not installed. Run: devbox global add gitleaks@latest"; \
 		exit 1; \
 	fi
 
 .PHONY: security-protect
-security-protect: ## Scan staged changes before commit
+security-protect:  ## Scan staged changes before commit
 	@if command -v gitleaks >/dev/null 2>&1; then \
-		echo "🔍 Scanning staged changes for secrets..."; \
+		echo "Scanning staged changes for secrets..."; \
 		gitleaks protect --verbose --staged; \
 	else \
-		echo "❌ gitleaks not installed. Run: devbox global add gitleaks@latest"; \
+		echo "gitleaks not installed. Run: devbox global add gitleaks@latest"; \
 		exit 1; \
 	fi
 
 .PHONY: security-install
-security-install: ## Install security tools and hooks
-	@echo "🔒 Installing security tools..."
+security-install:  ## Install security tools and hooks
+	@echo "Installing security tools..."
 	@if ! command -v gitleaks >/dev/null 2>&1; then \
 		echo "Installing gitleaks..."; \
 		devbox global add gitleaks@latest; \
 	else \
-		echo "✓ gitleaks already installed"; \
+		echo "gitleaks already installed"; \
 	fi
 	@echo "Installing pre-commit hook..."
 	@if [ ! -f .git/hooks/pre-commit ]; then \
@@ -802,84 +462,75 @@ security-install: ## Install security tools and hooks
 		echo "# Pre-commit hook to detect secrets" >> .git/hooks/pre-commit; \
 		echo "gitleaks protect --verbose --redact --staged" >> .git/hooks/pre-commit; \
 		chmod +x .git/hooks/pre-commit; \
-		echo "✓ Pre-commit hook installed"; \
+		echo "Pre-commit hook installed"; \
 	else \
-		echo "✓ Pre-commit hook already exists"; \
+		echo "Pre-commit hook already exists"; \
 	fi
 	@echo ""
-	@echo "✅ Security setup complete!"
+	@echo "Security setup complete!"
 	@echo "  - Run 'make security-scan' to scan entire repository"
 	@echo "  - Run 'make security-protect' to scan staged changes"
 	@echo "  - Pre-commit hook will automatically check commits"
 
-.PHONY: devbox-install
-devbox-install:
-	@echo "🧰 Installing Devbox..."
-	curl -fsSL https://get.jetify.com/devbox | bash
-
-
-.PHONY: devbox-global-install
-devbox-global-install: ## devbox global install
-	@echo "🧰 Installing Devbox globally..."
-	@devbox global install 2>/dev/null || devbox global update
-
-
-.PHONY: claude-mcp
-claude-mcp: ## Setup Claude Code MCP servers
-	@echo "🤖 Setting up Claude Code MCP servers..."
-	@if command -v claude >/dev/null 2>&1; then \
-		claude mcp add --scope user playwright npx @playwright/mcp@latest 2>/dev/null || true; \
-		echo "✓ MCP servers configured"; \
-		claude mcp list; \
-	else \
-		echo "⚠️  claude command not found. Install via: devbox global add claude-code"; \
-	fi
 
 # ==============================================================================
 # Git Hooks Management (Global)
 # ==============================================================================
 
 .PHONY: git-hooks-setup
-git-hooks-setup: ## Setup global git hooks (configure + update existing repos)
-	@echo "🔧 Setting up global Git hooks..."
+git-hooks-setup:  ## Setup global git hooks (configure + update existing repos)
+	@echo "Setting up global Git hooks..."
 	@echo ""
-	@if [ ! -d .config/git/template/hooks ]; then \
-		echo "❌ Error: .config/git/template/hooks not found"; \
+	@if [ ! -d home/.config/git/template/hooks ]; then \
+		echo "Error: home/.config/git/template/hooks not found"; \
 		echo "   Run 'make deploy' first to setup directory structure"; \
 		exit 1; \
 	fi
-	@echo "✓ Template directory verified"
+	@echo "Template directory verified"
 	@echo ""
-	@echo "📝 Configuring git init.templateDir..."
+	@echo "Configuring git init.templateDir..."
 	@git config --global init.templateDir ~/.config/git/template
-	@echo "✓ Git config updated"
+	@echo "Git config updated"
 	@echo ""
 	@if command -v gitleaks >/dev/null 2>&1; then \
-		echo "✓ gitleaks found"; \
+		echo "gitleaks found"; \
 	else \
-		echo "⚠️  Warning: gitleaks not found"; \
+		echo "Warning: gitleaks not found"; \
 		echo "   Install: devbox global add gitleaks@latest"; \
 		echo ""; \
 	fi
-	@echo "🔄 Updating existing repositories..."
+	@echo "Updating existing repositories..."
 	@echo ""
 	@$(HOME)/bin/git-hooks-update || true
 	@echo ""
-	@echo "✅ Global git hooks setup complete!"
+	@echo "Global git hooks setup complete!"
 	@echo ""
-	@echo "📚 What's configured:"
-	@echo "  • New repositories: Hooks auto-installed on git init/clone"
-	@echo "  • Existing repos: Updated with pre-commit hook"
-	@echo "  • Security: gitleaks runs on every commit"
-	@echo "  • Compatibility: Works with Husky, pre-commit framework, etc."
+	@echo "What's configured:"
+	@echo "  - New repositories: Hooks auto-installed on git init/clone"
+	@echo "  - Existing repos: Updated with pre-commit hook"
+	@echo "  - Security: gitleaks runs on every commit"
+	@echo "  - Compatibility: Works with Husky, pre-commit framework, etc."
 	@echo ""
-	@echo "📖 See .config/git/hooks/README.md for details"
+	@echo "See home/.config/git/hooks/README.md for details"
 
 .PHONY: git-hooks-update
-git-hooks-update: ## Update existing repositories with global hooks
+git-hooks-update:  ## Update existing repositories with global hooks
 	@if [ ! -x $(HOME)/bin/git-hooks-update ]; then \
-		echo "❌ Error: git-hooks-update script not found or not executable"; \
+		echo "Error: git-hooks-update script not found or not executable"; \
 		echo "   Run 'make deploy' first"; \
 		exit 1; \
 	fi
 	@$(HOME)/bin/git-hooks-update
+
+
+# ==========================================
+# Testing
+# ==========================================
+
+.PHONY: test
+test:  ## Run deployment tests in sandbox
+	$(MAKE) -C home test
+
+.PHONY: test/quick
+test/quick:  ## Quick sanity check
+	$(MAKE) -C home test/quick

@@ -11,10 +11,10 @@
 # Devbox global configuration
 .local/share/devbox/global/default
 
-# Config management (replacing .config/.gitignore)
-# Whitelist approach: only explicitly listed items are managed
+# Config management (whitelist approach)
+# Only explicitly listed items are managed as symlinks
 
-# Fish shell configuration (individual file/dir management)
+# Fish shell configuration
 .config/fish/config.fish
 .config/fish/fish_plugins
 .config/fish/conf.d
@@ -26,13 +26,14 @@
 # GitHub CLI configuration
 .config/gh/config.yml
 
-# Gemini settings
-.gemini/settings.json
-
 # Git configuration
 .config/git/ignore
 .config/git/template
 .config/git/hooks
 
-# Claude Code settings
+# Claude Code settings (runtime files stay in ~/.claude/)
 .claude/settings.json
+.claude/CLAUDE.md
+
+# Gemini CLI settings (runtime files stay in ~/.gemini/)
+.gemini/settings.json
