@@ -45,12 +45,20 @@ gitleaks.json
 gitleaks-report.json
 gitleaks-report.sarif
 
-# AI tools local settings (machine-specific, not tracked)
-.claude/settings.local.json
-.gemini/credentials.json
-
 # Override global gitignore for managed AI tool settings
 !home/.claude/settings.json
 !home/.gemini/settings.json
+
+# Override global gitignore for project-level AI settings (claude-code-orchestra)
+!.claude/
+!.claude/**
+!.codex/
+!.codex/**
+!.gemini/
+!.gemini/**
+
+# AI tools local settings (machine-specific, not tracked) - must be after override
+.claude/settings.local.json
+.gemini/credentials.json
 
 
