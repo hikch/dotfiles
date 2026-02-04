@@ -34,6 +34,7 @@
 # Claude Code settings (runtime files stay in ~/.claude/)
 .claude/settings.json
 .claude/CLAUDE.md
+.claude/hooks
 
 # Gemini CLI settings (runtime files stay in ~/.gemini/)
 .gemini/settings.json

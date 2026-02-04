@@ -1,4 +1,17 @@
 {
   "alwaysThinkingEnabled": true,
-  "language": "japanese"
+  "language": "japanese",
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/notify-speech.sh"
+          }
+        ]
+      }
+    ]
+  }
 }
