@@ -55,16 +55,24 @@ function gwn --description "Create or checkout git worktree with fzf"
     end
 
     # 5. Worktreeの作成
+    # ブランチ名の / を - に置換してディレクトリ名にする
+    # 環境変数 GWN_PREFIX でプレフィックスを指定可能
+    set -l prefix ""
+    if set -q GWN_PREFIX
+        set prefix $GWN_PREFIX
+    end
+    set -l worktree_dir "$prefix"(string replace -a "/" "-" $target_branch)
+
     if git rev-parse --verify "$target_branch" >/dev/null 2>&1
         echo (set_color blue)"🌿 Using existing branch: $target_branch"(set_color normal)
-        git worktree add "../$target_branch" "$target_branch"
+        git worktree add "../$worktree_dir" "$target_branch"
     else
         echo (set_color green)"🌱 Creating new branch: $target_branch"(set_color normal)
-        git worktree add -b "$target_branch" "../$target_branch"
+        git worktree add -b "$target_branch" "../$worktree_dir"
     end
 
     # 6. 移動
     if test $status -eq 0
-        cd "../$target_branch"
+        cd "../$worktree_dir"
     end
 end
