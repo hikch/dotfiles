@@ -394,7 +394,8 @@ devbox-global-install:  ## Install global Devbox packages
 .PHONY: claude-mcp
 claude-mcp:  ## Setup Claude Code MCP servers
 	@echo "Setting up Claude Code MCP servers..."
-	@if command -v claude >/dev/null 2>&1; then \
+	@eval "$$(devbox global shellenv 2>/dev/null)" && \
+	if command -v claude >/dev/null 2>&1; then \
 		claude mcp add --scope user playwright npx @playwright/mcp@latest 2>/dev/null || true; \
 		echo "MCP servers configured"; \
 		claude mcp list; \

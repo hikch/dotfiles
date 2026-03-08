@@ -1,0 +1,9 @@
+# MacBookAir2020 only
+# brew "ngrok"
+
+# Database and productivity tools for MacBookAir
+cask "dbeaver-community"
+cask "jordanbaird-ice"
+cask "lm-studio"
+cask "syncthing-app"
+cask "vincelwt-chatgpt"

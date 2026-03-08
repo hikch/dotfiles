@@ -442,16 +442,34 @@ doctor/symlinks:  ## Check symlink integrity
 
 .PHONY: vim
 vim: ## Install vim plug-ins
-	which vim && curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
+	@which vim || exit 0; \
+	rm -rf ~/.cache/dein/repos/github.com/Shougo/dein.vim; \
+	curl -fsSL https://raw.githubusercontent.com/Shougo/dein-installer.vim/master/installer.sh > installer.sh && sh ./installer.sh ~/.cache/dein && rm installer.sh
 	which vim && vim -c 'call dein#recache_runtimepath()' -c 'q'
 
 
 .PHONY: fish
 fish: ## Install fish plug-ins & Add direnv hook
-	which fish && fish -c \
-		"curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
-	which fish && touch .config/fish/fish_plugins
-	fish -c "fisher update"
+	@FISH=$$(which fish) || exit 0; \
+	if $$FISH -c "type -q fisher" 2>/dev/null; then \
+		$$FISH -c "fisher update"; \
+	else \
+		$$FISH -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"; \
+	fi; \
+	confdir=$(HOME)/.config/fish/conf.d; \
+	backed=""; \
+	for f in $$confdir/z.fish $$confdir/fzf.fish; do \
+		if [ -e "$$f" ]; then \
+			mv "$$f" "$$f.bak"; \
+			backed="$$backed $$f"; \
+		fi; \
+	done; \
+	$$FISH -c "fisher install jethrokuan/z jethrokuan/fzf"; \
+	rc=$$?; \
+	for f in $$backed; do \
+		mv "$$f.bak" "$$f"; \
+	done; \
+	exit $$rc
 
 
 # ========================================
