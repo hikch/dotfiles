@@ -38,6 +38,7 @@ CANDIDATES := $(foreach pattern,$(CANDIDATES_PATTERNS),$(wildcard $(pattern)))
 DOTFILES := $(filter-out $(EXCLUSIONS), $(CANDIDATES))
 
 DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+ROOT       := $(realpath $(DOTPATH)/..)
 OSNAME     := $(shell uname -s)
 
 # Migration backup directory for PARTIAL_LINKS conversion (overridable)

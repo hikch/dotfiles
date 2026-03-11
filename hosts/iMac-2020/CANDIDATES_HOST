@@ -3,4 +3,4 @@
 # One per line, comments start with #
 
 # LaunchAgents (host-specific automation)
-Library
+Library/LaunchAgents/local.tailscale-monitor.plist
