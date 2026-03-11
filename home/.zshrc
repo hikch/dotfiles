@@ -121,4 +121,5 @@ done
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-source /Users/hu/.docker/init-zsh.sh || true # Added by Docker Desktop
+# Docker Desktop initialization (only if installed)
+[ -f ~/.docker/init-zsh.sh ] && source ~/.docker/init-zsh.sh

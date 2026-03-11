@@ -45,6 +45,9 @@ gitleaks.json
 gitleaks-report.json
 gitleaks-report.sarif
 
+# Security: Tailscale webhook URLs (contains Discord webhook)
+home/.config/tailscale-monitor/webhook.env
+
 # Override global gitignore for managed AI tool settings
 !home/.claude/settings.json
 !home/.gemini/settings.json

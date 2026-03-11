@@ -38,3 +38,6 @@
 
 # Gemini CLI settings (runtime files stay in ~/.gemini/)
 .gemini/settings.json
+
+# Tailscale monitor configuration
+.config/tailscale-monitor

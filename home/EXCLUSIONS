@@ -23,6 +23,9 @@ nix
 .claude
 .gemini
 
+# macOS directories (managed via PARTIAL_LINKS)
+Library
+
 # Partial links (handled separately via PARTIAL_LINKS)
 # Note: PARTIAL_LINKS in Makefile specifies nested paths that should be symlinked
 # while their parent directories are excluded. This allows selective deployment of
