@@ -115,3 +115,75 @@ Simple journal-style decisions for this dotfiles repository.
   - Clearer mental model (each file has a specific, documented purpose)
 
   **Testing**: Verified Zsh and Bash functionality after changes - all environment variables (LANG, EDITOR), tools (Homebrew, Devbox), and PATH modifications work correctly in both shells.
+
+## 2026-03-11
+
+- **Host-Specific Configuration Management**: Established strategy for managing machine-specific dotfiles while maintaining separation from Brewfile management
+
+  **Context**: The tailscale-monitor LaunchAgent is only needed on iMac-2020 (remote access monitoring), not on MacBook devices. This raised the question of how to properly manage host-specific dotfiles configuration, particularly for files in `~/Library/LaunchAgents/`.
+
+  **Existing Brewfile Strategy**: Already had well-functioning Brewfile host management:
+  - Common packages: `.Brewfile` (all hosts)
+  - Host-specific packages: `hosts/{hostname}.Brewfile`
+  - Automatic inclusion via Ruby code in `.Brewfile`:
+    ```ruby
+    host = `hostname`.strip.split(".").first
+    hostfile = File.expand_path("hosts/#{host}.Brewfile", __dir__)
+    instance_eval(File.read(hostfile), hostfile) if File.exist?(hostfile)
+    ```
+
+  **Options Considered**:
+
+  **Option A - Separation Model (分離型)**:
+  ```
+  hosts/
+    iMac-2020.Brewfile              # Packages (flat, auto-included by .Brewfile)
+    iMac-2020/
+      Library/LaunchAgents/...      # Dotfiles (nested, CANDIDATES_HOST)
+  ```
+
+  **Option B - Complete Integration (完全統合型)**:
+  ```
+  hosts/
+    iMac-2020/
+      .Brewfile                     # Packages (nested, requires .Brewfile path update)
+      Library/LaunchAgents/...      # Dotfiles (nested, CANDIDATES_HOST)
+  ```
+
+  **Actual Decision**: Option A (Separation Model)
+
+  **Rationale**:
+  - **Minimal change**: Existing `.Brewfile` include logic works perfectly, no modification needed
+  - **Clear separation of concerns**: Brewfile (packages) vs dotfiles (configuration) have different purposes
+  - **Current simplicity**: Only one host-specific dotfile (tailscale-monitor.plist) at present
+  - **Lower risk**: No changes to working Brewfile include mechanism
+  - **Brewfile discoverability**: `ls hosts/*.Brewfile` is simpler than `ls hosts/*/.Brewfile`
+  - **Future migration path**: Can move to Option B later if host-specific dotfiles significantly increase
+
+  **Implementation**:
+  - Structure:
+    ```
+    hosts/iMac-2020.Brewfile              # Existing, unchanged
+    hosts/iMac-2020/CANDIDATES_HOST       # New: host-specific deployment targets
+    hosts/iMac-2020/Library/LaunchAgents/
+      local.tailscale-monitor.plist       # Moved from home/Library/LaunchAgents/
+    ```
+
+  - Makefile additions:
+    - New `deploy-host-overlay` target in `home/Makefile`
+    - Reads `hosts/{hostname}/CANDIDATES_HOST`
+    - Symlinks files from `hosts/{hostname}/` to `$HOME`
+    - Runs after `deploy-base` and `deploy-partial-links`
+
+  - Deployment flow:
+    1. Base deployment: `home/` → `$HOME` (via CANDIDATES/EXCLUSIONS)
+    2. Partial links: selective nested paths (via PARTIAL_LINKS)
+    3. Host overlay: host-specific additions (via CANDIDATES_HOST)
+
+  **Impact**:
+  - iMac-2020: Gets tailscale-monitor.plist via host overlay
+  - MacBookAir2020/2025: No host-specific dotfiles, unaffected
+  - Brewfile management: Unchanged, continues to work as before
+  - Future extensibility: Easy to add more host-specific dotfiles as needed
+
+  **Alternative Considered**: Option B (complete integration) was rejected primarily due to unnecessary complexity for current needs, but remains viable if host-specific configuration grows significantly in the future.

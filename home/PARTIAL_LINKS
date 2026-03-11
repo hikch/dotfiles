@@ -41,6 +41,3 @@
 
 # Tailscale monitor configuration
 .config/tailscale-monitor
-
-# LaunchAgents
-Library/LaunchAgents

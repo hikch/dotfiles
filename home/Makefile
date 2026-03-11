@@ -336,7 +336,7 @@ validate-partial-links:  ## Validate PARTIAL_LINKS configuration before deploy
 	echo "Validation complete"
 
 .PHONY: deploy
-deploy: validate-partial-links  ## Deploy dotfiles
+deploy: validate-partial-links deploy-host-overlay  ## Deploy dotfiles
 	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@$(foreach path,$(PARTIAL_LINKS), \
 		mkdir -p $(HOME)/$(dir $(path)); \
@@ -351,6 +351,26 @@ deploy: validate-partial-links  ## Deploy dotfiles
 	@if [ -d ~/.ssh ]; then \
 		chown $$(id -un):$$(id -gn) ~/.ssh; \
 		chmod 0700 ~/.ssh; \
+	fi
+
+.PHONY: deploy-host-overlay
+deploy-host-overlay:  ## Deploy host-specific dotfiles overlay
+	@HOST_DIR="$(ROOT)/hosts/$$(hostname -s)"; \
+	HOST_CANDIDATES="$${HOST_DIR}/CANDIDATES_HOST"; \
+	if [ -d "$${HOST_DIR}" ] && [ -f "$${HOST_CANDIDATES}" ]; then \
+		echo "=== Deploying host-specific config for $$(hostname -s) ==="; \
+		while IFS= read -r item || [ -n "$$item" ]; do \
+			[ -z "$$item" ] && continue; \
+			echo "$$item" | grep -q '^#' && continue; \
+			src="$${HOST_DIR}/$$item"; \
+			dest="$(HOME)/$$item"; \
+			if [ -e "$$src" ]; then \
+				mkdir -p "$$(dirname "$$dest")"; \
+				ln -sfnv "$$src" "$$dest"; \
+			else \
+				echo "WARNING: $${src} does not exist, skipping"; \
+			fi; \
+		done < "$${HOST_CANDIDATES}"; \
 	fi
 
 .PHONY: deploy/dry-run

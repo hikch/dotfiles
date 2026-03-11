@@ -1,0 +1,6 @@
+# Host-specific deployment targets for iMac-2020
+# Files/directories to be symlinked to $HOME
+# One per line, comments start with #
+
+# LaunchAgents (host-specific automation)
+Library
