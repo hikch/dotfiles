@@ -16,6 +16,7 @@ brew "ollama"
 
 # Common casks
 cask "alfred"
+cask "claude"
 cask "appcleaner"
 cask "deepl"
 cask "discord"
