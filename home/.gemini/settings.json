@@ -1,7 +1,7 @@
 {
   "security": {
     "auth": {
-      "selectedType": "oauth-personal"
+      "selectedType": "gemini-api-key"
     }
   },
   "ui": {
@@ -10,11 +10,23 @@
   "mcpServers": {
     "serena": {
       "command": "npx",
-      "args": ["@serena-ai/mcp-server"]
+      "args": [
+        "@serena-ai/mcp-server"
+      ]
     },
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ]
+    }
+  },
+  "general": {
+    "sessionRetention": {
+      "warningAcknowledged": true,
+      "enabled": true,
+      "maxAge": "120d"
     }
   }
 }
