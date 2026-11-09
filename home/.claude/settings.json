@@ -1,17 +1,107 @@
 {
-  "alwaysThinkingEnabled": true,
-  "language": "japanese",
-  "hooks": {
-    "Notification": [
+  "alwaysThinkingEnabled" : true,
+  "hooks" : {
+    "Notification" : [
       {
-        "matcher": "",
-        "hooks": [
+        "hooks" : [
           {
-            "type": "command",
-            "command": "~/.claude/hooks/notify-speech.sh"
+            "command" : "~\/.claude\/hooks\/notify-speech.sh",
+            "type" : "command"
+          }
+        ],
+        "matcher" : ""
+      },
+      {
+        "hooks" : [
+          {
+            "command" : "\/Users\/hu\/.config\/iterm2\/cc-status",
+            "type" : "command"
+          }
+        ],
+        "matcher" : ""
+      }
+    ],
+    "PermissionRequest" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\/Users\/hu\/.config\/iterm2\/cc-status",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "PostToolUse" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\/Users\/hu\/.config\/iterm2\/cc-status",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "PreToolUse" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\/Users\/hu\/.config\/iterm2\/cc-status",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "SessionEnd" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\/Users\/hu\/.config\/iterm2\/cc-status",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\/Users\/hu\/.config\/iterm2\/cc-status",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "Stop" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\/Users\/hu\/.config\/iterm2\/cc-status",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "SubagentStop" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\/Users\/hu\/.config\/iterm2\/cc-status",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\/Users\/hu\/.config\/iterm2\/cc-status",
+            "type" : "command"
           }
         ]
       }
     ]
-  }
+  },
+  "language" : "japanese",
+  "theme" : "light"
 }
