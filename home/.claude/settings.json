@@ -5,15 +5,6 @@
       {
         "hooks" : [
           {
-            "command" : "~\/.claude\/hooks\/notify-speech.sh",
-            "type" : "command"
-          }
-        ],
-        "matcher" : ""
-      },
-      {
-        "hooks" : [
-          {
             "command" : "\/Users\/hu\/.config\/iterm2\/cc-status",
             "type" : "command"
           }
