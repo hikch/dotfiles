@@ -123,3 +123,7 @@ done
 
 # Docker Desktop initialization (only if installed)
 [ -f ~/.docker/init-zsh.sh ] && source ~/.docker/init-zsh.sh
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/hu/.lmstudio/bin"
+# End of LM Studio CLI section
