@@ -1,10 +1,10 @@
-# Gemini Delegation Rule
+# Antigravity Delegation Rule
 
-**Gemini CLI is your research specialist with massive context and multimodal capabilities.**
+**Antigravity CLI is your research specialist with massive context and multimodal capabilities.**
 
 ## Context Management (CRITICAL)
 
-**コンテキスト消費を意識してGeminiを使う。** Gemini出力は大きくなりがちなので、サブエージェント経由を推奨。
+**コンテキスト消費を意識してAntigravityを使う。** Antigravity出力は大きくなりがちなので、サブエージェント経由を推奨。
 
 | 状況 | 推奨方法 |
 |------|----------|
@@ -21,27 +21,27 @@
 │                                                          │
 │  ┌────────────────────────────────────────────────────┐ │
 │  │  Subagent (general-purpose)                         │ │
-│  │  → Calls Gemini CLI                                 │ │
+│  │  → Calls Antigravity CLI                                 │ │
 │  │  → Saves full output to .claude/docs/research/      │ │
 │  │  → Returns key findings only                        │ │
 │  └────────────────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────────────┘
 ```
 
-## About Gemini
+## About Antigravity
 
-Gemini CLI excels at:
+Antigravity CLI excels at:
 - **1M token context window** — Analyze entire codebases at once
 - **Google Search grounding** — Access latest information
 - **Multimodal processing** — Video, audio, PDF analysis
 
-Think of Gemini as your research assistant who can quickly gather and synthesize information.
+Think of Antigravity as your research assistant who can quickly gather and synthesize information.
 
-**When you need research → Delegate to subagent → Subagent consults Gemini.**
+**When you need research → Delegate to subagent → Subagent consults Antigravity.**
 
-## Gemini vs Codex: Choose the Right Tool
+## Antigravity vs Codex: Choose the Right Tool
 
-| Task | Codex | Gemini |
+| Task | Codex | Antigravity |
 |------|-------|--------|
 | Design decisions | ✓ | |
 | Debugging | ✓ | |
@@ -52,9 +52,9 @@ Think of Gemini as your research assistant who can quickly gather and synthesize
 | Latest docs/library research | | ✓ |
 | Video/Audio/PDF analysis | | ✓ |
 
-## When to Consult Gemini
+## When to Consult Antigravity
 
-ALWAYS consult Gemini BEFORE:
+ALWAYS consult Antigravity BEFORE:
 
 1. **Pre-implementation research** - Best practices, library comparison
 2. **Large codebase analysis** - Repository-wide understanding
@@ -63,7 +63,7 @@ ALWAYS consult Gemini BEFORE:
 
 ### Trigger Phrases (User Input)
 
-Consult Gemini when user says:
+Consult Antigravity when user says:
 
 | Japanese | English |
 |----------|---------|
@@ -75,7 +75,7 @@ Consult Gemini when user says:
 
 ## When NOT to Consult
 
-Skip Gemini for:
+Skip Antigravity for:
 
 - Design decisions (use Codex instead)
 - Code implementation (use Codex instead)
@@ -98,8 +98,8 @@ Task tool parameters:
 - prompt: |
     Research: {topic}
 
-    1. Call Gemini CLI:
-       gemini -p "{research question}" 2>/dev/null
+    1. Call Antigravity CLI:
+       agy -p "{research question}" 2>/dev/null
 
     2. Save full output to: .claude/docs/research/{topic}.md
 
@@ -116,7 +116,7 @@ Task tool parameters:
 prompt: |
   Research best practices for {topic}.
 
-  gemini -p "Research: {topic}. Include recommended approaches,
+  agy -p "Research: {topic}. Include recommended approaches,
   common pitfalls, and library recommendations." 2>/dev/null
 
   Save to .claude/docs/research/{topic}.md
@@ -128,8 +128,8 @@ prompt: |
 prompt: |
   Analyze codebase for {purpose}.
 
-  gemini -p "Analyze architecture, key modules, data flow,
-  and entry points." --include-directories . 2>/dev/null
+  agy -p "Analyze architecture, key modules, data flow,
+  and entry points." --add-dir . 2>/dev/null
 
   Save to .claude/docs/research/codebase-analysis.md
   Return architecture summary and key insights.
@@ -140,7 +140,7 @@ prompt: |
 prompt: |
   Extract information from {file}.
 
-  gemini -p "{extraction prompt}" < {file_path} 2>/dev/null
+  agy -p "{extraction prompt} (file: {file_path})" 2>/dev/null
 
   Save to .claude/docs/research/{output}.md
   Return key extracted information.
@@ -157,26 +157,26 @@ While subagent is processing, you can:
 
 Subagent returns concise summary. Full output available in `.claude/docs/research/` if needed.
 
-## Gemini CLI Commands Reference
+## Antigravity CLI Commands Reference
 
 For use within subagents:
 
 ```bash
 # Research
-gemini -p "{question}" 2>/dev/null
+agy -p "{question}" 2>/dev/null
 
 # Codebase analysis
-gemini -p "{question}" --include-directories . 2>/dev/null
+agy -p "{question}" --add-dir . 2>/dev/null
 
 # Multimodal
-gemini -p "{prompt}" < /path/to/file.pdf 2>/dev/null
+agy -p "{prompt} (file: /path/to/file.pdf)" 2>/dev/null
 
 # JSON output
-gemini -p "{question}" --output-format json 2>/dev/null
+agy -p "{question}" --output-format json 2>/dev/null
 ```
 
 **Language protocol:**
-1. Ask Gemini in **English**
+1. Ask Antigravity in **English**
 2. Subagent receives response in **English**
 3. Subagent summarizes and saves full output
 4. Main receives summary, reports to user in **Japanese**
@@ -184,8 +184,8 @@ gemini -p "{question}" --output-format json 2>/dev/null
 ## Why Subagent Pattern?
 
 - **Context preservation**: Main orchestrator stays lightweight
-- **Full capture**: Subagent can save entire Gemini output to file
+- **Full capture**: Subagent can save entire Antigravity output to file
 - **Concise handoff**: Main only receives key findings
 - **Parallel work**: Background subagents enable concurrent research
 
-**Use Gemini (via subagent) for research, Codex (via subagent) for reasoning, Claude for orchestration.**
+**Use Antigravity (via subagent) for research, Codex (via subagent) for reasoning, Claude for orchestration.**

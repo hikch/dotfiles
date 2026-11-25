@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-PostToolUse hook: Log Codex/Gemini CLI input/output to JSONL file.
+PostToolUse hook: Log Codex/Antigravity CLI input/output to JSONL file.
 
-Triggers after Bash tool calls containing 'codex' or 'gemini' commands.
+Triggers after Bash tool calls containing 'codex' or 'agy' commands.
 Logs are stored in .claude/logs/cli-tools.jsonl
 
-All agents (Claude Code, subagents, Codex, Gemini) can read this log.
+All agents (Claude Code, subagents, Codex, Antigravity) can read this log.
 """
 
 import json
@@ -35,12 +35,12 @@ def extract_codex_prompt(command: str) -> str | None:
     return None
 
 
-def extract_gemini_prompt(command: str) -> str | None:
-    """Extract prompt from gemini command."""
-    # Pattern: gemini -p "prompt" or gemini -p 'prompt'
+def extract_agy_prompt(command: str) -> str | None:
+    """Extract prompt from agy command."""
+    # Pattern: agy -p "prompt" or agy -p 'prompt'
     patterns = [
-        r'gemini\s+-p\s+"([^"]+)"',
-        r"gemini\s+-p\s+'([^']+)'",
+        r'\bagy\s+-p\s+"([^"]+)"',
+        r"\bagy\s+-p\s+'([^']+)'",
     ]
     for pattern in patterns:
         match = re.search(pattern, command, re.DOTALL)
@@ -88,11 +88,11 @@ def main() -> None:
     command = tool_input.get("command", "")
     output = tool_response.get("stdout", "") or tool_response.get("content", "")
 
-    # Check if this is a codex or gemini command
+    # Check if this is a codex or agy command
     is_codex = "codex" in command.lower()
-    is_gemini = "gemini" in command.lower() and "codex" not in command.lower()
+    is_agy = re.search(r"\bagy\b", command) is not None and not is_codex
 
-    if not (is_codex or is_gemini):
+    if not (is_codex or is_agy):
         return
 
     # Extract prompt based on tool type
@@ -101,9 +101,9 @@ def main() -> None:
         prompt = extract_codex_prompt(command)
         model = extract_model(command) or "gpt-5.2-codex"
     else:
-        tool = "gemini"
-        prompt = extract_gemini_prompt(command)
-        model = "gemini-3-pro-preview"
+        tool = "agy"
+        prompt = extract_agy_prompt(command)
+        model = extract_model(command) or "agy-default"
 
     if not prompt:
         # Could not extract prompt, skip logging

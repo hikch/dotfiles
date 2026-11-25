@@ -3,7 +3,7 @@
 UserPromptSubmit hook: Route to appropriate agent based on user intent.
 
 Analyzes user prompts and suggests the most appropriate agent
-(Codex for design/debug, Gemini for research/multimodal).
+(Codex for design/debug, Antigravity for research/multimodal).
 """
 
 import json
@@ -31,8 +31,8 @@ CODEX_TRIGGERS = {
     ],
 }
 
-# Triggers for Gemini (research, multimodal, large context)
-GEMINI_TRIGGERS = {
+# Triggers for Antigravity (research, multimodal, large context)
+ANTIGRAVITY_TRIGGERS = {
     "ja": [
         "調べて", "リサーチ", "調査",
         "PDF", "動画", "音声", "画像",
@@ -60,11 +60,11 @@ def detect_agent(prompt: str) -> tuple[str | None, str]:
             if trigger in prompt_lower:
                 return "codex", trigger
 
-    # Check Gemini triggers
-    for triggers in GEMINI_TRIGGERS.values():
+    # Check Antigravity triggers
+    for triggers in ANTIGRAVITY_TRIGGERS.values():
         for trigger in triggers:
             if trigger in prompt_lower:
-                return "gemini", trigger
+                return "antigravity", trigger
 
     return None, ""
 
@@ -94,14 +94,14 @@ def main():
             }
             print(json.dumps(output))
 
-        elif agent == "gemini":
+        elif agent == "antigravity":
             output = {
                 "hookSpecificOutput": {
                     "hookEventName": "UserPromptSubmit",
                     "additionalContext": (
                         f"[Agent Routing] Detected '{trigger}' - this task may benefit from "
-                        "Gemini CLI's research capabilities. Consider: "
-                        '`gemini -p "Research: {topic}" 2>/dev/null` '
+                        "Antigravity CLI's research capabilities. Consider: "
+                        '`agy -p "Research: {topic}" 2>/dev/null` '
                         "for documentation, library research, or multimodal content."
                     )
                 }

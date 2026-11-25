@@ -134,13 +134,13 @@ See: `references/code-review-task.md`
 
 See: `references/refactoring-task.md`
 
-## Integration with Gemini
+## Integration with Antigravity
 
 | Task | Use |
 |------|-----|
-| Need research first | Gemini → then Codex |
+| Need research first | Antigravity → then Codex |
 | Design decision | Codex directly |
-| Library comparison | Gemini research → Codex decision |
+| Library comparison | Antigravity research → Codex decision |
 
 ## Why Codex?
 

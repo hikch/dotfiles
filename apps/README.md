@@ -19,7 +19,7 @@ apps/
 This repository follows a clear separation of concerns:
 
 - **`.config/`** - XDG-compliant CLI/development tool configurations
-  - Examples: fish (shell), gemini (AI tool), git (version control)
+  - Examples: fish (shell), herdr (agent multiplexer), git (version control)
   - Typically symlinked to `$HOME/.config/`
 
 - **`apps/`** - macOS GUI application preferences

@@ -41,7 +41,7 @@ CLI相談履歴を各エージェントの設定ファイルに追記。
 │  Data Sources:                                              │
 │  ├─ git log (commits)                                       │
 │  ├─ git diff (file changes)                                 │
-│  └─ cli-tools.jsonl (Codex/Gemini logs)                     │
+│  └─ cli-tools.jsonl (Codex/Antigravity logs)                     │
 │                      ↓                                      │
 │  /checkpointing --full                                      │
 │                      ↓                                      │
@@ -49,7 +49,7 @@ CLI相談履歴を各エージェントの設定ファイルに追記。
 │  ├─ Summary (commits, files, consultations)                 │
 │  ├─ Git History (commits list)                              │
 │  ├─ File Changes (created, modified, deleted)               │
-│  └─ CLI Consultations (Codex/Gemini)                        │
+│  └─ CLI Consultations (Codex/Antigravity)                        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -113,7 +113,7 @@ python checkpoint.py --full --analyze
 ### Session History モード
 
 1. `.claude/logs/cli-tools.jsonl` を解析
-2. Codex/Geminiへの相談内容を日付ごとに整理
+2. Codex/Antigravityへの相談内容を日付ごとに整理
 3. 各エージェント設定ファイルに `## Session History` を追記
 
 ### Full Checkpoint モード
@@ -125,7 +125,7 @@ python checkpoint.py --full --analyze
 
 2. **CLI相談ログを解析**
    - Codex相談内容とステータス
-   - Gemini調査内容とステータス
+   - Antigravity調査内容とステータス
 
 3. **チェックポイントファイルを生成**
    - `.claude/checkpoints/YYYY-MM-DD-HHMMSS.md`
@@ -139,7 +139,7 @@ python checkpoint.py --full --analyze
 - **Commits**: 5
 - **Files changed**: 12 (8 modified, 3 created, 1 deleted)
 - **Codex consultations**: 3
-- **Gemini researches**: 2
+- **Antigravity researches**: 2
 
 ## Git History
 
@@ -165,7 +165,7 @@ python checkpoint.py --full --analyze
 - ✓ 設計: チェックポイント拡張アーキテクチャ
 - ✓ デバッグ: Git log parsing issue
 
-### Gemini (2 researches)
+### Antigravity (2 researches)
 - ✓ 調査: Git integration best practices
 ```
 
@@ -177,9 +177,9 @@ python checkpoint.py --full --analyze
 ### 2026-01-26
 
 **Codex相談:**
-- ✓ サブエージェントパターンでCodex/Gemini呼び出しを推奨...
+- ✓ サブエージェントパターンでCodex/Antigravity呼び出しを推奨...
 
-**Gemini調査:**
+**Antigravity調査:**
 - ✓ MCP vs CLI比較調査...
 ```
 

@@ -38,7 +38,7 @@ You can read project context from `.claude/`:
 ```
 .claude/
 ├── docs/DESIGN.md        # Architecture decisions
-├── docs/research/        # Gemini's research results
+├── docs/research/        # Antigravity's research results
 ├── docs/libraries/       # Library constraints
 └── rules/                # Coding principles
 ```
@@ -87,7 +87,7 @@ Structure your response for Claude Code to use:
 
 ## CLI Logs
 
-Codex/Gemini への入出力は `.claude/logs/cli-tools.jsonl` に記録されています。
+Codex/Antigravity への入出力は `.claude/logs/cli-tools.jsonl` に記録されています。
 過去の相談内容を確認する場合は、このログを参照してください。
 
 `/checkpointing` 実行後、下記に Session History が追記されます。

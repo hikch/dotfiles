@@ -1,4 +1,4 @@
-# Gemini CLI — Research & Analysis Agent
+# Antigravity CLI (agy) — Research & Analysis Agent
 
 **You are called by Claude Code for research and large-scale analysis.**
 
@@ -51,8 +51,8 @@ This allows Claude Code and Codex to reference your findings.
 ## How You're Called
 
 ```bash
-gemini -p "{research question}" 2>/dev/null
-gemini -p "{question}" < file.pdf 2>/dev/null
+agy -p "{research question}" 2>/dev/null
+agy -p "{question} (file: file.pdf)" 2>/dev/null
 ```
 
 ## Output Format
@@ -93,7 +93,7 @@ Structure your response for Claude Code to use:
 
 ## CLI Logs
 
-Codex/Gemini への入出力は `.claude/logs/cli-tools.jsonl` に記録されています。
+Codex/Antigravity への入出力は `.claude/logs/cli-tools.jsonl` に記録されています。
 過去の相談内容を確認する場合は、このログを参照してください。
 
 `/checkpointing` 実行後、下記に Session History が追記されます。

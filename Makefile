@@ -79,7 +79,7 @@ pmset-settings:  ## Setup power management settings
 .PHONY: init
 init: deploy devbox-install devbox-global-install homebrew  ## Initialize environment
 	$(MAKE) -C home vim fish mac-defaults pmset-settings
-	$(MAKE) claude-mcp
+	$(MAKE) claude-mcp agy-mcp
 
 
 # ========================================
@@ -401,6 +401,20 @@ claude-mcp:  ## Setup Claude Code MCP servers
 		claude mcp list; \
 	else \
 		echo "claude command not found. Install via: devbox global add claude-code"; \
+	fi
+
+# agy rewrites ~/.gemini/config/mcp_config.json atomically (breaks symlinks),
+# so MCP servers are applied via `agy mcp add` (add-or-update) instead of PARTIAL_LINKS.
+.PHONY: agy-mcp
+agy-mcp:  ## Setup Antigravity CLI (agy) MCP servers
+	@echo "Setting up Antigravity CLI MCP servers..."
+	@eval "$$(devbox global shellenv 2>/dev/null)" && \
+	if command -v agy >/dev/null 2>&1; then \
+		agy mcp add serena npx @serena-ai/mcp-server && \
+		agy mcp add playwright npx -y @playwright/mcp@latest && \
+		agy mcp list; \
+	else \
+		echo "agy command not found. Install via: devbox global add antigravity-cli"; \
 	fi
 
 

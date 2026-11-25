@@ -1,6 +1,6 @@
-# Library Research Task for Gemini
+# Library Research Task for Antigravity
 
-When delegating library research to Gemini, use this prompt template.
+When delegating library research to Antigravity, use this prompt template.
 
 ## Prompt Template
 
@@ -57,7 +57,7 @@ Output documentation content in Japanese.
 
 ```bash
 # Basic library research
-gemini -p "Research the library 'httpx' comprehensively.
+agy -p "Research the library 'httpx' comprehensively.
 
 Use Google Search to find:
 - Official documentation
@@ -69,7 +69,7 @@ Use Google Search to find:
 " 2>/dev/null
 
 # Research with specific focus
-gemini -p "Research 'pydantic' v2 with focus on:
+agy -p "Research 'pydantic' v2 with focus on:
 - Migration from v1 to v2
 - Performance improvements
 - New validation patterns
@@ -81,13 +81,13 @@ gemini -p "Research 'pydantic' v2 with focus on:
 
 ## Workflow
 
-1. **Run Gemini research** (background)
+1. **Run Antigravity research** (background)
    ```bash
-   gemini -p "Research: {library}" 2>/dev/null
+   agy -p "Research: {library}" 2>/dev/null
    ```
 
 2. **Save output to docs**
-   - Claude saves Gemini's output to `.claude/docs/libraries/{library}.md`
+   - Claude saves Antigravity's output to `.claude/docs/libraries/{library}.md`
 
 3. **Update existing docs**
    - If documentation already exists, compare and update
@@ -109,7 +109,7 @@ All library documentation should be saved to:
 
 ## Integration with Codex
 
-After Gemini researches a library:
+After Antigravity researches a library:
 1. Documentation is saved to `.claude/docs/libraries/`
 2. Codex can reference this when reviewing code or refactoring
 3. Ensures library constraints are respected across all agents

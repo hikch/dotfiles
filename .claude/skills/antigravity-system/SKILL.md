@@ -1,24 +1,24 @@
 ---
-name: gemini-system
+name: antigravity-system
 description: |
-  PROACTIVELY consult Gemini CLI for research, large codebase comprehension,
-  and multimodal data processing. Gemini excels at: massive context windows (1M tokens),
+  PROACTIVELY consult Antigravity CLI for research, large codebase comprehension,
+  and multimodal data processing. Antigravity excels at: massive context windows (1M tokens),
   Google Search grounding, video/audio/PDF analysis, and repository-wide understanding.
   Use for pre-implementation research, documentation analysis, and multimodal tasks.
   Explicit triggers: "research", "investigate", "analyze video/audio/PDF", "understand codebase".
 metadata:
-  short-description: Claude Code ↔ Gemini CLI collaboration (research & multimodal)
+  short-description: Claude Code ↔ Antigravity CLI collaboration (research & multimodal)
 ---
 
-# Gemini System — Research & Multimodal Specialist
+# Antigravity System — Research & Multimodal Specialist
 
-**Gemini CLI (gemini-3-pro-preview) is your research specialist with 1M token context.**
+**Antigravity CLI (agy) is your research specialist with 1M token context.**
 
-> **詳細ルール**: `.claude/rules/gemini-delegation.md`
+> **詳細ルール**: `.claude/rules/antigravity-delegation.md`
 
 ## Context Management (CRITICAL)
 
-**サブエージェント経由を推奨。** Gemini出力は大きくなりがちなため。
+**サブエージェント経由を推奨。** Antigravity出力は大きくなりがちなため。
 
 | 状況 | 方法 |
 |------|------|
@@ -27,9 +27,9 @@ metadata:
 | マルチモーダル | サブエージェント経由（推奨） |
 | 短い質問 (1-2文回答) | 直接呼び出しOK |
 
-## Gemini vs Codex
+## Antigravity vs Codex
 
-| Task | Gemini | Codex |
+| Task | Antigravity | Codex |
 |------|--------|-------|
 | **リポジトリ全体理解** | ✓ | |
 | **ライブラリ調査** | ✓ | |
@@ -68,7 +68,7 @@ Task tool parameters:
 - prompt: |
     Research: {topic}
 
-    gemini -p "{research question}" 2>/dev/null
+    agy -p "{research question}" 2>/dev/null
 
     Save full output to: .claude/docs/research/{topic}.md
     Return CONCISE summary (5-7 bullet points).
@@ -79,39 +79,39 @@ Task tool parameters:
 For quick questions expecting brief answers:
 
 ```bash
-gemini -p "Brief question" 2>/dev/null
+agy -p "Brief question" 2>/dev/null
 ```
 
 ### CLI Options Reference
 
 ```bash
 # Codebase analysis
-gemini -p "{question}" --include-directories . 2>/dev/null
+agy -p "{question}" --add-dir . 2>/dev/null
 
 # Multimodal (PDF/video/audio)
-gemini -p "{prompt}" < /path/to/file.pdf 2>/dev/null
+agy -p "{prompt} (file: /path/to/file.pdf)" 2>/dev/null
 
 # JSON output
-gemini -p "{question}" --output-format json 2>/dev/null
+agy -p "{question}" --output-format json 2>/dev/null
 ```
 
 ### Workflow (Subagent)
 
-1. **Spawn subagent** with Gemini research prompt
+1. **Spawn subagent** with Antigravity research prompt
 2. **Continue your work** → Subagent runs in parallel
 3. **Receive summary** → Subagent returns key findings
 4. **Full output saved** → `.claude/docs/research/{topic}.md`
 
 ## Language Protocol
 
-1. Ask Gemini in **English**
+1. Ask Antigravity in **English**
 2. Receive response in **English**
 3. Synthesize and apply findings
 4. Report to user in **Japanese**
 
 ## Output Location
 
-Save Gemini research results to:
+Save Antigravity research results to:
 ```
 .claude/docs/research/{topic}.md
 ```
@@ -123,7 +123,7 @@ This allows Claude and Codex to reference the research later.
 ### Pre-Implementation Research
 
 ```bash
-gemini -p "Research best practices for {feature} in Python 2025.
+agy -p "Research best practices for {feature} in Python 2025.
 Include:
 - Common patterns and anti-patterns
 - Library recommendations (with comparison)
@@ -135,12 +135,12 @@ Include:
 ### Repository Analysis
 
 ```bash
-gemini -p "Analyze this repository:
+agy -p "Analyze this repository:
 1. Architecture overview
 2. Key modules and responsibilities
 3. Data flow between components
 4. Entry points and extension points
-5. Existing patterns to follow" --include-directories . 2>/dev/null
+5. Existing patterns to follow" --add-dir . 2>/dev/null
 ```
 
 ### Library Research
@@ -151,24 +151,24 @@ See: `references/lib-research-task.md`
 
 ```bash
 # Video
-gemini -p "Analyze video: main concepts, key points, timestamps" < tutorial.mp4 2>/dev/null
+agy -p "Analyze video: main concepts, key points, timestamps (file: tutorial.mp4)" 2>/dev/null
 
 # PDF
-gemini -p "Extract: API specs, examples, constraints" < api-docs.pdf 2>/dev/null
+agy -p "Extract: API specs, examples, constraints (file: api-docs.pdf)" 2>/dev/null
 
 # Audio
-gemini -p "Transcribe and summarize: decisions, action items" < meeting.mp3 2>/dev/null
+agy -p "Transcribe and summarize: decisions, action items (file: meeting.mp3)" 2>/dev/null
 ```
 
 ## Integration with Codex
 
 | Workflow | Steps |
 |----------|-------|
-| **New feature** | Gemini research → Codex design review |
-| **Library choice** | Gemini comparison → Codex decision |
-| **Bug investigation** | Gemini codebase search → Codex debug |
+| **New feature** | Antigravity research → Codex design review |
+| **Library choice** | Antigravity comparison → Codex decision |
+| **Bug investigation** | Antigravity codebase search → Codex debug |
 
-## Why Gemini?
+## Why Antigravity?
 
 - **1M token context**: Entire repositories at once
 - **Google Search**: Latest information and docs

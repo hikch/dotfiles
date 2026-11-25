@@ -13,12 +13,12 @@ metadata:
 
 ## Overview
 
-このスキルは3つのエージェント（Claude, Codex, Gemini）を協調させ、プロジェクト開始から実装後レビューまでをカバーする。
+このスキルは3つのエージェント（Claude, Codex, Antigravity）を協調させ、プロジェクト開始から実装後レビューまでをカバーする。
 
 ## Workflow
 
 ```
-Phase 1: Research (Gemini via Subagent)
+Phase 1: Research (Antigravity via Subagent)
     ↓
 Phase 2: Requirements & Planning (Claude)
     ↓
@@ -35,9 +35,9 @@ Phase 6: Multi-Session Review (New Session + Codex)
 
 ---
 
-## Phase 1: Gemini Research (Background)
+## Phase 1: Antigravity Research (Background)
 
-**Task tool でサブエージェントを起動し、Gemini でリポジトリ分析。**
+**Task tool でサブエージェントを起動し、Antigravity でリポジトリ分析。**
 
 ```
 Task tool parameters:
@@ -46,15 +46,15 @@ Task tool parameters:
 - prompt: |
     Research for: {feature}
 
-    1. Call Gemini CLI:
-       gemini -p "Analyze this repository for: {feature}
+    1. Call Antigravity CLI:
+       agy -p "Analyze this repository for: {feature}
 
        Provide:
        1. Repository structure and architecture
        2. Relevant existing code and patterns
        3. Library recommendations
        4. Technical considerations
-       " --include-directories . 2>/dev/null
+       " --add-dir . 2>/dev/null
 
     2. Save full output to: .claude/docs/research/{feature}.md
 
@@ -74,7 +74,7 @@ Ask in Japanese:
 3. **技術的要件**: 特定のライブラリ、制約は？
 4. **成功基準**: 完了の判断基準は？
 
-**Draft implementation plan based on Gemini research + user answers.**
+**Draft implementation plan based on Antigravity research + user answers.**
 
 ---
 
@@ -204,7 +204,7 @@ Present final plan to user (in Japanese):
 ```markdown
 ## プロジェクト計画: {feature}
 
-### 調査結果 (Gemini)
+### 調査結果 (Antigravity)
 {Key findings - 3-5 bullet points}
 
 ### 設計方針 (Codex レビュー済み)
@@ -230,7 +230,7 @@ Present final plan to user (in Japanese):
 
 | File | Purpose |
 |------|---------|
-| `.claude/docs/research/{feature}.md` | Gemini research output |
+| `.claude/docs/research/{feature}.md` | Antigravity research output |
 | `CLAUDE.md` | Updated with project context |
 | Task list (internal) | Progress tracking |
 
@@ -238,7 +238,7 @@ Present final plan to user (in Japanese):
 
 ## Tips
 
-- **All Codex/Gemini work through subagents** to preserve main context
+- **All Codex/Antigravity work through subagents** to preserve main context
 - **Update CLAUDE.md** to persist context across sessions
 - **Use multi-session review** for better quality assurance
 - **Ctrl+T**: Toggle task list visibility

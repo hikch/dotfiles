@@ -2,7 +2,7 @@
 
 **Multi-Agent Orchestration Framework**
 
-Claude Code integrates Codex CLI (deep reasoning) and Gemini CLI (large-scale research), leveraging each agent's strengths to accelerate development.
+Claude Code integrates Codex CLI (deep reasoning) and Antigravity CLI (large-scale research), leveraging each agent's strengths to accelerate development.
 
 ---
 
@@ -12,7 +12,7 @@ Claude Code integrates Codex CLI (deep reasoning) and Gemini CLI (large-scale re
 |-------|----------|---------|
 | **Claude Code** | Orchestration, user interaction | Overall coordination, task management |
 | **Codex CLI** | Deep reasoning, design decisions, debugging | Design consultation, error analysis, trade-off evaluation |
-| **Gemini CLI** | 1M tokens, multimodal, web search | Full codebase analysis, library research, PDF/video processing |
+| **Antigravity CLI** | 1M tokens, multimodal, web search | Full codebase analysis, library research, PDF/video processing |
 
 **IMPORTANT**: Tasks difficult for a single agent can be solved through 3-agent collaboration.
 
@@ -22,7 +22,7 @@ Claude Code integrates Codex CLI (deep reasoning) and Gemini CLI (large-scale re
 
 Claude Code context is **200k tokens**, but effectively **70-100k** due to tool definitions.
 
-**YOU MUST** call Codex/Gemini via subagent (for outputs >10 lines).
+**YOU MUST** call Codex/Antigravity via subagent (for outputs >10 lines).
 
 | Output Size | Method | Reason |
 |-------------|--------|--------|
@@ -50,13 +50,13 @@ Bash("codex exec ... 'answer in 1 sentence'")
 
 → Details: `.claude/rules/codex-delegation.md`
 
-### When to Use Gemini
+### When to Use Antigravity
 
 - Research ("Look up", "What's the latest?")
 - Large-scale analysis ("Understand the entire codebase")
 - Multimodal ("Check this PDF/video")
 
-→ Details: `.claude/rules/gemini-delegation.md`
+→ Details: `.claude/rules/antigravity-delegation.md`
 
 ---
 
@@ -66,7 +66,7 @@ Bash("codex exec ... 'answer in 1 sentence'")
 /startproject <feature-name>
 ```
 
-1. Gemini analyzes repository (via subagent)
+1. Antigravity analyzes repository (via subagent)
 2. Claude gathers requirements, creates plan
 3. Codex reviews plan (via subagent)
 4. Claude creates task list
@@ -82,8 +82,8 @@ Bash("codex exec ... 'answer in 1 sentence'")
 |----------|---------|
 | `.claude/rules/` | Coding, security, language rules |
 | `.claude/docs/DESIGN.md` | Design decision records |
-| `.claude/docs/research/` | Gemini research results |
-| `.claude/logs/cli-tools.jsonl` | Codex/Gemini I/O logs |
+| `.claude/docs/research/` | Antigravity research results |
+| `.claude/logs/cli-tools.jsonl` | Codex/Antigravity I/O logs |
 
 ---
 
@@ -114,15 +114,15 @@ A dotfiles repository managing macOS development environment configuration. Hybr
   hosts/                # Host-specific Brewfiles
   .claude/              # Project-level AI settings (not deployed)
   .codex/               # Codex CLI settings
-  .gemini/              # Project-level Gemini settings
+  .gemini/              # Project-level Antigravity context (GEMINI.md)
+  .agents/              # Project-level Antigravity skills
   home/                 # Files deployed to $HOME
     Makefile            # Deployment targets
     CANDIDATES          # Deployment whitelist
     EXCLUSIONS          # Excluded files
     PARTIAL_LINKS       # Partial link targets
     .claude/            # → ~/.claude/ (global AI settings)
-    .gemini/            # → ~/.gemini/ (global Gemini settings)
-    .config/            # Partial links (fish, git, gh)
+    .config/            # Partial links (fish, git, gh, herdr)
     .local/             # Partial links (devbox)
 ```
 
@@ -132,7 +132,7 @@ Global packages managed via Devbox:
 - **Config file**: `~/.local/share/devbox/global/default/devbox.json`
 - **Check command**: `devbox global list`
 
-**Key tools**: nodejs, uv, gh, fish, fzf, ripgrep, jq, tree, tmux, pandoc, ffmpeg, claude-code, gemini-cli
+**Key tools**: nodejs, uv, gh, fish, fzf, ripgrep, jq, tree, tmux, pandoc, ffmpeg, claude-code, antigravity-cli (agy), herdr
 
 ## AI Tools Configuration
 
@@ -140,7 +140,7 @@ Project-level and global settings are separated:
 
 | Type | Location | Purpose |
 |------|----------|---------|
-| **Project settings** | `.claude/`, `.codex/`, `.gemini/` | This repository only |
+| **Project settings** | `.claude/`, `.codex/`, `.gemini/`, `.agents/` | This repository only |
 | **Global settings** | `home/.claude/` → `~/.claude/` | All repositories |
 
 ## Coding Style & Naming Conventions
