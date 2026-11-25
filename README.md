@@ -277,6 +277,3 @@ and more...
 - [x] Switch to package management using Devbox
 - [x] Migrate from Nix to Devbox for better compatibility
 
-## Acknowledgments
-
-- AI coding settings based on [claude-code-orchestra](https://github.com/Sunwood-ai-labs/claude-code-orchestra) (MIT License)

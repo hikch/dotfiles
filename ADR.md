@@ -200,3 +200,11 @@ Simple journal-style decisions for this dotfiles repository.
 - **herdr (agent multiplexer)**: Added herdr via Devbox for running multiple AI agents in one terminal.
   - Config: `.config/herdr` via PARTIAL_LINKS
   - Claude Code: release-matched skill (`herdr --skill`) at `.claude/skills/herdr` via PARTIAL_LINKS; state hook installed with `herdr integration install claude` into the managed `.claude/hooks` and `settings.json`
+
+## 2026-11-26
+
+- **Remove Claude Code Orchestra**: Uninstalled the project-level multi-agent framework (based on claude-code-orchestra) from this repository.
+  - Removed `.claude/{agents,docs,hooks,rules,skills,settings.json}`, `.codex/`, `.gemini/`, `.agents/`, the Orchestra section of `AGENTS.md`, README acknowledgments, the LICENSE MIT note, `.gitignore` overrides for `.codex/.gemini/.agents`, and the `cinit` fish abbr.
+  - Kept `.claude/CLAUDE.md` (link to `AGENTS.md`) and the local-only `.claude/settings.local.json`.
+  - Reason: the delegation hooks kept nudging every task toward Codex/agy, its Codex invocation (`gpt-5.2-codex`, `--full-auto`) no longer worked, and the template rules targeted Python projects rather than dotfiles.
+  - Global settings (`home/.claude/`), devbox packages (codex, antigravity-cli) and `make agy-mcp` are unaffected.

@@ -292,6 +292,3 @@ brew services stop syncthing
 - [x] Devboxを使用したパッケージ管理に切り替え
 - [x] 互換性向上のためNixからDevboxに移行
 
-## 謝辞
-
-- AIコーディング設定は [claude-code-orchestra](https://github.com/Sunwood-ai-labs/claude-code-orchestra) をベースにしています（MITライセンス）

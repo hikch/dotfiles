@@ -129,7 +129,7 @@
       "**Cloud provider(s)**: None configured",
       "**Repository visibility**: Public — hikch/dotfiles (confirmed via gh). Any commit or push here is a publication; only this repo's own work belongs in it",
       "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
-      "**Secrets management**: None configured — repo's own .gitignore patterns exclude .env, credentials.json, secrets.yaml/yml, *.secret, *.credentials, *.key, *.keystore, .aws/credentials, home/.config/tailscale-monitor/webhook.env, .gemini/credentials.json from version control",
+      "**Secrets management**: None configured — repo's own .gitignore patterns exclude .env, credentials.json, secrets.yaml/yml, *.secret, *.credentials, *.key, *.keystore, .aws/credentials, home/.config/tailscale-monitor/webhook.env from version control",
       "**Default / protected branches**: default branch unknown (origin/HEAD unset); no rulesets listed, no protected branches listed on hikch/dotfiles",
       "**CI/CD deploy targets**: None configured",
       "**Network posture**: None configured",
@@ -147,7 +147,7 @@
       "### User-specific",
       "**Primary use of Claude Code**: personal dotfiles / macOS development environment management (hobby use, Claude Pro subscription)",
       "**Trusted repo**: /Users/hu/dotfiles (hikch/dotfiles on GitHub, public) — only this repo's own work (dotfiles, scripts, configs, docs) belongs here; content ported from other sources is not its own work",
-      "**Org-specific CLIs**: None configured — project uses devbox, Homebrew, Fish, gh, and delegates to Codex CLI (codex) and Antigravity CLI (agy) per repo docs",
+      "**Org-specific CLIs**: None configured — project uses devbox, Homebrew, Fish, gh",
       "routine under /Users/hu/dotfiles/ prefix: make deploy, make init, make test, make deploy/dry-run, devbox global list/install, brew bundle, fish -c \"fisher update\", and other Makefile targets listed in Config scans are routine project operations"
     ]
   }

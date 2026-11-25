@@ -51,18 +51,11 @@ home/.config/tailscale-monitor/webhook.env
 # Override global gitignore for managed AI tool settings
 !home/.claude/settings.json
 
-# Override global gitignore for project-level AI settings (claude-code-orchestra)
+# Override global gitignore for project-level Claude settings
 !.claude/
 !.claude/**
-!.codex/
-!.codex/**
-!.gemini/
-!.gemini/**
-!.agents/
-!.agents/**
 
-# AI tools local settings (machine-specific, not tracked) - must be after override
+# Claude local settings (machine-specific, not tracked) - must be after override
 .claude/settings.local.json
-.gemini/credentials.json
 
 
