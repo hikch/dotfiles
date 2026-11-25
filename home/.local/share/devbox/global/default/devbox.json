@@ -16,7 +16,8 @@
     "tree":                            "latest",
     "uv":                              "latest",
     "gh":                              "latest",
-    "gemini-cli":                      "latest",
+    "antigravity-cli":                 "latest",
+    "herdr":                           "latest",
     "mas":                             "latest",
     "git-filter-repo":                 "latest",
     "playwright-mcp":                  "latest",
@@ -24,7 +25,8 @@
     "claude-code":                     "latest",
     "codex":                           "latest",
     "gitleaks":                        "latest",
-    "nodejs_22":                       "latest"
+    "nodejs_22":                       "latest",
+    "google-cloud-sql-proxy":          "latest"
   },
   "shell": {
     "init_hook": [
