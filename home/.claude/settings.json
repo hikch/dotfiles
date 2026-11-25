@@ -117,6 +117,9 @@
   },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
+  "env": {
+    "CLAUDE_CODE_CERT_STORE": "bundled,system"
+  },
   "tui": "fullscreen",
   "theme": "light",
   "autoMode": {
