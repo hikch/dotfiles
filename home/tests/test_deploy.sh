@@ -58,6 +58,7 @@ echo "--- Test 2: PARTIAL_LINKS ---"
 assert_symlink ".config/fish/config.fish"
 assert_symlink ".config/git/ignore"
 assert_symlink ".local/share/devbox/global/default"
+assert_symlink ".config/herdr"
 
 # ========== Test 3: Parent directories are real ==========
 echo ""
@@ -70,9 +71,10 @@ echo ""
 echo "--- Test 4: AI settings ---"
 assert_symlink ".claude/settings.json"
 assert_symlink ".claude/CLAUDE.md"
-assert_symlink ".gemini/settings.json"
+assert_symlink ".claude/skills/herdr"
 assert_not_symlink ".claude"
-assert_not_symlink ".gemini"
+assert_not_symlink ".claude/skills"
+assert_not_exists ".gemini"
 
 # ========== Test 5: Excluded files ==========
 echo ""

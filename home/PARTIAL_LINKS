@@ -35,9 +35,10 @@
 .claude/settings.json
 .claude/CLAUDE.md
 .claude/hooks
+.claude/skills/herdr
 
-# Gemini CLI settings (runtime files stay in ~/.gemini/)
-.gemini/settings.json
+# herdr (agent multiplexer) configuration
+.config/herdr
 
 # Tailscale monitor configuration
 .config/tailscale-monitor

@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-This file provides guidance to AI coding assistants (Claude Code, Gemini CLI, etc.) when working with code in this repository.
+This file provides guidance to AI coding assistants (Claude Code, Antigravity CLI, etc.) when working with code in this repository.
 
 ## Repository Overview
 
@@ -38,7 +38,7 @@ This environment uses Devbox for global package management. To see the current l
 - System utilities (fish, fzf, ripgrep, jq, tree, tmux)
 - Text processing (pandoc, ffmpeg)
 - Version control (mercurial)
-- AI tools (claude-code, gemini-cli)
+- AI tools (claude-code, antigravity-cli, codex, herdr)
 - macOS tools (mas)
 
 Always verify tool availability before use, as the package list may change over time.
@@ -60,8 +60,7 @@ Always verify tool availability before use, as the package list may change over 
     .vimrc              # -> ~/.vimrc
     .gitconfig          # -> ~/.gitconfig
     .claude/            # -> ~/.claude/ (global AI settings)
-    .gemini/            # -> ~/.gemini/ (global AI settings)
-    .config/            # Partial links (fish, git, gh)
+    .config/            # Partial links (fish, git, gh, herdr)
     .local/             # Partial links (devbox)
     bin/                # -> ~/bin
     etc/                # -> ~/etc
@@ -138,7 +137,7 @@ This repository separates project-level and global AI settings:
 
 **Global Settings (deployed to $HOME):**
 - `home/.claude/` → `~/.claude/` - Global Claude Code settings
-- `home/.gemini/` → `~/.gemini/` - Global Gemini CLI settings
+- Antigravity CLI (`~/.gemini/`) is not symlinked (agy rewrites its files atomically); MCP servers are applied with `make agy-mcp`
 
 This separation allows:
 - Repository-specific AI behavior via project settings
@@ -161,7 +160,8 @@ Deployment is controlled by files in `home/`:
 
 ### Special Cases
 - **`.config` and `.local`**: Real directories in `$HOME`, with selective symlinks inside
-- **`.claude` and `.gemini`**: Full directory symlinks to `home/.claude/` and `home/.gemini/`
+- **`.claude`**: Real directory in `$HOME`, with selective symlinks inside (runtime state stays local)
+- **`.gemini`**: Not deployed; Antigravity CLI state stays local
 
 To modify what gets deployed:
 1. Edit `home/CANDIDATES` to add new deploy targets

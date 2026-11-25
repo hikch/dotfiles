@@ -41,6 +41,8 @@ cask "pycharm-ce"
 cask "sourcetree"
 cask "vlc"
 cask "zoom"
+# herdr desktop app (arm64 only; herdr CLI itself comes from Devbox)
+cask "herdr-app" if Hardware::CPU.arm?
 
 # --- Host include ---
 host = `hostname`.strip.split(".").first

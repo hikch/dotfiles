@@ -187,3 +187,16 @@ Simple journal-style decisions for this dotfiles repository.
   - Future extensibility: Easy to add more host-specific dotfiles as needed
 
   **Alternative Considered**: Option B (complete integration) was rejected primarily due to unnecessary complexity for current needs, but remains viable if host-specific configuration grows significantly in the future.
+
+## 2026-11-25
+
+- **Gemini CLI → Antigravity CLI (agy) Migration**: Replaced Gemini CLI with Antigravity CLI as the research agent in both global settings and the Claude Code Orchestra.
+  - **Reason**: Google shut down Gemini CLI on 2026-06-18; Antigravity CLI (`agy`) is the official successor.
+  - **Package**: `gemini-cli` → `antigravity-cli` in Devbox global (CLI → Devbox policy; `brew install --cask antigravity` is the desktop app, not the CLI).
+  - **Settings**: `~/.gemini/` is no longer symlinked. agy rewrites `~/.gemini/config/mcp_config.json` and `~/.gemini/antigravity-cli/settings.json` atomically (verified for `mcp_config.json`: a symlink is replaced by a real file). MCP servers are applied with `make agy-mcp` (`agy mcp add` is add-or-update) instead.
+  - **Orchestra**: `gemini -p` → `agy -p`; `--include-directories` → `--add-dir`; stdin file input replaced by file paths in the prompt. Workspace skills moved from `.gemini/skills/` to `.agents/skills/`. `GEMINI.md` is still read by agy and is kept.
+  - **Logs**: CLI log tool name is `agy`; checkpointing still reads legacy `gemini` entries.
+
+- **herdr (agent multiplexer)**: Added herdr via Devbox for running multiple AI agents in one terminal.
+  - Config: `.config/herdr` via PARTIAL_LINKS
+  - Claude Code: release-matched skill (`herdr --skill`) at `.claude/skills/herdr` via PARTIAL_LINKS; state hook installed with `herdr integration install claude` into the managed `.claude/hooks` and `settings.json`
