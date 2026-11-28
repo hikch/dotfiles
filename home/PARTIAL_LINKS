@@ -40,5 +40,9 @@
 # herdr (agent multiplexer) configuration
 .config/herdr
 
+# herdr-core (hc) launch templates (<role>-<agent>) and agent-neutral role definitions
+.config/herdr-core/templates
+.config/herdr-core/roles
+
 # Tailscale monitor configuration
 .config/tailscale-monitor
