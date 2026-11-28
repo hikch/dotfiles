@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_CODE_CERT_STORE": "bundled,system"
+  },
   "hooks": {
     "Notification": [
       {
@@ -117,9 +120,6 @@
   },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
-  "env": {
-    "CLAUDE_CODE_CERT_STORE": "bundled,system"
-  },
   "tui": "fullscreen",
   "theme": "light",
   "autoMode": {
@@ -150,5 +150,10 @@
       "**Org-specific CLIs**: None configured — project uses devbox, Homebrew, Fish, gh",
       "routine under /Users/hu/dotfiles/ prefix: make deploy, make init, make test, make deploy/dry-run, devbox global list/install, brew bundle, fish -c \"fisher update\", and other Makefile targets listed in Config scans are routine project operations"
     ]
+  },
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "autoCompactWindow": 400000
+    }
   }
 }
