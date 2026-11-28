@@ -14,6 +14,9 @@
 - テンプレートで起動する: `hc run --bg --name <名前> --cwd <dir> <template> "<タスク>"`。
 - 起動結果の `first_message.sent` を確認する。false の場合は `hc read` で画面を確認し、原因（信頼ダイアログ等）を解消してから送る。
 - タスクには作業範囲（触ってよいファイル）・受入条件を必ず含める。
+- Worker の選び方（既定）: 実装は `developer-codex` または `developer-agy`、テストは `tester-claude`、レビューは実装者と別の AI（`reviewer-claude` / `reviewer-codex`）。同じ成果物の実装・テスト・レビューを、同じ AI に重ねて担当させない。
+- 報告方法はエージェントごとに違う: Claude と agy は `hc send` で報告し、Codex（sandbox）は最終回答で報告する。
+- agy は、新しいフォルダで初めて起動するとき「Trust this folder?」で blocked になる。初回セットアップや規約への同意も含め、人間の判断を待つ。
 
 ## 待機と完了判定
 - 待機は `hc wait --children all` または `any` を使う。sleep やポーリングで待たない。
